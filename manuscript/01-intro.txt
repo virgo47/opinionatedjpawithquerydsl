@@ -27,9 +27,9 @@ providers*) like [Hibernate](https://en.wikipedia.org/wiki/Hibernate_%28framewor
 On the bright side - I wrote more than a few posts on [my blog](http://virgo47.wordpress.com/),
 mostly on technical topics, couple of them about JPA. Actually, this book is based on these
 frustrated experiences.
- 
+
 ## Is this book for you?
- 
+
 If you're not a programmer, well... it's not. If you don't use Java and JPA (or concrete ORM
 solution like those mentioned above), probably not. If you're happy with JPA as it is,
 probably still not - although you can give it a try. So who is this book for?
@@ -38,9 +38,19 @@ Best fit is when you want to use JPA (obviously), but don't like some of it's pr
 *Criteria API* could have been better, right? Little control over to-one relationships,
 because lazy isn't guaranteed there. And there's more.
 
+You may be interested in presented filtering/paging "framework" too and while it is utilized
+with the JPA back-end in our case, the concept is rather generic. Sometimes I feel like rewriting
+this part for every project.
+
+Talking about frameworks you may ask: "How does this all compare to Spring Data? It can be used
+with JPA and Querydsl too!" ... TODO :-)
+
 querydsl
 generic patterns
 filter/paging framework
+options for avoiding eager fetch:
+- state all the columns except for relations (tedious)
+- black byte-code magic, not ensured by the JPA standard
 
 ## Test area :-)
 
