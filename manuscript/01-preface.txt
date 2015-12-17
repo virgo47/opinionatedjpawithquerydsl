@@ -1,12 +1,12 @@
-# Introduction
+# Preface
 
 This is a book about my experience with [object-relational mapping](https://en.wikipedia.org/wiki/Object-relational_mapping)
 in general and the [Java Persistence API](https://en.wikipedia.org/wiki/Java_Persistence_API) (JPA)
 specifically. It's a book about [Querydsl](http://www.querydsl.com/) as well, because since I was
 recommended this library I completely fell in love with it. It never let me down and sometimes
-even generated feeling of sheer happiness - which is not that common in our programming profession.
+even generated feeling of sheer happiness -- which is not that common in our programming profession.
 
-Be warned - this book is (as the title suggests) very opinionated. Sometimes you may even ask:
+Be warned -- this book is (as the title suggests) very opinionated. Sometimes you may even ask:
 "Why the hell this guy even uses JPA?!" Sometimes even I don't know. And sometimes you can hear
 a feeble voice saying words like "legacy" or similar.
 
@@ -15,7 +15,7 @@ a feeble voice saying words like "legacy" or similar.
 Once I wrote a book. I was 17 or so and it wasn't a technical book. But I managed to finished it
 and I'm really proud of it, because that is something I often am not able to do now. I wanted
 to write a book about a simple monitoring library for Java called
-[Java Simon](https://github.com/virgo47/javasimon) - nothing big, but books are often easier to
+[Java Simon](https://github.com/virgo47/javasimon) -- nothing big, but books are often easier to
 read than manuals... but you can guess I haven't finished that up (even though it wouldn't be
 that big).
 
@@ -24,7 +24,7 @@ which is the standard API for ORM in the Java world with implementations (also c
 providers*) like [Hibernate](https://en.wikipedia.org/wiki/Hibernate_%28framework%29) or
 [EclipseLink](https://en.wikipedia.org/wiki/EclipseLink).
 
-On the bright side - I wrote more than a few posts on [my blog](http://virgo47.wordpress.com/),
+On the bright side -- I wrote more than a few posts on [my blog](http://virgo47.wordpress.com/),
 mostly on technical topics, couple of them about JPA. Actually, this book is based on these
 frustrated experiences.
 
@@ -32,19 +32,18 @@ frustrated experiences.
 
 If you're not a programmer, well... it's not. If you don't use Java and JPA (or concrete ORM
 solution like those mentioned above), probably not. If you're happy with JPA as it is,
-probably still not - although you can give it a try. So who is this book for?
+probably still not -- although you can give it a try. So who is this book for?
 
 Best fit is when you want to use JPA (obviously), but don't like some of it's problems.
 *Criteria API* could have been better, right? Little control over to-one relationships,
-because lazy isn't guaranteed there. And there's more.
+because lazy isn't guaranteed there. And there's more -- but I'll focus on these biggest pain
+points in the first iteration of the book.
 
-You may be interested in presented filtering/paging "framework" too and while it is utilized
-with the JPA back-end in our case, the concept is rather generic. Sometimes I feel like rewriting
-this part for every project.
+## Other JPA books
 
-Talking about frameworks you may ask: "How does this all compare to Spring Data? It can be used
-with JPA and Querydsl too!" ... TODO :-)
+## History -- or Enterprise Architecture Patterns then and now
 
+##
 querydsl
 generic patterns
 filter/paging framework
