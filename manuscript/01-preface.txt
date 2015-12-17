@@ -48,6 +48,7 @@ querydsl
 generic patterns
 filter/paging framework
 options for avoiding eager fetch:
+
 - state all the columns except for relations (tedious)
 - black byte-code magic, not ensured by the JPA standard
 

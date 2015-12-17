@@ -3,10 +3,12 @@
 Where am I with the book and what are my plans? (All is subject to change, of course.)
 
 To actually finish something, I want to do this in the 1st edition:
+
 * Preface (30%) - to explain why this book even exists and some background
 * Biggest gripes (0%) - where the JPA pains most and how I cope with it
 
 Other ideas, maybe for next editions:
+
 * filtering/pagination
 You may be interested in presented filtering/pagination "framework" too and while it is utilized
 with the JPA back-end in our case, the concept is rather generic. Sometimes I feel like reinventing
