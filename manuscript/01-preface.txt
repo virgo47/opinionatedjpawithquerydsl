@@ -43,7 +43,8 @@ points in the first iteration of the book.
 
 ## History -- or Enterprise Architecture Patterns then and now
 
-##
+## Other topics
+
 querydsl
 generic patterns
 filter/paging framework

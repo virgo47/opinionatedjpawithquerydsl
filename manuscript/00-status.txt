@@ -5,7 +5,17 @@ Where am I with the book and what are my plans? (All is subject to change, of co
 To actually finish something, I want to do this in the 1st edition:
 
 * Preface (30%) - to explain why this book even exists and some background
+* The Good Parts (0%) - mapping, conversion (type support, lobs), unit of work, caching
+** compare to JDBC, Groovy, Spring JDBC
+* Missing Parts (0%) - select from select (count with aggregation, find the problem in spec)
 * Biggest gripes (0%) - where the JPA pains most and how I cope with it
+** https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate/
+** https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
+** https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
+** no "streaming" (cursor like iteration, JPA fetches the results, OOM imminent :-))
+* Pagination with ToMany (0%) - how to paginate when to-many is just in where clause and how to
+do it when you need to fetch from to-many as well (famous N+1 select problem)
+** https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
 
 Other ideas, maybe for next editions:
 
@@ -13,7 +23,9 @@ Other ideas, maybe for next editions:
 You may be interested in presented filtering/pagination "framework" too and while it is utilized
 with the JPA back-end in our case, the concept is rather generic. Sometimes I feel like reinventing
 this part for every project I've made.
-*
+* DAO vs Repository vs...?
+* http://stackoverflow.com/questions/23625885/does-querydsl-suffers-of-the-same-limitations-as-jpa-criteria-api
+`JPASQLQuery`? How does it use JPA mapping?
 
 Talking about frameworks you may ask: "How does this all compare to Spring Data? It can be used
 with JPA and Querydsl too!" ... TODO :-)
