@@ -77,7 +77,24 @@ which is updated to JPA 2.1 (in line with *Java EE 7*). There is hardly anything
 in this one. Sure, it's closing to 500 pages, but it's structured well. It has minimal overlap with
 the rest of Java EE in *Chapter 3: Enterprise Applications*, but even that may be useful.
 
+TODO
 
 
 ## History -- or Enterprise Architecture Patterns then and now
 
+TODO
+
+
+## Structure of the book
+
+I aim for something not very long for the first edition, but I want to split it into couple of
+parts anyway.
+
+In the [first part](#part-jpa-good-bad) of the book we'll quickly go through JPA highs and lows
+(all highly subjective, you know the disclaimer drill) without digging deep.
+
+That's what the [second part](#part-opinionated-jpa) of the book is for. We will introduce
+Querydsl first, because I'm not willing to go on without it, and then I'll demonstrate what
+I don't like and avoid in JPA, when I can - and how I compensate for it.
+
+TODO

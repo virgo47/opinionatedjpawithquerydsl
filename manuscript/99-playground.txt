@@ -1,5 +1,10 @@
 {backmatter}
 
+-# Resources
+
+Pro JPA 2, TODO...
+{:book-projpa2}
+
 ## Other topics
 
 querydsl
@@ -21,6 +26,6 @@ main() {
 }
 ~~~
 
-<<(code/HelloWorld.java)
+<<(00-basic/pom.xml)
 
-<<(../build.gradle)
+<<(00-basic/src/main/java/model/Dog.java)

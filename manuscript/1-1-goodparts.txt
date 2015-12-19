@@ -1,6 +1,6 @@
 {mainmatter}
 
--# JPA Good Times, Bad Times
+-# JPA Good Times, Bad Times {#part-jpa-good-bad}
 
 JPA is hard... and people underestimate it (and don't read).
 
