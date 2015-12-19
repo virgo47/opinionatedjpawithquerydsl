@@ -50,7 +50,7 @@ answers, others open topics that may raise further questions.
 
 ## Not in the book
 
-This is an not introductory book about JPA, see the next section about other JPA related books.
+This is not an introductory book about JPA, see the next section about other JPA related books.
 I expect you know ORM and JPA at least superficially, you work with it for whatever reason
 (or will, or want to) and you are interested in something beyond reference material. It does not
 mean it is difficult book though, as I always try to talk about some concrete problem related

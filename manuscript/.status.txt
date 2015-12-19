@@ -1,4 +1,4 @@
-# Status of the book
+## Status of the book
 
 Where am I with the book and what are my plans? (All is subject to change, of course.)
 
@@ -6,7 +6,7 @@ To actually finish something, I want to do this in the 1st edition:
 
 * Preface (40%) - to explain why this book even exists and some background
 * JPA Good Times, Bad Times
-    * The Good Parts (0%) - mapping, conversion (type support, lobs), unit of work, caching
+    * Good Parts (0%) - mapping, conversion (type support, lobs), unit of work, caching
         * compare to JDBC, Groovy, Spring JDBC
     * Missing Parts (0%) - select from select (count with aggregation, find the problem in spec)
         * Biggest gripes (0%) - where the JPA pains most

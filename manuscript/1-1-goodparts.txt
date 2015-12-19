@@ -1,0 +1,9 @@
+{mainmatter}
+
+-# JPA Good Times, Bad Times
+
+JPA is hard... and people underestimate it (and don't read).
+
+# Good Parts
+
+JPA standard, ...
