@@ -1,0 +1,24 @@
+{backmatter}
+
+## Other topics
+
+querydsl
+generic patterns
+filter/paging framework
+options for avoiding eager fetch:
+
+- state all the columns except for relations (tedious)
+- black byte-code magic, not ensured by the JPA standard
+
+## Test area :-)
+
+Inline code: `print(anything)`
+
+~~~
+Some funny code
+main() {
+    How can I specify language?
+}
+~~~
+
+<<(code/HelloWorld.java)

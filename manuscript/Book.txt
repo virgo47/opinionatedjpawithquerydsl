@@ -1,2 +1,4 @@
-00-status.txt
-01-preface.txt
+.status.txt
+00-preface.txt
+01-goodparts.txt
+99-playground.txt

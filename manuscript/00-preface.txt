@@ -1,4 +1,6 @@
-# Preface
+{frontmatter}
+
+-# Preface
 
 This is a book about my experience with [object-relational mapping](https://en.wikipedia.org/wiki/Object-relational_mapping)
 in general and the [Java Persistence API](https://en.wikipedia.org/wiki/Java_Persistence_API) (JPA)
@@ -9,6 +11,7 @@ even generated feeling of sheer happiness -- which is not that common in our pro
 Be warned -- this book is (as the title suggests) very opinionated. Sometimes you may even ask:
 "Why the hell this guy even uses JPA?!" Sometimes even I don't know. And sometimes you can hear
 a feeble voice saying words like "legacy" or similar.
+
 
 ## My writing background
 
@@ -28,6 +31,7 @@ On the bright side -- I wrote more than a few posts on [my blog](http://virgo47.
 mostly on technical topics, couple of them about JPA. Actually, this book is based on these
 frustrated experiences.
 
+
 ## Is this book for you?
 
 If you're not a programmer, well... it's not. If you don't use Java and JPA (or concrete ORM
@@ -39,29 +43,41 @@ Best fit is when you want to use JPA (obviously), but don't like some of it's pr
 because lazy isn't guaranteed there. And there's more -- but I'll focus on these biggest pain
 points in the first iteration of the book.
 
+Some parts of the book are more generic and based on common sense (like "avoid N+1 select"),
+others are strictly JPA related (like how to achieve modularity). Some are probably complete
+answers, others open topics that may raise further questions.
+
+
+## Not in the book
+
+This is an not introductory book about JPA, see the next section about other JPA related books.
+I expect you know ORM and JPA at least superficially, you work with it for whatever reason
+(or will, or want to) and you are interested in something beyond reference material. It does not
+mean it is difficult book though, as I always try to talk about some concrete problem related
+to JPA or SQL (you should know that one too, of course) which makes the explanation easier to
+grasp.
+
+This is not a book focusing on architecture, although patterns how to use JPA are
+somewhere in this area. I take kind of "Fowlerish" liberty of mixing design and architecture
+and blur the line between them. I admit I have not yet worked on such a project where thinking
+architecturally big would pay off and while I have seen architecture effort on many, often this
+effort was wasted for other reasons you may guess if you're interested in an agile or lean software
+development.
+
+
 ## Other JPA books
+
+JPA came with EJB 3, actually first as a part of JSR 220 "Enterprise JavaBeans 3.0", but it soon
+proved as a worthy API on its own because it is not tied to EJP in particular. In those days I'd
+recommend [Pro EJB 3: Java Persistence API](http://www.amazon.com/dp/1590596455), but I think the
+book is now dead (and yes, in 2016 it celebrates its 10^th^ anniversary).
+
+I can highly recommend [Pro JPA 2](http://www.amazon.com/dp/1430249269) in its 2^nd^ Edition,
+which is updated to JPA 2.1 (in line with *Java EE 7*). There is hardly anything I haven't found
+in this one. Sure, it's closing to 500 pages, but it's structured well. It has minimal overlap with
+the rest of Java EE in *Chapter 3: Enterprise Applications*, but even that may be useful.
+
+
 
 ## History -- or Enterprise Architecture Patterns then and now
 
-## Other topics
-
-querydsl
-generic patterns
-filter/paging framework
-options for avoiding eager fetch:
-
-- state all the columns except for relations (tedious)
-- black byte-code magic, not ensured by the JPA standard
-
-## Test area :-)
-
-Inline code: `print(anything)`
-
-~~~
-Some funny code
-main() {
-    How can I specify language?
-}
-~~~
-
-<<(code/HelloWorld.java)
