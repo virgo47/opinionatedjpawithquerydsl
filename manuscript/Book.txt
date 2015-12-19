@@ -2,4 +2,5 @@
 00-preface.txt
 1-1-goodparts.txt
 1-2-missingparts.txt
+2-1-querydsl.txt
 99-playground.txt
