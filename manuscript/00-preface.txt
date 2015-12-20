@@ -57,12 +57,14 @@ mean it is difficult book though, as I always try to talk about some concrete pr
 to JPA or SQL (you should know that one too, of course) which makes the explanation easier to
 grasp.
 
-This is not a book focusing on architecture, although patterns how to use JPA are
-somewhere in this area. I take kind of "Fowlerish" liberty of mixing design and architecture
+This is not a book focusing on architecture, at least not primarily, although patterns how to use
+JPA are somewhere in this area. I take kind of "Fowlerish" liberty of mixing design and architecture
 and blur the line between them. I admit I have not yet worked on such a project where thinking
 architecturally big would pay off and while I have seen architecture effort on many, often this
 effort was wasted for other reasons you may guess if you're interested in an agile or lean software
-development.
+development. That said, I'll talk about some design considerations, especially around the contract
+between presentation and session layer. I'll talk about infamous *open session in view* pattern
+as well.
 
 
 ## Other JPA books
