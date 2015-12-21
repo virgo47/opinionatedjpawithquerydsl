@@ -26,9 +26,25 @@ So let's talk about the limits, let's talk about implications, about lazy loads 
 consequences, etc. Don't "just fix it with OSIV" (open session in view).
 
 In the following chapters we will talk what is really good about JPA, what is missing and what
-is rather limiting (if I want to avoid "plain bad" or some other unfairly harsh statement).
+is rather limiting or questionable. I'll try to avoid "plain bad" for these parts because
+it is rather unfairly harsh statement and some of these features are... well, features. Just
+questionable on many occasions, that's it.
 
 
 # Good Parts
 
-JPA standard, ...
+## JPA is standard
+
+## Better type support
+
+### Convenient type conversion
+
+## Unit of work
+
+## Declarative transactions
+
+OK, this is not JPA, but part of Java Transaction API (JTA) -- but these are so well integrated
+that we simply take `@Transactional` support for granted. And in most cases this is good, it
+simplifies our code and makes it more declarative.
+
+TODO Spring `@Transactional`

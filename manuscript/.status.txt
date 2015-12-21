@@ -11,7 +11,7 @@ To actually finish something, I want to do this in the 1st edition:
     * Missing Parts (0%) - select from select (count with aggregation, find the problem in spec)
         * Biggest gripes (0%) - where the JPA pains most
         * no "streaming" (cursor like iteration, JPA fetches the results, OOM imminent :-))
-    * Bad Parts (0%)
+    * Questionable Parts (0%)
         * https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate/
 * Opinionated JPA
     * No further steps without Querydsl
