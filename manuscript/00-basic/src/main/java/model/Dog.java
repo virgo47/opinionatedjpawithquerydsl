@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Entity
 public class Dog {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 }

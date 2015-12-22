@@ -96,7 +96,7 @@ In the [first part](#part-jpa-good-bad) of the book we'll quickly go through JPA
 (all highly subjective, you know the disclaimer drill) without digging deep.
 
 That's what the [second part](#part-opinionated-jpa) of the book is for. We will introduce
-Querydsl first, because I'm not willing to go on without it, and then I'll demonstrate what
-I don't like and avoid in JPA, when I can - and how I compensate for it.
+Querydsl first, because I'm not willing to go on without it. Then I'll demonstrate how I work
+around the features I marked as questionable.
 
 TODO
