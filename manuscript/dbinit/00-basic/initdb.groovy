@@ -1,6 +1,6 @@
 import static DbInit.*
 
-connect('jdbc:h2:tcp://localhost/~/sqldemo', 'sa', '')
+recreate('create.sql')
 
 dog('Lessie')
 dog('Rex', 'german shepherd')

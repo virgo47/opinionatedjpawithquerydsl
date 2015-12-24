@@ -260,4 +260,11 @@ class DbInit {
 		println "updates = $updates"
 		println "deletes = $deletes"
 	}
+
+	/** Drops all objects and then executes selected script specified by filename. */
+	static void recreate(String filename) {
+		connect('jdbc:h2:tcp://localhost/~/sqldemo', 'sa', '')
+		sql.execute('DROP ALL OBJECTS')
+		sql.execute(new File(filename).text)
+	}
 }
