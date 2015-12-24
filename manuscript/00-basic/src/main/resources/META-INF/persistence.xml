@@ -9,7 +9,7 @@
 				value="org.hibernate.dialect.H2Dialect"/>
 			<property name="hibernate.show_sql" value="true"/>
 			<property name="hibernate.connection.url"
-				value="jdbc:h2:tcp://localhost/~/sqldemo"/>
+				value="jdbc:h2:tcp://localhost/~/h2dbs/sqldemo"/>
 			<property name="hibernate.connection.username" value="sa"/>
 		</properties>
 	</persistence-unit>
