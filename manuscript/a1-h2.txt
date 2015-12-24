@@ -1,0 +1,44 @@
+{backmatter}
+
+-# Appendices
+
+# H2 Database
+
+*H2* ([project page](http://h2database.com), or
+[on Wikipedia](https://en.wikipedia.org/wiki/H2_%28DBMS%29)) is a SQL database implemented in Java
+with couple of features that are very handy especially for testing:
+
+* Firstly, H2 is all packed in a single JAR which weights way under 2 MB and contains features
+you would not expect in such a cute packaging.
+* It can store its tables both in-memory and on the disk. Using in-memory storage is great for
+tests, because it's fast (for reasonable database size) and also naturally disappears after the
+test is run.
+* It supports both embedded mode -- running in-process with the application itself -- and
+client-server mode where it can run standalone and you can connect to it from different process.
+For automated tests I prefer embedded mode, but when I experiment I use client-server mode, so
+I can check the state of my database independently from my demo application.
+* It contains various tools -- most prominent of which is web-based SQL console. This is what
+you can use to check the database in server mode while it's being modified by an application.
+* Naturally, it contains JDBC driver.
+* SQL support is rich enough to mimic much more evolved/expensive databases, I used it to test
+JPA applications that were originally developed for Oracle or Microsoft SQL Server -- no changes
+besides the JPA configuration were required.
+* While it does not support any scripting (like Oracle's
+[PL/SQL](https://en.wikipedia.org/wiki/PL/SQL) or PostgreSQL
+[PL/pgSQL](https://en.wikipedia.org/wiki/PL/pgSQL)) you can plug triggers and procedures developed
+in Java. Maybe I'd not use it if the database contained a lot of code, but when you need to handle
+couple of simple procedures and some triggers, it can be done.
+
+## Starting it
+
+You can [download it](http://h2database.com/html/download.html) as a Windows Installer or
+multi-platform ZIP, but all you really need is the JAR file. If you manage your application's
+dependencies you probably have it somewhere on the disk already. So just locate it and run it.
+If everything is set up properly, probably just hitting Enter on the JAR in some file manager will
+do. If not, try a command:
+~~~
+$ java -jar $HOME/.m2/repository/com/h2database/h2/1.4.190/h2-1.4.190.jar
+~~~
+
+Of course, adjust the JAR location and name, and if you don't have `java` on your `PATH` (yet!)
+do something about it.
