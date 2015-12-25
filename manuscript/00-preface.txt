@@ -15,12 +15,11 @@ a feeble voice saying words like "legacy" or similar.
 
 ## My writing background
 
-Once I wrote a book. I was 17 or so and it wasn't a technical book. But I managed to finished it
-and I'm really proud of it, because that is something I often am not able to do now. I wanted
-to write a book about a simple monitoring library for Java called
-[Java Simon](https://github.com/virgo47/javasimon) -- nothing big, but books are often easier to
-read than manuals... but you can guess I haven't finished that up (even though it wouldn't be
-that big).
+Once I wrote a book. I was 17 or so and it wasn't a technical book. And it was very short, I admit.
+But I managed to finish it and I'm really proud of that, because it is something I am not able to
+repeat consistently. I wanted to write a book about my simple monitoring library for Java called
+[Java Simon](https://github.com/virgo47/javasimon), because books are often easier to
+read than manuals or Javadoc... but you can guess I haven't finished it up.
 
 With 50% success rate (0% for Java related books) I'll try my luck again. This time about JPA
 which is the standard API for ORM in the Java world with implementations (also called *JPA
@@ -29,23 +28,25 @@ providers*) like [Hibernate](https://en.wikipedia.org/wiki/Hibernate_%28framewor
 
 On the bright side -- I wrote more than a few posts on [my blog](http://virgo47.wordpress.com/),
 mostly on technical topics, couple of them about JPA. Actually, this book is based on these
-frustrated experiences.
+frustrated experiences. I always felt like a writer, originally just to share -- although not
+everything is worth sharing, I know. I also write because it helps me to clarify a lot of concepts
+to myself. For the same reasons (sharing and learning) I gave courses and talks and I had to
+prepare them, which is also kind of writing. So I hope both me and this book are not lost causes.
 
 
 ## Is this book for you?
 
-This book is for anyone who actively uses JPA, preferably in version 2.1 (*Java EE 7*).
+This book is for anyone who actively uses JPA -- preferably in version 2.1 (*Java EE 7*) --
+and is not completely happy with it. Primarily it tackles some difficult JPA points, like features
+that combine benefits with unavoidable drawbacks. If you're happy with JPA as it is, the book
+still can give you more options how to solve your problems.
+
 Some of the considerations are related to ORM in general and may be applicable with if you're
 using some other ORM provider, but I can't guarantee that. I also don't think this book will
-be any fun to non-Java programmers.
-
-Primarily it tackles some difficult JPA points, like features that have its benefits but also
-drawbacks. If you're happy with JPA as it is, the book still can give you more options how to
-solve your problems.
-
-Some parts of the book are more generic and based on common sense (like "avoid N+1 select"),
-others are strictly JPA related (like how to achieve modularity). Some are probably complete
-answers, others open topics that may raise further questions.
+be any fun to non-Java programmers. Some parts of the book are more generic and based on common
+sense (like "avoid N+1 select"), others are strictly JPA related (like how to achieve modularity).
+Some are probably complete answers, others open topics that may raise further questions. Some
+are definitely a bit unorthodox from typical JPA perspective.
 
 
 ## Not in the book
@@ -53,7 +54,7 @@ answers, others open topics that may raise further questions.
 This is not an introductory book about JPA, see the next section about other JPA related books.
 I expect you know ORM and JPA at least superficially, you work with it for whatever reason
 (or will, or want to) and you are interested in something beyond reference material. It does not
-mean it is difficult book though, as I always try to talk about some concrete problem related
+mean this is a difficult book though, as I always try to talk about some concrete problem related
 to JPA or SQL (you should know that one too, of course) which makes the explanation easier to
 grasp.
 
