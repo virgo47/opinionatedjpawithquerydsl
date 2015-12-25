@@ -22,6 +22,12 @@ To actually finish something, I want to do this in the 1st edition:
     * Pagination with to-many (0%) - how to paginate when to-many is just in where clause and how to
     do it when you need to fetch from to-many as well (famous N+1 select problem)
         * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
+    * Transaction boundary and lazy load
+    * To-many relations
+    * Equals object or id? TODO - does it matter?
+* Appendices
+    * H2 Database
+    * Groovy scrips for database initialization
 
 Other ideas, maybe for next editions:
 
@@ -35,3 +41,7 @@ this part for every project I've made.
 
 Talking about frameworks you may ask: "How does this all compare to Spring Data? It can be used
 with JPA and Querydsl too!" ... TODO :-)
+
+## Checklist
+
+* For solutions always state minimal JPA version needed. Try to offer alternatives.
