@@ -36,6 +36,7 @@ multi-platform ZIP, but all you really need is the JAR file. If you manage your 
 dependencies you probably have it somewhere on the disk already. So just locate it and run it.
 If everything is set up properly, probably just hitting Enter on the JAR in some file manager will
 do. If not, try a command:
+
 ~~~
 $ java -jar $HOME/.m2/repository/com/h2database/h2/1.4.190/h2-1.4.190.jar
 ~~~

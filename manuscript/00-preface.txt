@@ -34,14 +34,14 @@ frustrated experiences.
 
 ## Is this book for you?
 
-If you're not a programmer, well... it's not. If you don't use Java and JPA (or concrete ORM
-solution like those mentioned above), probably not. If you're happy with JPA as it is,
-probably still not -- although you can give it a try. So who is this book for?
+This book is for anyone who actively uses JPA, preferably in version 2.1 (*Java EE 7*).
+Some of the considerations are related to ORM in general and may be applicable with if you're
+using some other ORM provider, but I can't guarantee that. I also don't think this book will
+be any fun to non-Java programmers.
 
-Best fit is when you want to use JPA (obviously), but don't like some of it's problems.
-*Criteria API* could have been better, right? Little control over to-one relationships,
-because lazy isn't guaranteed there. And there's more -- but I'll focus on these biggest pain
-points in the first iteration of the book.
+Primarily it tackles some difficult JPA points, like features that have its benefits but also
+drawbacks. If you're happy with JPA as it is, the book still can give you more options how to
+solve your problems.
 
 Some parts of the book are more generic and based on common sense (like "avoid N+1 select"),
 others are strictly JPA related (like how to achieve modularity). Some are probably complete
