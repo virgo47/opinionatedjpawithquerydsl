@@ -28,25 +28,24 @@ providers*) like [Hibernate](https://en.wikipedia.org/wiki/Hibernate_%28framewor
 
 On the bright side -- I wrote more than a few posts on [my blog](http://virgo47.wordpress.com/),
 mostly on technical topics, couple of them about JPA. Actually, this book is based on these
-frustrated experiences. I always felt like a writer, originally just to share -- although not
-everything is worth sharing, I know. I also write because it helps me to clarify a lot of concepts
-to myself. For the same reasons (sharing and learning) I gave courses and talks and I had to
-prepare them, which is also kind of writing. So I hope both me and this book are not lost causes.
+frustrated experiences. I always felt like a writer -- originally just to share although not
+everything is worth sharing, I know. Later I realized that writing helps me to clarify a lot of
+concepts to myself. For the same reasons (sharing and learning) I gave courses and talks. Preparing
+those is also kind of writing. So I hope both me and this book are not lost causes.
 
 
 ## Is this book for you?
 
 This book is for anyone who actively uses JPA -- preferably in version 2.1 (*Java EE 7*) --
-and is not completely happy with it. Primarily it tackles some difficult JPA points, like features
-that combine benefits with unavoidable drawbacks. If you're happy with JPA as it is, the book
+and is not completely happy with it. Primarily it tackles some difficult JPA points, features
+that combine benefits with unavoidable drawbacks. Even if you're happy with JPA as it is, the book
 still can give you more options how to solve your problems.
 
-Some of the considerations are related to ORM in general and may be applicable with if you're
-using some other ORM provider, but I can't guarantee that. I also don't think this book will
-be any fun to non-Java programmers. Some parts of the book are more generic and based on common
+Some of the considerations are related to ORM in general and may be applicable for non-JPA ORM
+providers, but I can't guarantee that. Some parts of the book are more generic and based on common
 sense (like "avoid N+1 select"), others are strictly JPA related (like how to achieve modularity).
-Some are probably complete answers, others open topics that may raise further questions. Some
-are definitely a bit unorthodox from typical JPA perspective.
+Some are probably complete answers, recipes even, others are open topics that only raise further
+questions. Some are definitely a bit unorthodox from typical JPA perspective.
 
 
 ## Not in the book
@@ -55,17 +54,17 @@ This is not an introductory book about JPA, see the next section about other JPA
 I expect you know ORM and JPA at least superficially, you work with it for whatever reason
 (or will, or want to) and you are interested in something beyond reference material. It does not
 mean this is a difficult book though, as I always try to talk about some concrete problem related
-to JPA or SQL (you should know that one too, of course) which makes the explanation easier to
-grasp.
+to JPA or [SQL](https://en.wikipedia.org/wiki/SQL) (you should know that one too, of course) which
+makes the explanation easier to grasp.
 
 This is not a book focusing on architecture, at least not primarily, although patterns how to use
 JPA are somewhere in this area. I take kind of "Fowlerish" liberty of mixing design and architecture
 and blur the line between them. I admit I have not yet worked on such a project where thinking
-architecturally big would pay off and while I have seen architecture effort on many, often this
-effort was wasted for other reasons you may guess if you're interested in an agile or lean software
-development. That said, I'll talk about some design considerations, especially around the contract
-between presentation and session layer. I'll talk about infamous *open session in view* pattern
-as well.
+architecturally big would pay off. But I have seen architecture effort on other projects where the
+effort was wasted for various reasons. Some of them you may guess if you're interested in an agile
+or lean software development. That said, I'll talk about some design considerations, especially
+around the contract between presentation and session layer. I'll talk about infamous *open session
+in view* pattern as well.
 
 
 ## Other JPA books
@@ -78,12 +77,18 @@ book is now dead (and yes, in 2016 it celebrates its 10^th^ anniversary).
 I can highly recommend [Pro JPA 2](http://www.amazon.com/dp/1430249269) in its 2^nd^ Edition,
 which is updated to JPA 2.1 (in line with *Java EE 7*). There is hardly anything I haven't found
 in this one. Sure, it's closing to 500 pages, but it's structured well. It has minimal overlap with
-the rest of Java EE in *Chapter 3: Enterprise Applications*, but even that may be useful.
+the rest of Java EE in *Chapter 3: Enterprise Applications*, but even that may be useful. This
+is currently my go-to book when I need to refresh some area.
 
-TODO
+I don't know more relevant books, but there is one more obvious resource -- [Java Persistence 2.1
+Specification](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html) itself.
+There are things you hardly find anywhere else, especially when it comes to corner cases like
+"use of DISTINCT with COUNT is not supported for arguments of embeddable types". So when you
+encounter a problem it is good to search through the specification for keywords -- often it works
+as specified (regardless whether it's a bug or a feature).
 
 
-## History -- or Enterprise Architecture Patterns then and now
+## Looking back to *Patterns of Enterprise Application Architecture*
 
 TODO
 
