@@ -1,0 +1,33 @@
+{mainmatter}
+
+-# JPA Good Times, Bad Times {#part-jpa-good-bad}
+
+The biggest trouble with JPA (and ORM in general) is that it is hard. Harder than people realize.
+The topic is complex, yet the solutions somehow make it look easier than it really is. JPA is part
+of Java EE and Spring framework supports it very well too, so you simply can't go wrong with it.
+Or can you? Various problems -- especially complexity -- are inherent to ORM solutions in general.
+But there is also no widespread alternative. JDBC? Too low level, although you may use some
+frameworks above it (like Spring's `JdbcTemplate`). Anything else? Not widespread.
+
+JPA/ORM also somehow makes people believe they don't need to understand *SQL*. Or *JPQL* (or any
+QL) for that matter -- and it shows (pain)fully both in the code and in runtime too, typically in
+the performance aspects.
+
+Technology like this deserves to be studied more deeply than it usually is. It cannot be just
+slapped on the application. Yet, that is what I mostly see and that is what all those false
+implied promises deliver. JPA is now one of many embodiments of "EE" -- or enterprise software.
+Applications are bigger and more complex than than they need to be. And slower, of course.
+Developers map the entities but they don't follow through and don't investigate and let entropy
+do the rest of the work instead.
+
+JPA is not perfect and I could name couple of things I'd love to see there. Many of them may not
+be right for JPA philosophy, others would probably help tremendously, but in any case we are
+responsible to do our best to learn about such a key technology -- that is if we use it. It reads
+and writes data from/to our databases which is a crucial thing for most enterprise applications.
+So let's talk about the limits, let's talk about implications, about lazy loads and their
+consequences, etc. Don't "just fix it with OSIV" (open session in view).
+
+In the following chapters we will talk what is really good about JPA, what is missing and what
+is limiting or questionable. I'll try to avoid "plain bad" for these parts because
+it is rather unfairly harsh statement and some of these features are... well, features. Just
+questionable on many occasions, that's it.
