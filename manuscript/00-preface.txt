@@ -80,12 +80,12 @@ in this one. Sure, it's closing to 500 pages, but it's structured well. It has m
 the rest of Java EE in *Chapter 3: Enterprise Applications*, but even that may be useful. This
 is currently my go-to book when I need to refresh some area.
 
-I don't know more relevant books, but there is one more obvious resource -- [Java Persistence 2.1
-Specification](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html) itself.
-There are things you hardly find anywhere else, especially when it comes to corner cases like
-"use of DISTINCT with COUNT is not supported for arguments of embeddable types". So when you
-encounter a problem it is good to search through the specification for keywords -- often it works
-as specified (regardless whether it's a bug or a feature).
+I don't know any other relevant book, but there is one more obvious resource -- [Java Persistence
+2.1 Specification](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
+itself. There are things you hardly find anywhere else, especially when it comes to corner cases
+like "use of DISTINCT with COUNT is not supported for arguments of embeddable types". So when you
+encounter a problem it is good to search through the specification for keywords. Often JPA
+provider works as specified, even when it does not make sense to us.
 
 
 ## Looking back to *Patterns of Enterprise Application Architecture*
