@@ -5,7 +5,7 @@ a particular provider?
 
 ## JPA is standard
 
-Historically, I was kinda Hibernate guy. There were not many other ORM options for Java, or
+When we started with ORM, we picked Hibernate. There were not many other ORM options for Java, or
 at least they were not both high-profile and free. Yet even Hibernate creators are now glad
 when their tool is [used via JPA interfaces](http://www.theserverside.com/news/2240186700/The-JPA-20-EntityManager-vs-the-Hibernate-Session-Which-one-to-use):
 
@@ -13,9 +13,66 @@ when their tool is [used via JPA interfaces](http://www.theserverside.com/news/2
 G> "We encourage people to use the EntityManager," said [Emmanuel] Bernard, demonstrating no
 G> romantic fondness for the objects and methods that are unique to the Hibernate implementation.
 
+Standard is not always necessarily good, but in case of JPA it is well established and respected.
+Now you can choose between multiple *JPA 2.1* implementations or just deploy to any *Java EE 7*
+application server. I'd not bet on the promise that you can easily swap one provider (or application
+server) for the other -- my experiences are terrible in this aspect -- but there is common set
+of annotations for mapping your entities, the same set of most important classes like
+`EntityManager`.
+
+But standards also have their drawbacks, most typically that they are some common subset of the
+features offered in that area. JPA's success is probably based on the fact that it emerged as
+rock-solid subset of features offered by major players in Java ORM world. But starting this way
+it must have trailed behind them. JPA 1 did not offer any criteria API, can you imagine that?
+Now *JPA 2.1* is somewhere else. The features cover nearly anything you need for typical
+applications talking to relational databases.
+
+And even if something is missing, you may combine it with proprietary annotations of a particular
+ORM provider -- but only to a necessary degree. And perhaps you can switch those to JPA in its next
+version. In any case, JPA providers allow you to spice up JPA soup with their specifics easily.
+That way JPA does not restrain you.
+
+
 ## Better type support
 
+JPA can persist anything that is so called *persistable type*. These are:
+
+* entity classes (annotated with `@Entity`) -- these loosely matches database tables;
+* mapped superclasses (`@MappedSuperclass`) -- when you map class hierarchies;
+* embeddable classes (`@Embeddable`) -- to group multiple columns into a value object;
+
+These were all types on class level, more or less matching whole database tables. Now we will
+move to field level:
+
+* simple Java types (optionally annotated with `@Basic`) like primitive types, their wrappers,
+`String`, `BigInteger` and `BigDecimal`;
+* temporal types like `java.util.Date/Calendar` in addition to `java.sql.Date/Time/Timestamp`;
+* collections -- these might be relations to other entities or embeddable types;
+* enum types -- here you can choose whether it's persisted by its `name()` or by `ordinal()`.
+
+We can't reasonably compare the first set to JDBC, because the principles are completely different.
+But we can compare how easy it is to get the value for any column as required type. Here JDBC
+locks you to low level types without any good conversion capabilities, not even for omnipresent
+types like `java.util.Date`. In JPA you can declare field as `java.util.Date` and just say that
+the column represents time, date or timestamp using `@Temporal` annotation. I feel no need to use
+`java.sql` package anymore.
+
+Also enums are much easier, although this applies only for simple cases, not to mention that for
+evolving enums `@Enumerated(EnumType.ORDINAL)` is not an option (it should not be an option at all,
+actually).
+
+The bottom line is that mapping from SQL types to Java field types is much more natural with JDBC.
+And we haven't even mentioned two big guns JPA offers -- custom type converters and large object
+support.
+
+
 ### Convenient type conversion
+
+Up to *JPA 2.0* you could not define custom conversions, but *JPA 2.1* changed this.
+
+TODO
+
+### Large objects
 
 ## Unit of work
 
@@ -25,4 +82,4 @@ OK, this is not JPA, but part of Java Transaction API (JTA) -- but these are so 
 that we simply take `@Transactional` support for granted. And in most cases this is good, it
 simplifies our code and makes it more declarative.
 
-TODO Spring `@Transactional`
+TODO Spring `@Transactional` warning
