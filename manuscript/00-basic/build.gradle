@@ -4,7 +4,7 @@ apply plugin: 'java'
 apply plugin: 'idea'
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 //    jcenter() for testng?
 }
 
@@ -14,19 +14,19 @@ targetCompatibility = 1.8
 querydsl.version = '4.0.7'
 
 idea {
-    module {
-        sourceDirs = ["$buildDir/generated-src"]
-    }
+  module {
+    sourceDirs = ["$buildDir/generated-src"]
+  }
 }
 
 dependencies {
 //    compile 'com.querydsl:querydsl-core:$querydsl.version'
-    compile 'com.querydsl:querydsl-jpa:$querydsl.version'
-    compile 'com.querydsl:querydsl-apt:$querydsl.version'
+  compile 'com.querydsl:querydsl-jpa:$querydsl.version'
+  compile 'com.querydsl:querydsl-apt:$querydsl.version'
 
 //    testCompile 'org.testng:testng:6.9.10'
 }
 
 test {
-    useTestNG()
+  useTestNG()
 }
