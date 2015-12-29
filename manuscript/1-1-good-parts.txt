@@ -7,11 +7,14 @@ a particular provider?
 
 Historically, I was kinda Hibernate guy. There were not many other ORM options for Java, or
 at least they were not both high-profile and free. Yet even Hibernate creators are now glad
-when their tool is [used via JPA interfaces](http://www.theserverside.com/news/2240186700/The-JPA-20-EntityManager-vs-the-Hibernate-Session-Which-one-to-use):
+when their tool is used via JPA interfaces:
 
 {icon=quote-right}
 G> "We encourage people to use the EntityManager," said [Emmanuel] Bernard, demonstrating no
-G> romantic fondness for the objects and methods that are unique to the Hibernate implementation.
+G> romantic fondness for the objects and methods that are unique to the Hibernate
+G> implementation.[^hibjpa]
+
+[^hibjpa]: http://www.theserverside.com/news/2240186700/The-JPA-20-EntityManager-vs-the-Hibernate-Session-Which-one-to-use
 
 ## Better type support
 
