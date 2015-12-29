@@ -37,9 +37,8 @@ dependencies you probably have it somewhere on the disk already. So just locate 
 If everything is set up properly, probably just hitting Enter on the JAR in some file manager will
 do. If not, try a command:
 
-~~~
-$ java -jar $HOME/.m2/repository/com/h2database/h2/1.4.190/h2-1.4.190.jar
-~~~
+{linenos=off}
+  $ java -jar $HOME/.m2/repository/com/h2database/h2/1.4.190/h2-1.4.190.jar
 
 Of course, adjust the JAR location and name, and if you don't have `java` on your `PATH` (yet!)
 do something about it.

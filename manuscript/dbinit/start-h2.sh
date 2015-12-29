@@ -6,8 +6,8 @@ GROOVY_INIT="groovy -cp .:..:$H2_JAR"
 JAVA="java"
 
 if [ -z "$1" ]; then
-	echo "Provide name of the directory with create/init scripts as a parameter!"
-	exit
+  echo "Provide name of the directory with create/init scripts as a parameter!"
+  exit
 fi
 
 $JAVA -jar $H2_JAR &
