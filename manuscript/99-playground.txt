@@ -26,6 +26,14 @@ main() {
 }
 ~~~
 
-<<(00-basic/pom.xml)
+Code options `{...}` can be used for both `<<` and for indented markdown.
+
+{lang="text", linenos=off, starting-line-number=47, crop-start-line=3, crop-end-line=12}
+<<[Random pom.xml](00-basic/pom.xml)
 
 <<(00-basic/src/main/java/model/Dog.java)
+
+{icon=automobile}
+G> Block with icon from URL down there.
+
+http://fontawesome.io/icons/

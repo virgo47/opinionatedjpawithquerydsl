@@ -1,6 +1,17 @@
 # Good Parts
 
+First we will look at all the goodies JPA offers to us. Why did I started to prefer JPA over
+a particular provider?
+
 ## JPA is standard
+
+Historically, I was kinda Hibernate guy. There were not many other ORM options for Java, or
+at least they were not both high-profile and free. Yet even Hibernate creators are now glad
+when their tool is [used via JPA interfaces](http://www.theserverside.com/news/2240186700/The-JPA-20-EntityManager-vs-the-Hibernate-Session-Which-one-to-use):
+
+{icon=quote-right}
+G> "We encourage people to use the EntityManager," said [Emmanuel] Bernard, demonstrating no
+G> romantic fondness for the objects and methods that are unique to the Hibernate implementation.
 
 ## Better type support
 
