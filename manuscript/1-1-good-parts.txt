@@ -1,7 +1,8 @@
 # Good Parts
 
 First we will look at all the goodies JPA offers to us. Why did I started to prefer JPA over
-a particular provider?
+a particular provider? Mind that this part is just an extended enumeration of various features,
+not a tutorial material.
 
 ## JPA is standard
 
@@ -68,11 +69,23 @@ support.
 
 ### Convenient type conversion
 
-Up to *JPA 2.0* you could not define custom conversions, but *JPA 2.1* changed this.
+Up to *JPA 2.0* you could not define custom conversions, but *JPA 2.1* changed this. Now you can
+simply annotate your field with `@Convert` and implement `AttributeConverter<X, Y>` with two
+very obvious methods -- `Y convertToDatabaseColumn (X attribute)` and `X convertToEntityAttribute (Y dbData)`
+-- and you're done! Of course, don't forget to add annotation `@Converter` on the converter itself
+so it's picked up with auto-scan.
+
+TODO: is it necessary if it is in `persistance.xml`?
+
+Even better, you can declare converter as `@Converter(autoApply = true)` and you can do without
+`@Convert` on the field. This is extremely handy for `java.time` types, because *JPA 2.1* does not
+support those (it was released before *Java SE 8*, remember).
+
+
+### Large objects
 
 TODO
 
-### Large objects
 
 ## Unit of work
 

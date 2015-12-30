@@ -1,0 +1,5 @@
+# Questionable parts
+
+* TODO: is it assured that `@Id @GeneratedValue(strategy = GenerationType.IDENTITY)` has id filled in
+after insert? in case of EclipseLink it happens after fetch (IIRC), Hibernate does it sooner(?)
+*
