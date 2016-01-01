@@ -75,7 +75,7 @@ very obvious methods -- `Y convertToDatabaseColumn (X attribute)` and `X convert
 -- and you're done! Of course, don't forget to add annotation `@Converter` on the converter itself
 so it's picked up with auto-scan.
 
-TODO: is it necessary if it is in `persistance.xml`?
+TODO: is it necessary if it is in `persistence.xml`?
 
 Even better, you can declare converter as `@Converter(autoApply = true)` and you can do without
 `@Convert` on the field. This is extremely handy for `java.time` types, because *JPA 2.1* does not
@@ -98,10 +98,11 @@ basic and to-one fields in a [dedicated section](#lazy-problems).
 
 TODO
 
+
 ## Declarative transactions
 
-OK, this is not JPA, but part of Java Transaction API (JTA) -- but these are so well integrated
-that we simply take `@Transactional` support for granted. And in most cases this is good, it
-simplifies our code and makes it more declarative.
+JPA has basic transactional support, but when it comes to declarative transactions they are part of
+Java Transaction API (JTA). JPA and JTA are seamlessly integrated from programmer's point of view
+that we simply take `@Transactional` support for granted.
 
 TODO Spring `@Transactional` warning

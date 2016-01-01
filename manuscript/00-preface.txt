@@ -90,6 +90,12 @@ provider works as specified, even when it does not make sense to us.
 
 ## Looking back to *Patterns of Enterprise Application Architecture*
 
+Martin Fowler wrote his *Patterns of Enterprise Application Architecture* in 2002 trying to capture
+various patterns that were occurring in enterprise applications, written not only in Java. Many
+patterns in the book cover data access layer and many of those are clearly ORM related -- starting
+with *Data Mapper* going through *Unit of Work* or *Lazy Load* to many more related to concrete
+mapping problems.
+
 TODO
 
 
