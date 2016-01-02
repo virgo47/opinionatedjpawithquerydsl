@@ -4,6 +4,14 @@ First we will look at all the goodies JPA offers to us. Why did I started to pre
 a particular provider? Mind that this part is just an extended enumeration of various features,
 not a tutorial material.
 
+The good parts are not absolute though. If you compare JPA against ORM there is one set of
+benefits -- and related drawbacks, of course. Comparing JPA to SQL is not quite appropriate as
+JPA covers much bigger stack. We may compare JPA to JDBC, or we may compare *Java Persistence
+Query Language* (JPQL) to SQL to a degree.
+
+TODO: Crucial benefit over JDBC and SQL
+
+
 ## JPA is standard
 
 When we started with ORM, we picked Hibernate. There were not many other ORM options for Java, or
@@ -34,7 +42,7 @@ version. In any case, JPA providers allow you to spice up JPA soup with their sp
 That way JPA does not restrain you.
 
 
-## Better type support
+## Natural SQL-Java type mapping
 
 JPA can persist anything that is so called *persistable type*. These are:
 

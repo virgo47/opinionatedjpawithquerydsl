@@ -1,3 +1,10 @@
 # The Missing Parts
 
-xxx
+In this part we'll go through things that are missing in *JPA Query Language* (JPQL) when compared
+to SQL.
+
+
+* no support for right-outer-join
+* TODO: what does this mean?
+support for left-outer-join only if the relation in the entities is in the same direction
+* no support for subquery neither in SELECT nor in FROM clauses
