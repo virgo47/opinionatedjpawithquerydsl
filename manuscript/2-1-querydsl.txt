@@ -1,1 +1,35 @@
 # No further step without Querydsl {#querydls}
+
+Querydsl is a library that easily replaces *Java Persistence Criteria API* but it generates JPQL
+instead. This gives us convenience of one with the power of the other, because JPQL can perform
+more than Criteria API. However we don't want to work with JPQL all the time. Imagine search form
+with separate fields for a person (name, address, date of birth from-to, etc.). This is a typical
+use case for Criteria API because you want to construct the query dynamically - you want to add
+`where` conditions only for inputs that are not empty.
+
+## Comparison to Criteria API
+
+Querydsl offers the power of dynamic query creation but except for not being part of the standard
+outclasses Criteria API thanks to its expressive fluent-style API. This provides better type
+safety, for instance only only operations that make sense for the field are offered by IDE
+auto-completion.
+
+While in case of Criteria API you don't need to generate metamodel from the entity classes,
+in Querydsl this is not an option. But using metamodel in Criteria API is advantageous anyway
+so the need to generate the metamodel for Querydsl using annotation processor can hardly be
+considered a drawback. It can be easily integrated with Maven or other build as demonstrated
+in the [companion sources](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/00-basic/pom.xml)
+to this book or [documented](http://www.querydsl.com/static/querydsl/4.0.7/reference/html/ch02.html#d0e127)
+on Querydsl site.
+
+TODO: Criteria API vs Querydsl:
+http://blog.mysema.com/2010/04/querydsl-as-alternative-to-jpa-2.html
+
+## Comparison to JPQL
+
+Caching queries? Query objects? Performance comparison?
+Detached query can be attached to current entity manager.
+
+## Be explicit with aliases
+
+http://stackoverflow.com/questions/6385036/querydsl-generated-classes-not-able-to-access-second-level-elements-for-querying
