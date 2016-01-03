@@ -1,1 +1,1 @@
--# Opinionated JPA {#part-opinionated-jpa}
+# No further step without Querydsl {#querydls}

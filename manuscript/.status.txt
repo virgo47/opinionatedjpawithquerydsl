@@ -1,4 +1,4 @@
-## Status of the book
+-# Status of the book
 
 Where am I with the book and what are my plans? (All is subject to change, of course.)
 
@@ -6,20 +6,22 @@ To actually finish something, I want to do this in the 1st edition:
 
 * Preface (40%) - to explain why this book even exists and some background
 * JPA Good Times, Bad Times
-    * Good Parts (20%) - mapping, conversion (type support, lobs), unit of work, caching
+    * Good Parts (50%) - mapping, conversion (type support, lobs), unit of work, caching
     * Missing Parts (0%) - select from select (count with aggregation, find the problem in spec)
         * Biggest gripes (0%) - where the JPA pains most
         * no "streaming" (cursor like iteration, JPA fetches the results, OOM imminent :-))
     * Questionable Parts (0%)
         * https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate/
+        * Conflict between cache and direct JPQL
         * compare to JDBC, Groovy, Spring JDBC?
 * Opinionated JPA
     * No further steps without Querydsl
+    * ORM tuned down --
     * Moving away from eager to-one relationships (0%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
     * Modularity, if you must
         * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
-    * Pagination with to-many (0%) - how to paginate when to-many is just in where clause and how to
+    * Pagination with to-many (0%) -- how to paginate when to-many is just in where clause and how to
     do it when you need to fetch from to-many as well (famous N+1 select problem)
         * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
     * Transaction boundary and lazy load
