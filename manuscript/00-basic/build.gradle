@@ -1,7 +1,9 @@
-// TODO: MAYBE finish this when I figure out "provided" for Java EE (again) and running APT + setting up souces in Idea
-// all this is currently for free in Maven
-apply plugin: 'java'
-apply plugin: 'idea'
+// TODO: finish APT for querydsl
+plugins {
+  id 'nebula.provided-base' version '3.0.3'
+  id 'java'
+  id 'idea'
+}
 
 repositories {
   mavenCentral()
@@ -11,7 +13,11 @@ repositories {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-querydsl.version = '4.0.7'
+ext {
+  querydslVersion = '4.0.7'
+  hibernateVersion = '5.0.6.Final'
+  h2Version = '1.4.190'
+}
 
 idea {
   module {
@@ -20,9 +26,11 @@ idea {
 }
 
 dependencies {
-//    compile 'com.querydsl:querydsl-core:$querydsl.version'
-  compile 'com.querydsl:querydsl-jpa:$querydsl.version'
-  compile 'com.querydsl:querydsl-apt:$querydsl.version'
+  provided 'javax:javaee-api:7.0'
+  compile "com.querydsl:querydsl-jpa:$querydslVersion"
+  compile "com.querydsl:querydsl-apt:$querydslVersion"
+  compile "org.hibernate:hibernate-entitymanager:$hibernateVersion"
+  compile "com.h2database:h2:$h2Version"
 
 //    testCompile 'org.testng:testng:6.9.10'
 }
