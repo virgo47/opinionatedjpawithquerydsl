@@ -1,3 +1,5 @@
+{frontmatter}
+
 -# Status of the book
 
 Where am I with the book and what are my plans? (All is subject to change, of course.)
