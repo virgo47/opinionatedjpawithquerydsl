@@ -2,8 +2,11 @@
 
 -# Resources
 
+Fowler, Martin. 2002. *Patterns of Enterprise Application Architecture*
+{#bib-poeaa}
+
 Pro JPA 2, TODO...
-{:book-projpa2}
+{#bib-projpa2}
 
 ## Other topics
 

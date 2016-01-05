@@ -5,3 +5,15 @@ after insert? in case of EclipseLink it happens after fetch (IIRC), Hibernate do
 * unit-of-work works only with whole entities, it does not emit partial updates
 
 ## Lazy on basic and to-one fields {#lazy-problems}
+
+## Unit of work vs queries
+
+## 2^nd^ level cache vs queries
+
+TODO: In projpa2 called "in-memory cache", but also "second-level cache" when talking about EMF.getCache()
+
+### Let database to cache it all?
+
+## You can't escape SQL and relation model
+
+TODO: Example: Paging with to-many fetching

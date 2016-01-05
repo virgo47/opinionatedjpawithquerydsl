@@ -109,9 +109,36 @@ Getting LOBs via JDBC from some databases may not be such a big deal, but if you
 over LOB content using 4 KB buffer you will appreciate straightforward JPA mapping.
 
 
+## Flexible mapping
+
+It better be flexible because it is the most important reason for the whole ORM concept.
+TODO: Transient, field/property, ...
+
+
 ## Unit of work
 
-TODO
+[Unit of work](http://martinfowler.com/eaaCatalog/unitOfWork.html) is a pattern described in
+[PoEAA](#bib-poeaa). In Hibernate it was represented by its `Session`, in JPA more descriptive
+(and arguably more EE-ish) name `EntityManager` was chosen. Nowadays `EntityManager` is typically
+injected and combined with declarative transactions it is very natural to use it.
+
+To put it simply: Whatever you read or delete through it or whatever new you persist with it will
+be "flushed" at the end of transaction and relevant SQL queries will get executed. If the mapping
+is good enough then the right order of insert/delete is determined. But sometimes it needs explicit
+help from the programmer -- which is allowed.
+
+You get all the goodies you need from `EntityManager` and while there is some ideal way how to use
+it, it is flexible enough and can be "bent". You can flush things earlier if you need to force some
+order of SQL statements, etc.
+
+Because *unit of work* remembers all the work related to it sometimes it is called "session cache"
+or "1^st^ level cache". This "cache" however does not survive the unit of work itself and talking
+about cache gives this pattern additional -- and confusing -- meaning.
+
+After all the years of experience with `Session` and `EntityManager` it was actually really
+refreshing to read about *unit of work* pattern, especially how it was written back in 2002.
+To see what operations are typical for it, to have it explicitly stated and also to read Fowler's
+speculation how it will be used and implemented. (Most of them are still valid!)
 
 
 ## Declarative transactions

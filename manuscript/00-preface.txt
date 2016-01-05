@@ -47,6 +47,13 @@ sense (like "avoid N+1 select"), others are strictly JPA related (like how to ac
 Some are probably complete answers, recipes even, others are open topics that only raise further
 questions. Some are definitely a bit unorthodox from typical JPA perspective.
 
+While many parts of the book are usable with JPA 2.0, it was update to JPA 2.1 that really allowed
+me to experiment with getting rid of my biggest pain point in JPA mapping -- which were to-one
+mappings that are inherently eager unless you use some non-standard magic (probably based on
+bytecode modification). JPA 2.1 introduces ability to explicitly state `ON` conditions for joins
+and this, in my eyes, is a true killer feature of this specification update and kind of a hidden
+gem overshadowed by (also very useful) custom converters, procedure calls, etc.
+
 
 ## Not in the book
 
@@ -80,7 +87,8 @@ proved as a worthy API on its own because it is not tied to EJP in particular. I
 recommend [Pro EJB 3: Java Persistence API](http://www.amazon.com/dp/1590596455), but I think the
 book is now dead (and yes, in 2016 it celebrates its 10^th^ anniversary).
 
-I can highly recommend [Pro JPA 2](http://www.amazon.com/dp/1430249269) in its 2^nd^ Edition,
+I can highly recommend [Pro JPA 2](http://www.amazon.com/dp/1430249269)
+in its 2^nd^ Edition ([PJPA2](#bib-projpa2)),
 which is updated to JPA 2.1 (in line with *Java EE 7*). There is hardly anything I haven't found
 in this one. Sure, it's closing to 500 pages, but it's structured well. It has minimal overlap with
 the rest of Java EE in *Chapter 3: Enterprise Applications*, but even that may be useful. This
@@ -96,13 +104,32 @@ provider works as specified, even when it does not make sense to us.
 
 ## Looking back to *Patterns of Enterprise Application Architecture*
 
-Martin Fowler wrote his *Patterns of Enterprise Application Architecture* in 2002 trying to capture
-various patterns that were occurring in enterprise applications, written not only in Java. Many
-patterns in the book cover data access layer and many of those are clearly ORM related -- starting
-with *Data Mapper* going through *Unit of Work* or *Lazy Load* to many more related to concrete
-mapping problems.
+Martin Fowler wrote his *Patterns of Enterprise Application Architecture* ([PoEAA](#bib-poeaa))
+in 2002 trying to capture various patterns that were occurring in enterprise applications,
+written not only in Java. Many patterns in the book cover data access layer and many of those
+are clearly ORM related -- starting with *Data Mapper* going through *Unit of Work* or *Lazy Load*
+to many more related to concrete mapping problems.
 
-TODO
+Reading the material so old also gives you the idea how well the patterns stand the test of time.
+In 2002 Java was 7 years old, now it's over 20. There were no annotations and dependency injection
+was known in theory, but there was no wide-spread container supporting it (mind you, Spring 1.0 was
+released in 2004). Years later we still used various `SessionHelper` static classes to work with
+Hibernate `Session` in thread-local manner, often forgetting to close session because we were not
+able to clearly put open and close to a single method with try/finally block. That was before we
+read books like *Clean Code*... probably because it was before they were written.
+
+Closing his chapter *Mapping to Relation Databases* Martin Fowler wrote:
+
+{icon=quote-right}
+G> Object-relational mapping is a fact of life for most people, so it’s no surprise
+G> that there’s been a lot written on the subject. The surprise is that there isn’t a
+G> single coherent, complete, and up-to-date book, which is why I’ve devoted so
+G> much of this one to this tricky yet interesting subject.
+
+Today we have more books about ORM, even if you narrow it to Java world. Irony of my book
+is that I actually step back from many ORM concepts and go back to SQL roots to some degree.
+That does not change the fact that Fowler's work organizing and describing all these (still
+applicable) patterns is remarkable.
 
 
 ## Structure of the book

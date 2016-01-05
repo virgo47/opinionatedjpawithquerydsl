@@ -1,1 +1,11 @@
 -# Opinionated JPA {#part-opinionated-jpa}
+
+TODO: Describe the overal concept - going less ORM, more "raw" :-), with FKs as values,
+not relations and utilizing ON clause (new in JPA 2.1) to join these when necessary.
+
+Investigate more about Entity Graphs:
+http://www.thoughts-on-java.org/jpa-21-entity-graph-part-1-named-entity/
+http://www.thoughts-on-java.org/jpa-21-entity-graph-part-2-define/
+Also projpa2, p.321
+
+However, I doubt this tackles the problem of inherently eager to-one mappings.
