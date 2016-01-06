@@ -4,8 +4,8 @@ First we will look at all the goodies JPA offers to us. Why did I started to pre
 a particular provider? Mind that this part is just an extended enumeration of various features,
 not a tutorial material.
 
-The good parts are not absolute though. If you compare JPA against ORM there is one set of
-benefits -- and related drawbacks, of course. Comparing JPA to SQL is not quite appropriate as
+The good parts are not absolute though. If you compare JPA as a standard to concrete ORM there
+is one set of benefits and related drawbacks. Comparing JPA to SQL is not quite appropriate as
 JPA covers much bigger stack. We may compare JPA to JDBC, or we may compare *Java Persistence
 Query Language* (JPQL) to SQL to a degree.
 
@@ -40,6 +40,19 @@ And even if something is missing, you may combine it with proprietary annotation
 ORM provider -- but only to a necessary degree. And perhaps you can switch those to JPA in its next
 version. In any case, JPA providers allow you to spice up JPA soup with their specifics easily.
 That way JPA does not restrain you.
+
+
+## Database independence
+
+Let's face it - it's not possible to easily switch from one database to another when you have
+invested in one -- especially if you use stored procedures or anything else beyond simple plain
+SQL. But JPA is not the problem here, on the contrary. It will require much less (if any) changes
+and the application will go on.
+
+Also, if you just start another project and go for different database your application programmers
+using JPA probably don't have to learn anything new. This cuts both ways though. I've heard that
+"you don't have to learn SQL" is considered benefit of the JPA, but every time programmers didn't
+understand SQL they didn't produce good results.
 
 
 ## Natural SQL-Java type mapping
@@ -112,7 +125,21 @@ over LOB content using 4 KB buffer you will appreciate straightforward JPA mappi
 ## Flexible mapping
 
 It better be flexible because it is the most important reason for the whole ORM concept.
-TODO: Transient, field/property, ...
+Field-to-column mapping can specified as annotations on the fields or on the getters -- or
+in XML files. Annotation placement implies access strategy, but it can be overridden using
+`@Access` on the class. In the book I'll use field access mostly, but property access can be
+handy when you want to do something in get/setters. For instance, before JPA 2.1 we did simple
+conversions there, field was already converted and we used additional get/setters annotated as
+`@Transient` leaving those JPA related accessors only for JPA purposes.
+
+Mentioning `@Transient` -- sometimes you want additional fields in your JPA entities and this
+clearly tells JPA not to touch them. There are arguments how much or little should be in JPA
+entity, I personally prefer rather less than more -- this on the other hand is criticized
+as [anemic domain model](http://www.martinfowler.com/bliki/AnemicDomainModel.html), but the
+question is whether JPA entities really are "domain model" and not just part of the "data mapper"
+layer. With all the annotation mapping it actually serves its purpose already (is it its single
+responsibility? I guess so), which then leads other people to an argument for XML mapping that
+just makes it all more foggy. In any case, this topic is not covered in this book.
 
 
 ## Unit of work
