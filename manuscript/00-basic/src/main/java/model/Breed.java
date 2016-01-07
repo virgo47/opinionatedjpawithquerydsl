@@ -1,19 +1,18 @@
 package model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
-public class Dog {
+public class Breed {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   private String name;
-
-  @ManyToOne
-  @JoinColumn(name = "breed_id")
-  private Breed breed;
 
   public Integer getId() {
     return id;
@@ -33,10 +32,9 @@ public class Dog {
 
   @Override
   public String toString() {
-    return "Dog{" +
+    return "Breed{" +
       "id=" + id +
       ", name='" + name + '\'' +
-      ", breed.id=" + (breed != null ? breed.getId() : null) +
       '}';
   }
 }

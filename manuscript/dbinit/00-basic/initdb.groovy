@@ -2,12 +2,21 @@ import static DbInit.*
 
 recreate('create.sql')
 
-dog('Lessie')
-dog('Rex', 'german shepherd')
+def collie = breed('collie')
+def germanShepherd = breed('german shepherd')
 
-static Integer dog(String name, String breed = 'collie') {
-	def selector = [name: name]
-	def id = findOrCreate("Dog", selector, [breed: breed]) as Integer
-	return id
+dog('Lassie', collie)
+dog('Rex', germanShepherd)
+
+static Integer breed(String name) {
+  def selector = [name: name]
+  def id = findOrCreate("Breed", selector, selector) as Integer
+  return id
+}
+
+static Integer dog(String name, Integer breed) {
+  def selector = [name: name]
+  def id = findOrCreate("Dog", selector, [breed_id: breed]) as Integer
+  return id
 }
 

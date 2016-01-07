@@ -8,3 +8,6 @@ when compared to SQL.
 * TODO: what does this mean?
 support for left-outer-join only if the relation in the entities is in the same direction
 * no support for subquery neither in SELECT nor in FROM clauses
+
+The best way how to find corner cases that are not supported in the specification is simply to
+search for "not supported".

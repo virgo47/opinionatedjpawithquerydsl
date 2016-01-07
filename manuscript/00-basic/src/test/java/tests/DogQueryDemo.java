@@ -29,6 +29,16 @@ public class DogQueryDemo {
         .where(QDog.dog.name.startsWith("Re"))
         .fetch();
       System.out.println("dogs2 = " + dogs2);
+
+      dogs = em.createQuery(
+        "select d from Dog d where d.breed.name = 'collie'", Dog.class)
+        .getResultList();
+      System.out.println("dogs = " + dogs);
+
+      em.getTransaction().begin();
+      em.createQuery("delete from Dog d where d.breed.name = 'collie'")
+        .executeUpdate();
+      em.getTransaction().rollback();
     } finally {
       emf.close();
     }
