@@ -11,6 +11,7 @@
 
   <properties>
     <hibernate.version>5.0.6.Final</hibernate.version>
+    <eclipselink.version>2.6.0</eclipselink.version>
     <querydsl.version>4.0.7</querydsl.version>
   </properties>
 
@@ -22,10 +23,18 @@
       <scope>provided</scope>
     </dependency>
 
+<!--
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
       <version>${hibernate.version}</version>
+    </dependency>
+-->
+
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>org.eclipse.persistence.jpa</artifactId>
+      <version>${eclipselink.version}</version>
     </dependency>
 
     <dependency>

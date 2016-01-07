@@ -31,6 +31,14 @@ public class Dog {
     this.name = name;
   }
 
+  public Breed getBreed() {
+    return breed;
+  }
+
+  public void setBreed(Breed breed) {
+    this.breed = breed;
+  }
+
   @Override
   public String toString() {
     return "Dog{" +
