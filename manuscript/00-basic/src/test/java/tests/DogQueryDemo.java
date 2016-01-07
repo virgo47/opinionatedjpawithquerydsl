@@ -30,7 +30,7 @@ public class DogQueryDemo {
 
   private static void testManyToManyOnEntityWithCompositeKey(EntityManager em) {
     Person owner = new Person();
-    owner.setId(1, 1);
+    owner.setFamilyIdAndSeq(1, 1);
     List<Dog> dogs = new JPAQueryFactory(em)
       .select(QDog.dog).from(QDog.dog)
       .orderBy(QDog.dog.id.asc())

@@ -23,13 +23,11 @@
       <scope>provided</scope>
     </dependency>
 
-<!--
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
       <version>${hibernate.version}</version>
     </dependency>
--->
 
     <dependency>
       <groupId>org.eclipse.persistence</groupId>

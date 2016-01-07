@@ -1,14 +1,18 @@
 package model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-@IdClass(PersonPk.class)
-public class Person {
+public class Person implements Serializable {
 
-  @Id private Integer familyId;
-  @Id private Integer familySeq;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
+
+  private Integer familyId;
+  private Integer familySeq;
 
   @ManyToMany
   @JoinTable(name = "Person_Dog",
@@ -19,7 +23,7 @@ public class Person {
     inverseJoinColumns = @JoinColumn(name = "dog_id", referencedColumnName = "id"))
   private Set<Dog> dogs;
 
-  public void setId(Integer familyId, Integer familySeq) {
+  public void setFamilyIdAndSeq(Integer familyId, Integer familySeq) {
     this.familyId = familyId;
     this.familySeq = familySeq;
   }
@@ -42,7 +46,8 @@ public class Person {
 
   @Override public String toString() {
     return "Person{" +
-      "familyId=" + familyId +
+      "id=" + id +
+      ", familyId=" + familyId +
       ", familySeq=" + familySeq +
       ", dogs=" + dogs +
       '}';
