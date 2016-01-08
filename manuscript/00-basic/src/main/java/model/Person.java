@@ -11,29 +11,16 @@ public class Person implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  private Integer familyId;
-  private Integer familySeq;
+  private Integer uniqId;
 
   @ManyToMany
   @JoinTable(name = "Person_Dog",
-    joinColumns = {
-      @JoinColumn(name = "fid", referencedColumnName = "familyId"),
-      @JoinColumn(name = "fseq", referencedColumnName = "familySeq")
-    },
+    joinColumns = @JoinColumn(name = "puid", referencedColumnName = "uniqId"),
     inverseJoinColumns = @JoinColumn(name = "dog_id", referencedColumnName = "id"))
   private Set<Dog> dogs;
 
-  public void setFamilyIdAndSeq(Integer familyId, Integer familySeq) {
-    this.familyId = familyId;
-    this.familySeq = familySeq;
-  }
-
-  public Integer getFamilyId() {
-    return familyId;
-  }
-
-  public Integer getFamilySeq() {
-    return familySeq;
+  public void setUniqId(Integer uniqId) {
+    this.uniqId = uniqId;
   }
 
   public Set<Dog> getDogs() {
@@ -47,8 +34,7 @@ public class Person implements Serializable {
   @Override public String toString() {
     return "Person{" +
       "id=" + id +
-      ", familyId=" + familyId +
-      ", familySeq=" + familySeq +
+      ", uniqId=" + uniqId +
       ", dogs=" + dogs +
       '}';
   }

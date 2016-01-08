@@ -11,7 +11,7 @@
 
   <properties>
     <hibernate.version>5.0.6.Final</hibernate.version>
-    <eclipselink.version>2.6.0</eclipselink.version>
+    <eclipselink.version>2.6.2</eclipselink.version>
     <querydsl.version>4.0.7</querydsl.version>
   </properties>
 
