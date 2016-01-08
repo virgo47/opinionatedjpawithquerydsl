@@ -33,6 +33,7 @@ To actually finish something, I want to do this in the 1st edition:
 * Appendices
     * H2 Database
     * Groovy scrips for database initialization
+    * How to report JPA provider bugs? (be active, report, vote, creating test cases, ...)
 
 Other ideas, maybe for next editions:
 
