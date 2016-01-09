@@ -6,9 +6,9 @@ Where am I with the book and what are my plans? (All is subject to change, of co
 
 To actually finish something, I want to do this in the 1st edition:
 
-* Preface (40%) - to explain why this book even exists and some background
+* Preface (80%) - to explain why this book even exists and some background
 * JPA Good Times, Bad Times
-    * Good Parts (50%) - mapping, conversion (type support, lobs), unit of work, caching
+    * Good Parts (60%) - mapping, conversion (type support, lobs), unit of work, caching
     * Missing Parts (0%) - select from select (count with aggregation, find the problem in spec)
         * Biggest gripes (0%) - where the JPA pains most
         * no "streaming" (cursor like iteration, JPA fetches the results, OOM imminent :-))
@@ -18,7 +18,7 @@ To actually finish something, I want to do this in the 1st edition:
         * compare to JDBC, Groovy, Spring JDBC?
 * Opinionated JPA
     * ORM tuned down (intro to the part)
-    * No further steps without Querydsl
+    * No further steps without Querydsl (10%)
     * Moving away from eager to-one relationships (0%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
     * To-many relations
@@ -31,7 +31,7 @@ To actually finish something, I want to do this in the 1st edition:
         * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
     * Equals object or id? TODO - does it matter?
 * Appendices
-    * H2 Database
+    * H2 Database (50%)
     * Groovy scrips for database initialization
     * How to report JPA provider bugs? (be active, report, vote, creating test cases, ...)
 
