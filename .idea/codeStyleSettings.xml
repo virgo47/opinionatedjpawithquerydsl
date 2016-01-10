@@ -25,6 +25,8 @@
           <option name="ALIGN_INSIDE_QUERY_EXPRESSION" value="false" />
         </SqlCodeStyleSettings>
         <XML>
+          <option name="XML_ATTRIBUTE_WRAP" value="0" />
+          <option name="XML_TEXT_WRAP" value="0" />
           <option name="XML_ALIGN_ATTRIBUTES" value="false" />
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
         </XML>
@@ -86,6 +88,5 @@
       </value>
     </option>
     <option name="USE_PER_PROJECT_SETTINGS" value="true" />
-    <option name="PREFERRED_PROJECT_CODE_STYLE" value="leanpub" />
   </component>
 </project>

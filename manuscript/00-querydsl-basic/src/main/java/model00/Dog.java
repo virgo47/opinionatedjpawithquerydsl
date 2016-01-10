@@ -1,18 +1,19 @@
-package model;
+package model00;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
-public class Breed {
+public class Dog {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   private String name;
+
+  @ManyToOne
+  @JoinColumn(name = "breed_id")
+  private Breed breed;
 
   public Integer getId() {
     return id;
@@ -30,11 +31,20 @@ public class Breed {
     this.name = name;
   }
 
+  public Breed getBreed() {
+    return breed;
+  }
+
+  public void setBreed(Breed breed) {
+    this.breed = breed;
+  }
+
   @Override
   public String toString() {
-    return "Breed{" +
+    return "Dog{" +
       "id=" + id +
       ", name='" + name + '\'' +
+      ", breed.id=" + (breed != null ? breed.getId() : null) +
       '}';
   }
 }

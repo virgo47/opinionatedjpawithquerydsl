@@ -11,10 +11,6 @@ public class Dog {
 
   private String name;
 
-  @ManyToOne
-  @JoinColumn(name = "breed_id")
-  private Breed breed;
-
   public Integer getId() {
     return id;
   }
@@ -31,20 +27,11 @@ public class Dog {
     this.name = name;
   }
 
-  public Breed getBreed() {
-    return breed;
-  }
-
-  public void setBreed(Breed breed) {
-    this.breed = breed;
-  }
-
   @Override
   public String toString() {
     return "Dog{" +
       "id=" + id +
       ", name='" + name + '\'' +
-      ", breed.id=" + (breed != null ? breed.getId() : null) +
       '}';
   }
 }
