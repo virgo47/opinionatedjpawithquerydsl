@@ -10,6 +10,7 @@
 
 2-0-opinionated-jpa.txt
 2-1-querydsl.txt
+2-2-away-from-to-one.txt
 
 a1-h2.txt
 99-playground.txt

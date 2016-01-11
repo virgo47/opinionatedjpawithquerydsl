@@ -1,0 +1,4 @@
+# Moving away from to-one relationships
+
+http://stackoverflow.com/questions/18746259/lazy-loading-does-not-works-for-manytoone-in-eclipselink
+http://stackoverflow.com/questions/9400930/using-ecliplselink-jpa-how-can-i-disable-all-the-relationship-lookups-when-persi
