@@ -7,8 +7,8 @@
 
   <persistence-unit name="sqldemo" transaction-type="RESOURCE_LOCAL">
 
-    <!--<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
-    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <!--<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>-->
     <!-- Classes should be specified in SE environment, but Hibernate finds them automatically -->
     <class>model00.Breed</class>
     <class>model00.Dog</class>

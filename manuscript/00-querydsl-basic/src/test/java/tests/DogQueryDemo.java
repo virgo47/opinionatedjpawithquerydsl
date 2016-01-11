@@ -1,5 +1,6 @@
 package tests;
 
+import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import model00.Breed;
 import model00.Dog;
@@ -26,6 +27,31 @@ public class DogQueryDemo {
       criteriaDemo(em);
       typedCriteriaDemo(em);
       querydslDemo(em);
+
+      System.out.println("\nBEFORE cache evict");
+      em.clear();
+      Dog dog = em.find(Dog.class, 1);
+      System.out.println("dog = " + dog);
+
+      System.out.println("\nAFTER cache evict");
+      emf.getCache().evictAll();
+      em.clear();
+      // EclipseLink: 2 selects, dog+breed
+      // Hibernate: 1 select, clever enough to JOIN
+      em.find(Dog.class, 1);
+      dog = em.find(Dog.class, 1);
+      System.out.println("dog = " + dog);
+
+      System.out.println("\nREFERENCE");
+      emf.getCache().evictAll();
+      em.clear();
+      // EclipseLink: This does not work lazily, but maybe with weaving it would? (2 selects)
+      // Hibernate: Not lazy either out-of-the-box (1 select)
+      Dog reference = em.getReference(Dog.class, 1);
+      System.out.println("===");
+      System.out.println(reference.getId());
+      System.out.println("===");
+      System.out.println(reference);
     } finally {
       emf.close();
     }
@@ -67,7 +93,7 @@ public class DogQueryDemo {
   }
 
   private static void querydslDemo(EntityManager em) {
-    List<Dog> dogs = new JPAQueryFactory(em)
+    List<Dog> dogs = new JPAQueryFactory(JPQLTemplates.DEFAULT, em)
       .select(QDog.dog)
       .from(QDog.dog)
       .where(QDog.dog.name.like("Re%"))
