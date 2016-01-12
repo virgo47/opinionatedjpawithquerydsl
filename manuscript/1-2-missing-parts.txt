@@ -1,7 +1,7 @@
 # The Missing Parts
 
 In this part we'll go through things that are missing in *Java Persistence Query Language* (JPQL)
-when compared to SQL.
+when compared with SQL, other ORMs, ....
 
 
 * no support for right-outer-join

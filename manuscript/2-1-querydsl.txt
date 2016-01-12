@@ -1,44 +1,46 @@
 # No further step without Querydsl {#querydls}
 
-To put it simply -- [Querydsl](www.querydsl.com) is a library that easily replaces *Java
-Persistence Criteria API* but it first generates JPQL that is handled by JPA provider.
-Querydsl can actually talk to many more back-ends - SQL directly, Hibernate directly, ... and many
+To put it simply -- [Querydsl](www.querydsl.com) is a library that -- from programmer's
+perspective -- works like a more expressive and readable version of *Java Persistence Criteria
+API*. Internally it first generates JPQL and the rest from there is handled by the JPA provider.
+Querydsl can actually talk to many more back-ends: SQL, Hibernate directly, ... and many
 more, but we will focus on Querydsl over JPA here. To use it goes in these steps:
 
-* declare the dependency to the library and to its annotation processor,
-* add step generating metamodel classes to your build,
+* declare the dependency for Querydsl library and to its annotation processor,
+* add a step in your build to generate metamodel classes,
 * and write queries happily in sort of criteria-like way.
 
-But Criteria API also let you use generated metamodel, so what's the deal? Why would I bring
+But Criteria API also lets you use generated metamodel, so what's the deal? Why would I bring
 non-standard third-party library when it does not provide any additional advantage? If you even
-hate this idea, then you probably can stop reading this book. Or you have to translate all my
-Querydsl code into JPQL or Criteria yourself -- which can be done, of course! Querydsl does not
-disrupt the stack under it, it is "just" slapped over JPA to make it more convenient.
+hate this idea, then you probably can stop reading this book -- or you can translate all my
+Querydsl code into JPQL or Criteria yourself, which is perfectly doable, of course! Querydsl does
+not disrupt the stack under it, it is "just" slapped over the JPA to make it more convenient.
 
 Querydsl brings in a [domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language)
 (or DSL) in the form of its fluent API. It happens to be so-called internal DSL because it's still
 embedded in Java, it's not different language per se. This fluent API is much more readable and
 convenient than Criteria API which has couple of advantages.
 
-DSL should bring language of some specific domain -- in this case it's query language very close
-to JPQL or SQL. It builds on generated metamodel a lot, this metamodel is well-though and brings
-type-safety to higher level compared to Criteria API. This not only gives us compile-time checks
-for our queries, but also offers even better auto-completion in IDEs.
+DSL is a language of some specific domain -- in this case it's a query language very close to JPQL
+or SQL. It builds on a generated metamodel a lot. API of this metamodel is well-though and brings
+type-safety to a higher level compared with Criteria API. This not only gives us compile-time
+checks for our queries, but also offers even better auto-completion in IDEs.
+
 
 ## Simple example with Querydsl
 
 Let's be concrete now -- but also very simple. We have a class `Dog`, each dog has a `name`
-and we will query by the name. Assuming we got hold of `EntityManager` (variable `em`) the code
+and we will query by this `name`. Assuming we got hold of `EntityManager` (variable `em`) the code
 goes like this:
 
 {title="Querydsl simple example", lang=java}
 ~~~
-    List<Dog> dogs = new JPAQueryFactory(em)
-      .select(QDog.dog)
-      .from(QDog.dog)
-      .where(QDog.dog.name.like("Re%"))
-//    .where(QDog.dog.name.startsWith("Re")) // communicates the intention even better
-      .fetch();
+List<Dog> dogs = new JPAQueryFactory(em)
+  .select(QDog.dog)
+  .from(QDog.dog)
+  .where(QDog.dog.name.like("Re%"))
+//.where(QDog.dog.name.startsWith("Re")) // alternative
+  .fetch();
 ~~~
 
 Both `where` alternatives produce the same result in this case, but `startsWith` may communicate
@@ -46,13 +48,13 @@ the intention better, unless you go for `like("%any%")` in which case `contains`
 If you are provided input values for `like`, leave it. If you can tell from the logic that more
 specific name for the operation is better, go for it.
 
-This is very subtle thing, but we can see that this DSL contains variations that can communicate
-our intention better. Criteria API sticks to `like` only, because that is its internal model.
-Other thing is how beautifully the whole query flows. In version 4 the fluent API got even closer
+This is a very subtle thing, but we can see that this DSL contains variations that can communicate
+our intention more clearly. Criteria API sticks to `like` only, because that is its internal model.
+Other thing is how beautifully the whole query flows. In version 4.x the fluent API got even closer
 to JPQL/SQL semantics, it starts with `select` (what) and ends with `fetch` which is a mere
 signal to deliver the results. As with any other fluent API, you need a terminal operation.
-In previous version you would have no `select` because it was included in terminal operation, e.g.
-`list(QDog.dog)`. Newer version is one line longer, but mentally closer to the target domain
+In previous versions you would have no `select` because it was included in a terminal operation,
+e.g. `list(QDog.dog)`. Newer version is one line longer, but closer to the target domain
 of query languages.
 
 D> And yes, I wrap the code like this even in IDE where I could afford 160 characters or more.
@@ -61,41 +63,41 @@ D> better](http://www.infoq.com/presentations/7-ineffective-coding-habits).
 D> The whole linked presentation is good (and fun!), but at least watch the part from 17m25s.
 
 
-## Comparison to Criteria API
+## Comparison with Criteria API
 
-From programmer's perspective Querydsl is closer to Criteria API than to JPQL, because both are
-natural fit for dynamic query creation. Imagine a search form with separate fields for a person
+Both Querydsl and Criteria API are natural fit for dynamic query creation. Doing this with JPQL
+is rather painful. Imagine a search form with separate fields for a person
 entity, so you can search by name, address, date of birth from--to, etc. We don't want to add
 the search condition when the respective input field is empty. If you have done this before
 with any form of query string concatenation then you probably know the pain. In extreme cases
 of plain JDBC with prepared statement you even have to write all the `if`s twice -- first to add
 `where` condition (or `and` for any next one) and second to set parameters. Technically you can
-embed the parameter values into the query, but let's help the infamous [injection] vulnerability
-get off the top of [OWASP Top 10 list](https://www.owasp.org/index.php/Top_10_2013-Top_10).
+embed the parameter values into the query, but let's help the infamous
+[injection](https://en.wikipedia.org/wiki/SQL_injection) vulnerability get off the top of the
+[OWASP Top 10 list](https://www.owasp.org/index.php/Top_10_2013-Top_10).
 
-T> If you ever need to do that again -- and there are cases when JPA is not enough, like streaming
-T> a really long list of results -- you definitely want to use something like Spring's
+T> If you ever need to construct JDBC statements again -- and there are cases when JPA is not
+T> enough, like streaming a really long list of results -- you definitely want to use something like Spring's
 T> [`JdbcTemplate`](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/jdbc.html#jdbc-JdbcTemplate).
-T> This still let's you to put together the query string yourself, but allows you
-T> to add each parameter value at the time when you add where part. And also takes away many
-T> low-level JDBC concerns.
+T> This still leaves putting the query together to you, but allows you to add each parameter
+T> value at the time when you add the where part. And also takes away many low-level JDBC concerns.
 T>
-T> BTW: Do you remember JPA 1.0? It didn't have any Criteria API!
+T> BTW: Do you remember *JPA 1.0*? It didn't have any Criteria API!
 
 Let's see how query for our dogs looks like with Criteria API -- again starting from `em`:
 
 {title="Criteria API  example", lang=java}
 ~~~
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<Dog> query = cb.createQuery(Dog.class);
-    Root<Dog> dog = query.from(Dog.class);
-    query.select(dog)
-      // this is actually the only place where we can use metamodel in this example
-      .where(cb.like(dog.get(Dog_.name), "Re%"));
-      // without metamodel it would be:
-      // .where(cb.like(dog.<String>get("name"), "Re%"));
-    List<Dog> dogs = em.createQuery(query)
-      .getResultList();
+CriteriaBuilder cb = em.getCriteriaBuilder();
+CriteriaQuery<Dog> query = cb.createQuery(Dog.class);
+Root<Dog> dog = query.from(Dog.class);
+query.select(dog)
+  // this is the only place where we can use metamodel in this example
+  .where(cb.like(dog.get(Dog_.name), "Re%"));
+  // without metamodel it would be:
+//.where(cb.like(dog.<String>get("name"), "Re%"));
+List<Dog> dogs = em.createQuery(query)
+  .getResultList();
 ~~~
 
 Let's observe now:
@@ -106,14 +108,15 @@ This should not be heavy operation, in most cases entity manager holds this buil
 and merely gives it to you (hence `get` and not `new` or `create`).
 * Then you create an instance of `CriteriaQuery`.
 * From this you need to get a `Root` object representing content of a `from` clause.
-* Then you use `query` in a nearly fluent fashion. Version with metamodel is presented
-with alternative without it commented-out.
+* Then you use the `query` in a nearly-fluent fashion. Version with metamodel is presented
+with alternative without it in the comment.
 * Finally, you use `em` again to get a `TypedQuery` based on the `CriteriaQuery` and we ask it
 for results.
 
 D> Creators of JPA decided not to go with fluent API and it shows. If you read this for a while
 D> you'll get the meaning, especially when you're used to it, but our mind needs bigger mental
-D> shift to get the meaning compared to Querydsl version.
+D> shift to get the meaning compared with the Querydsl version. Clearly, signal-to-noise ratio
+D> is much lower too.
 
 While in case of Criteria API you don't need to generate metamodel from the entity classes,
 in Querydsl this is not optional. But using metamodel in Criteria API is advantageous anyway
@@ -121,11 +124,14 @@ so the need to generate the metamodel for Querydsl using annotation processor ca
 considered a drawback. It can be easily integrated with Maven or other build as demonstrated
 in the [companion sources](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/00-basic/pom.xml)
 to this book or [documented](http://www.querydsl.com/static/querydsl/4.0.7/reference/html/ch02.html#d0e127)
-on Querydsl site. You can also check [original blog post](http://blog.mysema.com/2010/04/querydsl-as-alternative-to-jpa-2.html)
-from 2010 comparing Criteria API with Querydsl (then in version 1.x, but it's not that different).
+on Querydsl site.
+
+For another comparison of Querydsl and Criteria API, you can also check the
+[original blog post](http://blog.mysema.com/2010/04/querydsl-as-alternative-to-jpa-2.html)
+from 2010. Querydsl was much younger then (version 1.x) but the difference was striking already.
 
 
-## Comparison to JPQL
+## Comparison with JPQL
 
 Caching queries? Query objects? Performance comparison?
 Detached query can be attached to current entity manager.

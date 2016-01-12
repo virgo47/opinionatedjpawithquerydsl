@@ -15,7 +15,7 @@ To actually finish something, I want to do this in the 1st edition:
     * Questionable Parts (0%)
         * https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate/
         * Conflict between cache and direct JPQL
-        * compare to JDBC, Groovy, Spring JDBC?
+        * compare with JDBC, Groovy, Spring JDBC?
 * Opinionated JPA
     * ORM tuned down (intro to the part)
     * No further steps without Querydsl (10%)
@@ -45,7 +45,7 @@ this part for every project I've made.
 * http://stackoverflow.com/questions/23625885/does-querydsl-suffers-of-the-same-limitations-as-jpa-criteria-api
 `JPASQLQuery`? How does it use JPA mapping?
 
-Talking about frameworks you may ask: "How does this all compare to Spring Data? It can be used
+Talking about frameworks you may ask: "How does this all compare with Spring Data? It can be used
 with JPA and Querydsl too!" ... TODO :-)
 
 Mention Make the Magic go away: https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html
