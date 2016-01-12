@@ -1,6 +1,5 @@
 package tests;
 
-import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import model00.Breed;
 import model00.Dog;
@@ -84,7 +83,7 @@ public class DogQueryDemo {
     query.select(dog)
       // this is actually the only place where we can use metamodel in this example
       .where(cb.like(dog.get(Dog_.name), "Re%"));
-      // .where(cb.equal(dog.get(Dog_.id), "x")) but type-safety does NOT cover this id.eq(string)
+    // .where(cb.equal(dog.get(Dog_.id), "x")) but type-safety does NOT cover this id.eq(string)
     List<Dog> dogs = em.createQuery(query)
       .getResultList();
 
@@ -93,7 +92,7 @@ public class DogQueryDemo {
   }
 
   private static void querydslDemo(EntityManager em) {
-    List<Dog> dogs = new JPAQueryFactory(JPQLTemplates.DEFAULT, em)
+    List<Dog> dogs = new JPAQueryFactory(em)
       .select(QDog.dog)
       .from(QDog.dog)
       .where(QDog.dog.name.like("Re%"))
