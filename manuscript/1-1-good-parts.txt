@@ -146,13 +146,17 @@ just makes it all more foggy. In any case, this topic is not covered in this boo
 
 [Unit of work](http://martinfowler.com/eaaCatalog/unitOfWork.html) is a pattern described in
 [PoEAA](#bib-poeaa). In Hibernate it was represented by its `Session`, in JPA more descriptive
-(and arguably more EE-ish) name `EntityManager` was chosen. Nowadays `EntityManager` is typically
-injected and combined with declarative transactions it is very natural to use it.
+(and arguably more EE-ish) name `EntityManager` was chosen. To make things just a little tougher
+on newcomers, entity manager manages something called *persistence context* -- but you make
+no big mistake if you treat *entity manager* and *persistence context* as synonyms. Nowadays
+`EntityManager` is typically injected where needed, and combined with declarative transactions
+it is very natural to use it. Funny enough, it's not injected with standard `@Inject` but with
+`@PersistenceContext`.
 
-To put it simply: Whatever you read or delete through it or whatever new you persist with it will
-be "flushed" at the end of transaction and relevant SQL queries will get executed. If the mapping
-is good enough then the right order of insert/delete is determined. But sometimes it needs explicit
-help from the programmer -- which is allowed.
+To explain the pattern simply: Whatever you read or delete through it or whatever new you persist
+with it will be "flushed" at the end of transaction and relevant SQL queries will get executed.
+If the mapping is good enough then the right order of insert/delete is determined. But sometimes
+it needs explicit help from the programmer -- which is allowed.
 
 You get all the goodies you need from `EntityManager` and while there is some ideal way how to use
 it, it is flexible enough and can be "bent". You can flush things earlier if you need to force some
