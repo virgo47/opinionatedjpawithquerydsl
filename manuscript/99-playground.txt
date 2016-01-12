@@ -1,13 +1,6 @@
 {backmatter}
 
--# Resources
-
-{#bib-poeaa}
-Fowler, Martin. 2002. *Patterns of Enterprise Application Architecture*
-
-{#bib-projpa2}
-Pro JPA 2, TODO...
-
+-# Playground, testing...
 
 ## Other topics
 

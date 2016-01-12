@@ -1,0 +1,7 @@
+-# Bibliography
+
+{#bib-poeaa}
+[PoEAA] Martin Fowler. *Patterns of Enterprise Application Architecture*, Addison-Wesley, 2002.
+
+{#bib-projpa2}
+[ProJPA2] Mike Keith, Merrick Schincariol. *Pro JPA 2*, Apress Media, LLC, 2013.
