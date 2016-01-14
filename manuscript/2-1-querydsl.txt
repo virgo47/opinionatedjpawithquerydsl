@@ -10,7 +10,7 @@ more, but we will focus on Querydsl over JPA here. To use it goes in these steps
 * add a step in your build to generate metamodel classes,
 * and write queries happily in sort of criteria-like way.
 
-But Criteria API also lets you use generated metamodel, so what's the deal? Why would I bring
+But Criteria API also lets you use generated metamodel, so what's the deal? Why would I introduce
 non-standard third-party library when it does not provide any additional advantage? If you even
 hate this idea, then you probably can stop reading this book -- or you can translate all my
 Querydsl code into JPQL or Criteria yourself, which is perfectly doable, of course! Querydsl does
@@ -22,7 +22,7 @@ embedded in Java, it's not different language per se. This fluent API is much mo
 convenient than Criteria API which has couple of advantages.
 
 DSL is a language of some specific domain -- in this case it's a query language very close to JPQL
-or SQL. It builds on a generated metamodel a lot. API of this metamodel is well-though and brings
+or SQL. It builds on a generated metamodel a lot. API of this metamodel is well-though and takes
 type-safety to a higher level compared with Criteria API. This not only gives us compile-time
 checks for our queries, but also offers even better auto-completion in IDEs.
 
@@ -86,7 +86,7 @@ T> BTW: Do you remember *JPA 1.0*? It didn't have any Criteria API!
 
 Let's see how query for our dogs looks like with Criteria API -- again starting from `em`:
 
-{title="Criteria API  example", lang=java}
+{title="Criteria API simple example", lang=java}
 ~~~
 CriteriaBuilder cb = em.getCriteriaBuilder();
 CriteriaQuery<Dog> query = cb.createQuery(Dog.class);
@@ -133,12 +133,74 @@ from 2010. Querydsl was much younger then (version 1.x) but the difference was s
 
 ## Comparison with JPQL
 
-Caching queries? Query objects? Performance comparison?
+Comparing Querydsl with Criteria API was rather easy as they are in the same ballpark. Querydsl,
+however, with its fluency can be compared to JPQL although it can't match it completely. After all
+JPQL is non-Java DSL, even though it typically is embedded in Java code. Let's see JPQL in action
+first to finish our side-by-side comparisons:
+
+{title="JPQL simple example", lang=java}
+~~~
+List<Dog> dogs = em.createQuery(
+  "select d from Dog d where d.name like :name", Dog.class)
+  .setParameter("name", "Re%")
+  .getResultList();
+~~~
+
+This is it! Straight to the point, and you can even call it fluent! Probably the best we can do
+with Querydsl is adding one line to introduce shorter "alias" like this:
+
+{title="Querydsl simple example with alias", lang=java}
+~~~
+QDog d = new QDog("d1");
+List<Dog> dogs = new JPAQueryFactory(em)
+  .select(d)
+  .from(d)
+  .where(d.name.startsWith("Re"))
+  .fetch();
+~~~
+
+We could use `QDog.dog` as the value, or here I introduced new variable and named it `d1`. This
+name will appear in generated JPQL that looks a little bit different from the JPQL in example
+above:
+
+  select d1 from Dog d1 where d1.name like ?1 escape '!'
+
+There is a subtle difference in how Querydsl generates `like` clause -- which, by the way, is fully
+customizable using Querydsl templates. But you can see that alias appears in JPQL, although neither
+EclipseLink nor Hibernate bother to translate it to generated SQL for your convenience.
+
+Now if we compare both code snippets above (alias creation included) we get a surprising result --
+there are more characters in the JPQL version! But this is really nit-picking, line/char here or
+there. Querydsl expresses the JPQL extremely well (especially in 4.x version) and brings all of
+possibilities of dynamic query creation.
+
+If you're familiar with JPQL more than me (which is not that hard, after all) you may ask about
+named queries. Here I admit right away, that Querydsl necessarily introduces overhead (see
+[cons](#querydsl-cons) section), but when it comes to query reuse from programmers perspective,
+there is an answer called...
+
+
+## Detached queries
+
+TODO: Query objects?
 Detached query can be attached to current entity manager.
+
+
+## And the cons? {#querydsl-cons}
+
+TODO: Performance comparison?
+Documentation, good - but not complete (but suberb support on stackoverflow, mailing-list, github, ...)
+Additional dependency, non-standard
+
 
 ## Be explicit with aliases
 
 http://stackoverflow.com/questions/6385036/querydsl-generated-classes-not-able-to-access-second-level-elements-for-querying
+
+
+## Tricky predicate parts
+
+TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
 
 ## More
 

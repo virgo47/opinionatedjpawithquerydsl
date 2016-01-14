@@ -26,40 +26,46 @@ public class DogQueryDemo {
       criteriaDemo(em);
       typedCriteriaDemo(em);
       querydslDemo(em);
+      querydslWithAliasDemo(em);
 
-      System.out.println("\nBEFORE cache evict");
-      em.clear();
-      Dog dog = em.find(Dog.class, 1);
-      System.out.println("dog = " + dog);
-
-      System.out.println("\nAFTER cache evict");
-      emf.getCache().evictAll();
-      em.clear();
-      // EclipseLink: 2 selects, dog+breed
-      // Hibernate: 1 select, clever enough to JOIN
-      em.find(Dog.class, 1);
-      dog = em.find(Dog.class, 1);
-      System.out.println("dog = " + dog);
-
-      System.out.println("\nREFERENCE");
-      emf.getCache().evictAll();
-      em.clear();
-      // EclipseLink: This does not work lazily, but maybe with weaving it would? (2 selects)
-      // Hibernate: Not lazy either out-of-the-box (1 select)
-      Dog reference = em.getReference(Dog.class, 1);
-      System.out.println("===");
-      System.out.println(reference.getId());
-      System.out.println("===");
-      System.out.println(reference);
+//      referenceAndCacheExperiments(emf, em);
     } finally {
       emf.close();
     }
   }
 
+  private static void referenceAndCacheExperiments(EntityManagerFactory emf, EntityManager em) {
+    System.out.println("\nBEFORE cache evict");
+    em.clear();
+    Dog dog = em.find(Dog.class, 1);
+    System.out.println("dog = " + dog);
+
+    System.out.println("\nAFTER cache evict");
+    emf.getCache().evictAll();
+    em.clear();
+    // EclipseLink: 2 selects, dog+breed
+    // Hibernate: 1 select, clever enough to JOIN
+    em.find(Dog.class, 1);
+    dog = em.find(Dog.class, 1);
+    System.out.println("dog = " + dog);
+
+    System.out.println("\nREFERENCE");
+    emf.getCache().evictAll();
+    em.clear();
+    // EclipseLink: This does not work lazily, but maybe with weaving it would? (2 selects)
+    // Hibernate: Not lazy either out-of-the-box (1 select)
+    Dog reference = em.getReference(Dog.class, 1);
+    System.out.println("===");
+    System.out.println(reference.getId());
+    System.out.println("===");
+    System.out.println(reference);
+  }
+
   private static void jpqlDemo(EntityManager em) {
     List<Dog> dogs = em.createQuery(
       "select d from Dog d where d.name like :name", Dog.class)
-      .setParameter("name", "Re%").getResultList();
+      .setParameter("name", "Re%")
+      .getResultList();
 
     System.out.println("\nJPQL: " + dogs);
   }
@@ -100,6 +106,17 @@ public class DogQueryDemo {
       .fetch();
 
     System.out.println("\nQuerydsl: " + dogs);
+  }
+
+  private static void querydslWithAliasDemo(EntityManager em) {
+    QDog d = new QDog("d1");
+    List<Dog> dogs = new JPAQueryFactory(em)
+      .select(d)
+      .from(d)
+      .where(d.name.startsWith("Re"))
+      .fetch();
+
+    System.out.println("\nQuerydsl with alias: " + dogs);
   }
 
   private static void prepareData(EntityManager em) {
