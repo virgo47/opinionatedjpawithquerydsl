@@ -170,16 +170,16 @@ select d1 from Dog d1 where d1.name like ?1 escape '!'
 
 There is a subtle difference in how Querydsl generates `like` clause -- which, by the way, is fully
 customizable using Querydsl templates. But you can see that alias appears in JPQL, although neither
-EclipseLink nor Hibernate bother to translate it to generated SQL for your convenience.
+EclipseLink nor Hibernate bother to translate it to the generated SQL for your convenience.
 
-Now if we compare both code snippets above (alias creation included) we get a surprising result --
-there are more characters in the JPQL version! But this is really nit-picking, line/char here or
-there. Querydsl expresses the JPQL extremely well (especially in 4.x version) and brings all of
-possibilities of dynamic query creation.
+Now, if we compare both code snippets above (alias creation included) we get a surprising result --
+there are more characters in the JPQL version! But this is really nit-picking, line/char up or
+down. But it's clear that Querydsl can express JPQL extremely well (especially in 4.x version)
+and at the same time it allows for easy dynamic query creation.
 
 If you're familiar with JPQL more than me (which is not that hard, after all) you may ask about
 named queries. Here I admit right away, that Querydsl necessarily introduces overhead (see
-[cons](#querydsl-cons) section), but when it comes to query reuse from programmers perspective,
+[cons](#querydsl-cons) section), but when it comes to query reuse from programmer's perspective,
 there is an answer called...
 
 
