@@ -134,9 +134,9 @@ from 2010. Querydsl was much younger then (version 1.x) but the difference was s
 ## Comparison with JPQL
 
 Comparing Querydsl with Criteria API was rather easy as they are in the same ballpark. Querydsl,
-however, with its fluency can be compared to JPQL although it can't match it completely. After all
-JPQL is non-Java DSL, even though it typically is embedded in Java code. Let's see JPQL in action
-first to finish our side-by-side comparisons:
+however, with its fluency can be compared to JPQL as well. After all JPQL is non-Java DSL,
+even though it typically is embedded in Java code. Let's see JPQL in action first to finish
+our side-by-side comparisons:
 
 {title="JPQL simple example", lang=java}
 ~~~
@@ -159,11 +159,14 @@ List<Dog> dogs = new JPAQueryFactory(em)
   .fetch();
 ~~~
 
-We could use `QDog.dog` as the value, or here I introduced new variable and named it `d1`. This
+Using aliases is very handy especially for longer and/or more complicated queries. We could
+use `QDog.dog` as the value, or here I introduced new query variable and named it `d1`. This
 name will appear in generated JPQL that looks a little bit different from the JPQL in example
 above:
 
-  select d1 from Dog d1 where d1.name like ?1 escape '!'
+~~~
+select d1 from Dog d1 where d1.name like ?1 escape '!'
+~~~
 
 There is a subtle difference in how Querydsl generates `like` clause -- which, by the way, is fully
 customizable using Querydsl templates. But you can see that alias appears in JPQL, although neither
