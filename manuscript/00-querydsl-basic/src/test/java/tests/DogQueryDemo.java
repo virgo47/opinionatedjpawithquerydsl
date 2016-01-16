@@ -1,5 +1,7 @@
 package tests;
 
+import com.querydsl.core.types.dsl.Param;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import model00.Breed;
 import model00.Dog;
@@ -22,11 +24,16 @@ public class DogQueryDemo {
       EntityManager em = emf.createEntityManager();
       prepareData(em);
 
+      // pure JPA
       jpqlDemo(em);
       criteriaDemo(em);
       typedCriteriaDemo(em);
+
+      // querydsl options
       querydslDemo(em);
+      querydslDemoWithFactory(em);
       querydslWithAliasDemo(em);
+      querydslWithDetachedQuery(em);
 
 //      referenceAndCacheExperiments(emf, em);
     } finally {
@@ -98,7 +105,7 @@ public class DogQueryDemo {
   }
 
   private static void querydslDemo(EntityManager em) {
-    List<Dog> dogs = new JPAQueryFactory(em)
+    List<Dog> dogs = new JPAQuery<Dog>(em)
       .select(QDog.dog)
       .from(QDog.dog)
       .where(QDog.dog.name.like("Re%"))
@@ -108,15 +115,40 @@ public class DogQueryDemo {
     System.out.println("\nQuerydsl: " + dogs);
   }
 
+  private static void querydslDemoWithFactory(EntityManager em) {
+    List<Dog> dogs = new JPAQueryFactory(em)
+      .select(QDog.dog)
+      .from(QDog.dog)
+      .where(QDog.dog.name.startsWith("Re"))
+      .fetch();
+
+    System.out.println("\nQuerydsl with JPAQueryFactory: " + dogs);
+  }
+
   private static void querydslWithAliasDemo(EntityManager em) {
     QDog d = new QDog("d1");
-    List<Dog> dogs = new JPAQueryFactory(em)
+    List<Dog> dogs = new JPAQuery<Dog>(em)
       .select(d)
       .from(d)
       .where(d.name.startsWith("Re"))
       .fetch();
 
     System.out.println("\nQuerydsl with alias: " + dogs);
+  }
+
+  private static QDog DOG_ALIAS = new QDog("d1");
+  private static Param<String> DOG_NAME_PREFIX = new Param<String>(String.class);
+  private static JPAQuery<Dog> DOG_QUERY = new JPAQuery<Dog>()
+    .select(DOG_ALIAS)
+    .from(DOG_ALIAS)
+    .where(DOG_ALIAS.name.startsWith(DOG_NAME_PREFIX));
+
+  private static void querydslWithDetachedQuery(EntityManager em) {
+    List<Dog> dogs = DOG_QUERY.clone(em)
+      .set(DOG_NAME_PREFIX, "Re")
+      .fetch();
+
+    System.out.println("\nQuerydsl with detached query: " + dogs);
   }
 
   private static void prepareData(EntityManager em) {

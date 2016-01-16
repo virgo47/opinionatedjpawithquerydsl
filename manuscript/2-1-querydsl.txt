@@ -35,7 +35,7 @@ goes like this:
 
 {title="Querydsl simple example", lang=java}
 ~~~
-List<Dog> dogs = new JPAQueryFactory(em)
+List<Dog> dogs = new JPAQuery<Dog>(em)
   .select(QDog.dog)
   .from(QDog.dog)
   .where(QDog.dog.name.like("Re%"))
@@ -152,7 +152,7 @@ with Querydsl is adding one line to introduce shorter "alias" like this:
 {title="Querydsl simple example with alias", lang=java}
 ~~~
 QDog d = new QDog("d1");
-List<Dog> dogs = new JPAQueryFactory(em)
+List<Dog> dogs = new JPAQuery<Dog>(em)
   .select(d)
   .from(d)
   .where(d.name.startsWith("Re"))
@@ -173,8 +173,8 @@ customizable using Querydsl templates. But you can see that alias appears in JPQ
 EclipseLink nor Hibernate bother to translate it to the generated SQL for your convenience.
 
 Now, if we compare both code snippets above (alias creation included) we get a surprising result --
-there are more characters in the JPQL version! But this is really nit-picking, line/char up or
-down. But it's clear that Querydsl can express JPQL extremely well (especially in 4.x version)
+there are more characters in the JPQL version! Although it's just a nit-picking (line/char up or
+down), it's clear that Querydsl can express JPQL extremely well (especially in 4.x version)
 and at the same time it allows for easy dynamic query creation.
 
 If you're familiar with JPQL more than me (which is not that hard, after all) you may ask about
@@ -185,15 +185,62 @@ there is an answer called...
 
 ## Detached queries
 
-TODO: Query objects?
-Detached query can be attached to current entity manager.
+While we can create all the queries in methods provided with `EntityManager` parameter, but
+sometimes it feels more natural to put queries into a constant a reuse them later. This is
+possible using so called "detached queries" -- simply create a query without entity manager
+and later clone it with entity manager provided:
+
+{title="Querydsl, detached query", lang=java}
+~~~
+private static QDog DOG_ALIAS = new QDog("d1");
+private static Param<String> DOG_NAME_PREFIX = new Param<String>(String.class);
+private static JPAQuery<Dog> DOG_QUERY = new JPAQuery<Dog>()
+  .select(DOG_ALIAS)
+  .from(DOG_ALIAS)
+  .where(DOG_ALIAS.name.startsWith(DOG_NAME_PREFIX));
+
+//... and somewhere in a method
+List<Dog> dogs = DOG_QUERY.clone(em)
+  .set(DOG_NAME_PREFIX, "Re")
+  .fetch();
+~~~
+
+The benefit is questionable though. You need to name the query well enough so it expresses what
+it does while seeing the query sometimes says it better. You have to walk the distance to introduce
+parameters explicitly (you wouldn't like it constant). And I doubt there is any performance benefit
+as the clone (I guess) clones the query anyway. I'm sure there are legitimate cases when to use
+this feature, but I personally use it only in query objects wrapping complicated query where I have
+a lot of aliases around anyway -- and even then mostly without the where part which I rather add
+dynamically later.
 
 
 ## And the cons? {#querydsl-cons}
 
-TODO: Performance comparison?
-Documentation, good - but not complete (but suberb support on stackoverflow, mailing-list, github, ...)
-Additional dependency, non-standard
+Before we move to a couple of advanced topics I'd go over the disadvantages of using Querydsl.
+For one, you're definitely adding some overhead. I don't know exactly how big, maybe with the SQL
+backend (using JDBC directly) it would be more pronounced because ORM itself is big overhead
+anyway. In any case, there is object graph of the query in the memory before it is serialized into
+JPQL -- and from there it's on the same baseline like using JPA directly.
+
+This performance factor obviously is not a big deal for many Querydsl users (some of them are
+really big names), it mostly does not add too much to the SQL execution itself, but in any case --
+if you are interested you have to measure it yourself. Also realize that without Querydsl you
+either have to mess with JPQL strings before you have the complete dynamic WHERE part or you should
+compare it with Criteria API which does not have to go through JPQL, but also creates some object
+graph in the memory (richer or not? depends).
+
+Documentation, while good, is definitely not complete. For instance, detached queries are not
+mentioned in their [Query Reference Guide](http://www.querydsl.com/static/querydsl/4.0.7/reference/html_single/)
+and there is much more you need to find out yourself. You'll need to find your own best practices,
+probably, but it is not that difficult with Querydsl. Based (not only) on my own experience, it
+is literally joy to work with Querydsl and explore what it can provide -- for me it worked like
+this from day zero. It's also very easy to find responses on the
+[stackoverlow](http://stackoverflow.com/questions/tagged/querydsl) or their
+[mailing-list](https://groups.google.com/forum/#!forum/querydsl), very often provided directly
+by Querydsl developers. This makes any lack of documentation easy to overcome.
+
+Finally, you're adding another dependency to the project, which may be a problem for some. For us
+it is well compensated with the code clarity Querydsl gave us.
 
 
 ## Be explicit with aliases
