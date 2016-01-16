@@ -138,6 +138,7 @@ throughout the book (e.g. H2 database).
 
 TODO
 
+
 ## My writing background
 
 Once I wrote a book. I was 17 or so and it wasn't a technical book. And it was very short, I admit.
@@ -157,3 +158,18 @@ frustrated experiences. I always felt like a writer -- originally just to share 
 everything is worth sharing, I know. Later I realized that writing helps me to clarify a lot of
 concepts to myself. For the same reasons (sharing and learning) I gave courses and talks. Preparing
 those is also kind of writing. So I hope both me and this book are not lost causes.
+
+
+## Feedback
+
+When you work on a technical book alone it may happen that some information are not exactly right.
+Some might even be plain wrong. Obviously, it is not an intention -- on the contrary, I try hard
+to avoid any confusion or leading anyone into a mistake. However, it may happen because the topic
+is not simple. I study books and online resources, I test my solutions, I try to understand what
+is going on, but sometimes I may just understand something wrong. Sorry for that and please,
+if you know better, let me know.
+
+* Either add an issue on the GitHub repo for the book: https://github.com/virgo47/opinionatedjpawithquerydsl
+* Or just [email me](mailto:virgo47@gmail.com) directly.
+
+Obviously, factual errors are probably most crucial, but other suggestions are welcome too.
