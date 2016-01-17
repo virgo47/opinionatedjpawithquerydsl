@@ -127,16 +127,18 @@ I aim for something not very long for the first edition, but I want to split it 
 parts anyway.
 
 In the [first part](#part-jpa-good-bad) of the book we'll quickly go through JPA highs and lows
-(all highly subjective, you know the disclaimer drill) without digging deep.
+(all highly subjective, you know the disclaimer drill) without digging deep. If you're familiar
+with JPA you may even skip it if you're just skimming this book whether it's even worth reading.
+Go straight to the second part to make your decision whether to read on or stop right away. In
+any case, this part is just a really short background for any further arguments.
 
-That's what the [second part](#part-opinionated-jpa) of the book is for. We will introduce
-Querydsl first, because I'm not willing to go on without it. Then I'll demonstrate how I work
-around the features I marked as questionable.
+That's what the [second part](#part-opinionated-jpa) of the book is for. First I'll make my case
+for the whole opinionated part of the book. Then we'll meet Querydsl before diving into other
+problems, because I'm not willing to go on without it. And in the rest of this part I'll
+demonstrate how I work around the features I marked as questionable.
 
 Finally, [appendices](#appendices) will provide short references for related technologies I used
 throughout the book (e.g. H2 database).
-
-TODO
 
 
 ## My writing background

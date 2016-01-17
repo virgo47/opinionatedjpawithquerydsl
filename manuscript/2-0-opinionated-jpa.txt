@@ -1,5 +1,21 @@
 -# Opinionated JPA {#part-opinionated-jpa}
 
+To use ORM/JPA really well you need to know a lot about it, about the provider, its settings,
+about caching mechanisms and so on. And you should not be oblivious to SQL either. I never worked
+on a system where ORM/JPA was used to its full extent and everybody was really happy with the
+result. System got slower, DBAs asked us why we produce crappy SQLs and so on. Any pro can
+instantly blame us for "just not knowing"... but I think this goes deeper.
+
+While I myself complain about laziness of programmers to learn more about technologies they work
+with, JPA (plus the provider, mind you!) is really complex topic. I personally study it for years
+already. Sure, there was no 100% study time like when you prepare to a certification. On the other
+hand, most of my study was based on experiences, but not only reactive (solutions to imminent
+problems) but also proactive (how to do it better on any level, as a coder, designer, architect,
+whatever).
+
+-- and mostly we fought with drawbacks before we could utilize the features. It all comes
+down to inherent complexity of any ORM.
+
 TODO: Describe the overal concept - going less ORM, more "raw" :-), with FKs as values,
 not relations and utilizing ON clause (new in JPA 2.1) to join these when necessary.
 

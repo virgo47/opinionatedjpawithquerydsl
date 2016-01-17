@@ -1,0 +1,26 @@
+# Tuning ORM down
+
+Love and hate for ORM
+
+* Yegor Bugayenko: http://www.yegor256.com/2014/12/01/orm-offensive-anti-pattern.html and
+https://www.youtube.com/watch?v=DEqcn4-freM - he references some of the further resources
+(most well known on their own anyway). (Yegor's solution to many problems is to put the
+the technology right into the object, often all the technologies. There is no SRP in that.)
+* Ted Neward: http://blogs.tedneward.com/post/the-vietnam-of-computer-science/
+* Jeff Atwood: http://blog.codinghorror.com/object-relational-mapping-is-the-vietnam-of-computer-science/
+* Martin Fowler: http://martinfowler.com/bliki/OrmHate.html and http://www.martinfowler.com/bliki/AnemicDomainModel.html
+* Laurie Voss: http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern
+
+Other problems:
+* monitoring of SQL from JPA application is difficult (it's kinda "elsewhere") and the
+interaction with the SQL itself has a lot of overhead as well (but this is complex topic anyway,
+JDBC proxy driver is possibility, but how to connect to the business logic or place where it
+happens?)
+* updates of all columns when just one was changed (not inherent JPA problem, but happens)
+
+Alternatives sometimes bash ORM on false grounds though:
+* Complaint about using any QL on business level is completely off, as it should be hidden
+somewhere else. Where? Maybe in some `User` object if it is *Active Record* pattern. Maybe in
+`UserDao`. In any case, it is possible to change well wrapped access to other underlying storage.
+I doubt it's much easier to switch from RDBMS to something completely else when you're not using
+ORM when you design the rest of the system equally well.

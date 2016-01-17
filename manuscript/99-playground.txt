@@ -4,26 +4,11 @@
 
 ## Other topics
 
-querydsl
-generic patterns
 filter/paging framework
-options for avoiding eager fetch:
-
-- state all the columns except for relations (tedious)
-- black byte-code magic, not ensured by the JPA standard
 
 ## Test area :-)
 
-Inline code: `print(anything)`
-
-~~~
-Some funny code
-main() {
-    How can I specify language?
-}
-~~~
-
-Code options `{...}` can be used for both `<<` and for indented markdown.
+Code options `{...}` can be used for both `<<` and `~~~` markdown.
 
 {lang="text", linenos=off, starting-line-number=47, crop-start-line=3, crop-end-line=12}
 <<[Random pom.xml](00-basic/pom.xml)

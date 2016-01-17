@@ -9,8 +9,9 @@
 1-3-questionable-parts.txt
 
 2-0-opinionated-jpa.txt
-2-1-querydsl.txt
-2-2-away-from-to-one.txt
+2-1-tuning-orm-down.txt
+2-2-querydsl.txt
+2-3-away-from-to-one.txt
 
 a1-h2.txt
 bibliography.txt

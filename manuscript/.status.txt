@@ -6,7 +6,7 @@ Where am I with the book and what are my plans? (All is subject to change, of co
 
 To actually finish something, I want to do this in the 1st edition:
 
-* Preface (80%) - to explain why this book even exists and some background
+* Preface (90%) - to explain why this book even exists and some background
 * JPA Good Times, Bad Times
     * Good Parts (60%) - mapping, conversion (type support, lobs), unit of work, caching
     * Missing Parts (0%) - select from select (count with aggregation, find the problem in spec)
@@ -17,15 +17,15 @@ To actually finish something, I want to do this in the 1st edition:
         * Conflict between cache and direct JPQL
         * compare with JDBC, Groovy, Spring JDBC?
 * Opinionated JPA
-    * ORM tuned down (intro to the part)
-    * No further steps without Querydsl (10%)
+    * ORM tuned down (5%, investigation and review of materials)
+    * No further steps without Querydsl (40%)
     * Moving away from eager to-one relationships (0%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
     * To-many relations
     * Pagination with to-many (0%) -- how to paginate when to-many is just in where clause and how to
     do it when you need to fetch from to-many as well (famous N+1 select problem)
         * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
-    * Transaction boundary and lazy load
+    * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
     * Injecting EMF for better control (integration/standalone scenarios, not typical for webapps/simple services)
     * Modularity, if you must
         * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
