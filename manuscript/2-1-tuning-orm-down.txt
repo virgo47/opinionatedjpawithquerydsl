@@ -58,7 +58,25 @@ this in part on [going away from to-one](#away-from-to-one) relations.
 Other points are much less radical compared to this one. I learnt long before that being explicit
 and less lazy is definitely better and we will talk about it in other sections.
 
-Love and hate for ORM
+## How does this affect my domain model?
+
+DDD and ORM are closely related (synergies), should we even use ORM without DDD?
+
+TODO:
+* should domain model be in JPA entities?
+Quote from http://www.martinfowler.com/bliki/AnemicDomainModel.html
+In essence the problem with anemic domain models is that they incur all of the costs of a domain
+model, without yielding any of the benefits. The primary cost is the awkwardness of mapping to
+a database, which typically results in a whole layer of O/R mapping. This is worthwhile iff you
+use the powerful OO techniques to organize complex logic. By pulling all the behavior out into
+services, however, you essentially end up with Transaction Scripts, and thus lose the advantages
+that the domain model can bring. As I discussed in P of EAA, Domain Models aren't always the
+best tool.
+
+* Domain model over entity model?
+* Do I incur all of the costs when I tune it down? For me to-one was most costly.
+
+## Love and hate for ORM
 
 * Yegor Bugayenko: http://www.yegor256.com/2014/12/01/orm-offensive-anti-pattern.html and
 https://www.youtube.com/watch?v=DEqcn4-freM - he references some of the further resources
@@ -66,7 +84,7 @@ https://www.youtube.com/watch?v=DEqcn4-freM - he references some of the further 
 the technology right into the object, often all the technologies. There is no SRP in that.)
 * Ted Neward: http://blogs.tedneward.com/post/the-vietnam-of-computer-science/
 * Jeff Atwood: http://blog.codinghorror.com/object-relational-mapping-is-the-vietnam-of-computer-science/
-* Martin Fowler: http://martinfowler.com/bliki/OrmHate.html and http://www.martinfowler.com/bliki/AnemicDomainModel.html
+* Martin Fowler: http://martinfowler.com/bliki/OrmHate.html
 * Laurie Voss: http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern
 
 Other problems:

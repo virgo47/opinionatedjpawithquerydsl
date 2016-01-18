@@ -11,6 +11,7 @@ public class Dog {
 
   private String name;
 
+  // lazy is effectively ignored here
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "breed_id")
   private Breed breed;
