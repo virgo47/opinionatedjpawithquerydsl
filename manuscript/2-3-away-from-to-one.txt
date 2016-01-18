@@ -1,14 +1,7 @@
-# Moving away from to-one relationships
+# Moving away from to-one relationships {#away-from-to-one}
 
 Now we can get back to the topics I foreshadowed in the introduction to this opinionated part.
 
-Full-blown object-relational mapping maps database foreign keys as relations between objects.
-Instead of `Integer breedId` you have `Breed breed` where mapping information provides all the
-necessary low-level information about the foreign key (annotations or XML). This can be done in
-any direction (even in reverse), for one or both directions (then you choose which one is the
-owner's side, which is kinda more "in control" of the relationship) and in any cardinality (with
-annotations `@OneOnOne`, `@OneToMany`, `@ManyToOne` and `@ManyToMany`). This is probably the most
-pronounced feature of ORM. And I'm going to make a case against some of it.
 
 http://stackoverflow.com/questions/18746259/lazy-loading-does-not-works-for-manytoone-in-eclipselink
 http://stackoverflow.com/questions/9400930/using-ecliplselink-jpa-how-can-i-disable-all-the-relationship-lookups-when-persi

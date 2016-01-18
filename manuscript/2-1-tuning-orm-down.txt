@@ -1,5 +1,63 @@
 # Tuning ORM down
 
+Full-blown object-relational mapping maps database foreign keys as relations between objects.
+Instead of `Integer breedId` you have `Breed breed` where mapping information provides all the
+necessary low-level information about the foreign key (annotations or XML). This can be done in
+any direction (even in reverse), for one or both directions (then you choose which one is the
+owner's side, which is kinda more "in control" of the relationship) and in any cardinality (with
+annotations `@OneOnOne`, `@OneToMany`, `@ManyToOne` and `@ManyToMany`). This is probably the most
+pronounced feature of ORM. And I'm going to make a case against some of it.
+
+Most of the points I'm going to explain somehow revolve around two rules:
+
+* **Be explicit.** For instance don't leave persistence context (session) open after you leave
+service layer and don't wait for presentation layer to load something lazily. Make explicit
+contract and fetch what you should eagerly (but not ORM "load the whole DB" way).
+* **Don't go lazy.** Obviously stems from the previous point, but goes further. Lazy may save
+some queries here and there, but in practice we rely on it too much. In most cases we can be
+explicit, but we're lazy to be so (so let's not be lazy ourselves either ;-)). There are places
+where `FetchType.LAZY` means nothing to JPA. Oh, they will say it's a hint for a provider, but
+it's not guaranteed. That's nothing for me. Let's face it -- any to-one mapping is eager, unless
+you add some complexity to your system to make it lazy. It's not lazy because you annotate it so,
+deal with it.
+
+## Price for relations
+
+For me the biggest problem is that JPA does not provide any convenient way how to stop cascading
+finds across `@ManyToOne` and `@OneToOne` (or just to-one in this book) relationships. I don't mind
+to-many relations, they have their twists, many of them actually, but at least their lazy works.
+But to-one typically triggers find by id. If you have a `Dog` that has an `owner` (type `Person`)
+and is of specific `Breed` you must load these two things along with a dog. Maybe they will be
+joined by the JPA provider (Hibernate does it), maybe not (EclipseLink), maybe they are already
+in second-level cache and will be "loaded" nearly "for free". All these options should be seriously
+considered, analyzed and proved before you can say that you know what is going on in your
+application.
+
+And it just starts there, because `Person` has an `Address` which -- in case of a rich system --
+may further point to `District`, `County`, `State` and so on. Once I wanted to change something
+like `Currency` in a treasury system. It loaded around 50 objects -- all of them across these
+to-one relations.
+
+When you insert or update you can use `em.getReference(clazz, id)` to get an object containing only
+id which effectively works as a foreign key (FK). Or you just `new` an empty entity and set the id,
+you don't even have to ask `em`
+
+Why JPA doesn't provide the same for finds? I want to work
+with this object, but I'm not interested in relations, just wrap those FK values into the mapped
+objects.
+This led me to some extreme measures and I simply started
+using raw FK values -- but only after I discovered that I can `JOIN` on any condition. That's why
+this all stands and falls on JPA 2.1, because before that `ON` was only implicit.
+
+I actually wandered "why can't I join on any value?" long time before JPA 2.1. Even with 2.1 out
+I didn't know that it does have this feature. It was like epiphany when I discovered this, because
+this addition allowed me to do many things explicitly in my queries and getting rid of mappings
+that gave me no `LAZY` option -- and I mean really standardized and guaranteed lazy. More about
+this in part on [going away from to-one](#away-from-to-one) relations.
+
+Other points are much less radical compared to this one. I learnt long before that being explicit
+and less lazy is definitely better and we will talk about it in other sections.
+
 Love and hate for ORM
 
 * Yegor Bugayenko: http://www.yegor256.com/2014/12/01/orm-offensive-anti-pattern.html and

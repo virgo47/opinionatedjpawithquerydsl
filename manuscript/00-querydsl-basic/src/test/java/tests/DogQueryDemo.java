@@ -34,38 +34,9 @@ public class DogQueryDemo {
       querydslDemoWithFactory(em);
       querydslWithAliasDemo(em);
       querydslWithDetachedQuery(em);
-
-//      referenceAndCacheExperiments(emf, em);
     } finally {
       emf.close();
     }
-  }
-
-  private static void referenceAndCacheExperiments(EntityManagerFactory emf, EntityManager em) {
-    System.out.println("\nBEFORE cache evict");
-    em.clear();
-    Dog dog = em.find(Dog.class, 1);
-    System.out.println("dog = " + dog);
-
-    System.out.println("\nAFTER cache evict");
-    emf.getCache().evictAll();
-    em.clear();
-    // EclipseLink: 2 selects, dog+breed
-    // Hibernate: 1 select, clever enough to JOIN
-    em.find(Dog.class, 1);
-    dog = em.find(Dog.class, 1);
-    System.out.println("dog = " + dog);
-
-    System.out.println("\nREFERENCE");
-    emf.getCache().evictAll();
-    em.clear();
-    // EclipseLink: This does not work lazily, but maybe with weaving it would? (2 selects)
-    // Hibernate: Not lazy either out-of-the-box (1 select)
-    Dog reference = em.getReference(Dog.class, 1);
-    System.out.println("===");
-    System.out.println(reference.getId());
-    System.out.println("===");
-    System.out.println(reference);
   }
 
   private static void jpqlDemo(EntityManager em) {
@@ -151,12 +122,16 @@ public class DogQueryDemo {
     System.out.println("\nQuerydsl with detached query: " + dogs);
   }
 
-  private static void prepareData(EntityManager em) {
+  public static void prepareData(EntityManager em) {
     em.getTransaction().begin();
 
     Breed collie = new Breed();
     collie.setName("collie");
     em.persist(collie);
+
+    Breed germanShepherd = new Breed();
+    germanShepherd.setName("german shepherd");
+    em.persist(germanShepherd);
 
     Dog lassie = new Dog();
     lassie.setName("Lassie");
@@ -164,8 +139,8 @@ public class DogQueryDemo {
     em.persist(lassie);
 
     Dog rexo = new Dog();
-    rexo.setName("Rexo");
-    rexo.setBreed(collie);
+    rexo.setName("Rex");
+    rexo.setBreed(germanShepherd);
     em.persist(rexo);
 
     em.getTransaction().commit();
