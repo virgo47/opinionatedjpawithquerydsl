@@ -3,38 +3,41 @@
 To use ORM/JPA really well you need to know a lot about it, about the provider, its settings,
 about caching mechanisms and so on. And you should not be oblivious to SQL either. I never worked
 on a system where ORM/JPA was used to its full extent and everybody was really happy with the
-result. System got slower, DBAs asked why we produce crappy SQLs and so on. Mostly we fought with
-drawbacks before we could utilize the features. It all comes down to inherent complexity of an ORM.
-Any pro can instantly blame us for "just not knowing"... but I think this goes deeper.
+result. The system got slower, [DBAs](https://en.wikipedia.org/wiki/Database_administrator)
+asked why we produce crappy SQLs and so on. We fought with ORM drawbacks before we could benefit
+from the features. It all comes down to inherent complexity of an ORM. Any pro can instantly blame
+us for "just not knowing"... but I think the problem goes deeper.
 
-While I too complain about laziness of programmers to learn more about the technologies they work
+While I too complain about programmers' laziness to learn more about the technologies they work
 with, JPA (plus the provider, mind you!) is a really complex topic. I've been studying it for years
-already. Sure, there was no 100% study time like when you prepare to a certification. On the other
+already. Sure, there was no 100% study time like when you prepare for a certification. On the other
 hand, most of my study was based on experiences -- and not only reactive (solutions to imminent
 problems) but also proactive (how to do it better on any level, as a coder, designer, architect,
 whatever).
 
-I always welcome to learn more about JPA -- not because it's my favourite technology, I just
+I always welcome to learn more about JPA. Not because it's my favourite technology, I just
 happened to spend so much time with it. When we started one recent project we discussed what to
 use, I was quite fresh to the team and somehow got convinced to use JPA although I would rather
 risk Querydsl over SQL directly. But I didn't mind that much, JPA was quite well known to me.
 Little I knew how many surprises it still got for me! The biggest of them all was probably the
 reason why I started to complain about the JPA on [my blog](https://virgo47.wordpress.com/tag/jpa/)
-and, eventually, I decided to put my "twisted" ideas how to utilize JPA into a book.
+and, eventually, I decided to put my twisted ideas how to utilize JPA into this book.
 
-While I don't like ideas like "let's just use subset of this". I don't believe tons of dumb Java
-programmers should be forbidden to use latest Java 8 features, because rarely I saw "subset"
-programmer to write clean code (or even to try to). But this time I decided "let's use SQL more"
-and "let's not load graph of objects (even if cached) when I just want to update this single one".
-And that's how it all started -- the more I know about JPA the less of it I use. But it still has
-goodies I don't want to let go. How can I tune down JPA without crippling it (or ourselves)?
+Generally I don't like ideas like "let's just use subset of this". I don't believe that hiring
+dumb Java programmers and forbidding them to use latest Java 8 features is the solution. I rarely
+saw such a "subset" programmer to write clean code (or even to try to) -- or they were bright
+enough to dislike such an arrangement (and probably left soon). But the JPA is not a programming
+language, you're working with an API and you may choose the patterns you want to use and others
+you don't. This time I decided "let's use SQL more" and "let's not load graph of objects (even
+if cached) when I just want to update this single one". And that's how it all started -- the more
+I know about JPA the less of it I use. But it still has goodies I don't want to let go.
 
-TODO: Describe the overal concept - going less ORM, more "raw" :-), with FKs as values,
-not relations and utilizing ON clause (new in JPA 2.1) to join these when necessary.
+So the question is: How can we tune the JPA down without crippling it -- or ourselves?
 
+TODO - this goes away - just notes:
 Investigate more about Entity Graphs:
 http://www.thoughts-on-java.org/jpa-21-entity-graph-part-1-named-entity/
 http://www.thoughts-on-java.org/jpa-21-entity-graph-part-2-define/
 Also projpa2, p.321
 
-However, I doubt this tackles the problem of inherently eager to-one mappings.
+However, I doubt this tackles the problem of inherently eager *to-one* mappings.

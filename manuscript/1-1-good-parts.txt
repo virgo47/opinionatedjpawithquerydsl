@@ -117,7 +117,7 @@ or `Character[]` for *CLOBs*.
 
 In theory you may annotate the `@Lob` field as `@Basic(fetch=FetchType.LAZY)` however this is
 a mere hint to the JPA provider and you can bet it will not be heard out. More about lazy on
-basic and to-one fields in a [dedicated section](#lazy-problems).
+basic and *to-one* fields in a [dedicated section](#lazy-problems).
 
 Getting LOBs via JDBC from some databases may not be such a big deal, but if you ever looped
 over LOB content using 4 KB buffer you will appreciate straightforward JPA mapping.

@@ -2,31 +2,34 @@
 
 Full-blown object-relational mapping maps database foreign keys as relations between objects.
 Instead of `Integer breedId` you have `Breed breed` where mapping information provides all the
-necessary low-level information about the foreign key (annotations or XML). This can be done in
-any direction (even in reverse), for one or both directions (then you choose which one is the
-owner's side, which is kinda more "in control" of the relationship) and in any cardinality (with
-annotations `@OneOnOne`, `@OneToMany`, `@ManyToOne` and `@ManyToMany`). This is probably the most
-pronounced feature of ORM. And I'm going to make a case against some of it.
+necessary low-level information about the foreign key. This mapping information can be stored
+elsewhere (typically XML mapping file) or as annotations directly on the entity (probably more
+popular nowadays). Relations can be mapped in any direction (even in reverse), for one or both
+directions (then you choose which one is the owner's side, which is kinda more "in control" of
+the relationship) and in any cardinality (with annotations `@OneOnOne`, `@OneToMany`, `@ManyToOne`
+and `@ManyToMany`). Mapping foreign keys as relations is probably the most pronounced feature of
+an ORM. And I'm going to make a case against some of it.
 
 Most of the points I'm going to explain somehow revolve around two rules:
 
 * **Be explicit.** For instance don't leave persistence context (session) open after you leave
 service layer and don't wait for presentation layer to load something lazily. Make explicit
-contract and fetch what you should eagerly (but not ORM "load the whole DB" way).
-* **Don't go lazy.** Obviously stems from the previous point, but goes further. Lazy may save
-some queries here and there, but in practice we rely on it too much. In most cases we can be
-explicit, but we're lazy to be so (so let's not be lazy ourselves either ;-)). There are places
-where `FetchType.LAZY` means nothing to JPA. Oh, they will say it's a hint for a provider, but
-it's not guaranteed. That's nothing for me. Let's face it -- any to-one mapping is eager, unless
-you add some complexity to your system to make it lazy. It's not lazy because you annotate it so,
-deal with it.
+contract and fetch what you should eagerly (but not ORM "load the whole DB" way). Also, don't
+rely on caches blindly!
+* **Don't go lazy.** Or at least not easily. This obviously stems from the previous point, but
+goes further. Lazy may save some queries here and there, but in practice we rely on it too much.
+In most cases we can be explicit, but we're lazy to be so (so let's not go lazy ourselves either).
+There are places where `FetchType.LAZY` means nothing to JPA. Oh, they will say it's a hint for
+a provider, but it's not guaranteed. That's nothing for me. Let's face it -- any *to-one* mapping
+is eager, unless you add some complexity to your system to make it lazy. It's not lazy because you
+annotate it so, deal with it.
 
 ## Price for relations
 
 For me the biggest problem is that JPA does not provide any convenient way how to stop cascading
-finds across `@ManyToOne` and `@OneToOne` (or just to-one in this book) relationships. I don't mind
-to-many relations, they have their twists, many of them actually, but at least their lazy works.
-But to-one typically triggers find by id. If you have a `Dog` that has an `owner` (type `Person`)
+loads for `@ManyToOne` and `@OneToOne` (or just *to-one* in this book) relationships. I don't mind
+*to-many* relations, they have their twists, but at least their lazy works.
+But *to-one* typically triggers find by id. If you have a `Dog` that has an `owner` (type `Person`)
 and is of specific `Breed` you must load these two things along with a dog. Maybe they will be
 joined by the JPA provider (Hibernate does it), maybe not (EclipseLink), maybe they are already
 in second-level cache and will be "loaded" nearly "for free". All these options should be seriously
@@ -36,27 +39,33 @@ application.
 And it just starts there, because `Person` has an `Address` which -- in case of a rich system --
 may further point to `District`, `County`, `State` and so on. Once I wanted to change something
 like `Currency` in a treasury system. It loaded around 50 objects -- all of them across these
-to-one relations.
+*to-one* relations. All of this may happen when you naively want change a single attribute in that
+currency. In SQL terms, that's an update of a single column for a single row.
 
-When you insert or update you can use `em.getReference(clazz, id)` to get an object containing only
-id which effectively works as a foreign key (FK). Or you just `new` an empty entity and set the id,
-you don't even have to ask `em`
+When you insert or update a `Dog` you can use `em.getReference(clazz, id)` to get a `Breed` object
+containing only id of the breed. This effectively works as a wrapped foreign key (FK). Heck, you
+can just `new` an empty `Breed` and set its id, you don't even have to ask `em` for the reference.
+But if you do this, that `Dog` is probably managed anyway which means it loaded previous values
+for all FKs (cascading further on). Should you just use JPQL update and possibly remove all dogs
+from the second-level cache? How ORM is that?
 
-Why JPA doesn't provide the same for finds? I want to work
-with this object, but I'm not interested in relations, just wrap those FK values into the mapped
-objects.
-This led me to some extreme measures and I simply started
-using raw FK values -- but only after I discovered that I can `JOIN` on any condition. That's why
-this all stands and falls on JPA 2.1, because before that `ON` was only implicit.
+Why JPA doesn't provide better fetch control for finds? I want to work with this `Dog` object now,
+I'm not interested in its relations, just wrap those FK values into otherwise empty entity objects
+(like references) and let me do my stuff! How I wished I could just map raw FK value instead of
+relation... actually, you can, but while you are able to related object explicitly (find by id),
+you can't join on that relationship. Or can you?
 
-I actually wandered "why can't I join on any value?" long time before JPA 2.1. Even with 2.1 out
-I didn't know that it does have this feature. It was like epiphany when I discovered this, because
-this addition allowed me to do many things explicitly in my queries and getting rid of mappings
-that gave me no `LAZY` option -- and I mean really standardized and guaranteed lazy. More about
-this in part on [going away from to-one](#away-from-to-one) relations.
+There are little to no examples of this, because JPA 2.0 could not do that. All the joins were
+implicit and without the mapping (`@One/ManyToOne/Many`) it simply dit not work. I actually
+wandered "why can't I join on any value?!" for long time. And then, with JPA 2.1 out in a wild for
+about a year, I discovered that I indeed **can** `JOIN` on any condition -- and that way I can join
+with raw FK. This ultimately led me to some extreme measures and I got rid of *to-one* mappings
+and never looked back.
 
-Other points are much less radical compared to this one. I learnt long before that being explicit
+So that is what the chapter [Moving away from *to-one* relationships](#away-from-to-one) is about.
+Other points are much less radical compared to this one. Long before I learnt that being explicit
 and less lazy is definitely better and we will talk about it in other sections.
+
 
 ## How does this affect my domain model?
 
@@ -74,7 +83,7 @@ that the domain model can bring. As I discussed in P of EAA, Domain Models aren'
 best tool.
 
 * Domain model over entity model?
-* Do I incur all of the costs when I tune it down? For me to-one was most costly.
+* Do I incur all of the costs when I tune it down? For me *to-one* was most costly.
 
 ## Love and hate for ORM
 
@@ -100,3 +109,11 @@ somewhere else. Where? Maybe in some `User` object if it is *Active Record* patt
 `UserDao`. In any case, it is possible to change well wrapped access to other underlying storage.
 I doubt it's much easier to switch from RDBMS to something completely else when you're not using
 ORM when you design the rest of the system equally well.
+
+## Caching
+
+* complexity of ORM/JPA caching (query vs 2^nd^-level cache, provider settings)
+* DB has its caches too
+* anti-patterns: caching returned JPA entities with JSR-107/Spring (first time they are managed,
+next time they are not)
+* explicit application caching

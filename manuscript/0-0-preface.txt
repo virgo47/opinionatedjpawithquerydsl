@@ -39,7 +39,7 @@ questions. Some are definitely a bit unorthodox from typical JPA perspective.
 
 While many parts of the book are usable with *JPA 2.0*, it was the update of the specification to
 *JPA 2.1* that really allowed me to experiment with getting rid of my biggest pain point in the JPA
-mapping -- which were to-one relations that are inherently eager unless you use some non-standard
+mapping -- which were *to-one* relations that are inherently eager unless you use some non-standard
 magic (probably based on bytecode modification). JPA 2.1 introduces ability to explicitly state
 `ON` conditions for joins and this, in my eyes, is a true killer feature of this specification
 update and bit of a hidden gem overshadowed by (also very useful) converters, procedure calls, etc.
