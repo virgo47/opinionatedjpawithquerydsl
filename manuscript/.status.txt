@@ -19,7 +19,7 @@ To actually finish something, I want to do this in the 1st edition:
 * Opinionated JPA
     * ORM tuned down (25%, investigation and review of materials)
     * No further steps without Querydsl (40%)
-    * Moving away from eager *to-one* relationships (10%)
+    * Moving away from eager *to-one* relationships (15%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
     * *To-many* relations
     * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
