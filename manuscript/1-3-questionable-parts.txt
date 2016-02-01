@@ -3,6 +3,8 @@
 * TODO: is it assured that `@Id @GeneratedValue(strategy = GenerationType.IDENTITY)` has id filled in
 after insert? in case of EclipseLink it happens after fetch (IIRC), Hibernate does it sooner(?)
 * unit-of-work works only with whole entities, it does not emit partial updates
+* unit-of-work "caching" and tracking a lot of data that are to be viewed (can be fixed with
+readonly transactions, nice example of being explicit)
 
 ## Lazy on basic and *to-one* fields {#lazy-problems}
 

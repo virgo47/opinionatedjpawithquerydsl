@@ -13,9 +13,9 @@ an ORM. And I'm going to make a case against some of it.
 Most of the points I'm going to explain somehow revolve around two rules:
 
 * **Be explicit.** For instance don't leave persistence context (session) open after you leave
-service layer and don't wait for presentation layer to load something lazily. Make explicit
-contract and fetch what you should eagerly (but not ORM "load the whole DB" way). Also, don't
-rely on caches blindly!
+the service layer and don't wait for the presentation layer to load something lazily. Make explicit
+contract and fetch eagerly what you need for presentation, just like you would with plain SQL
+(but still avoiding ORM syndrome "load the whole DB"). Also, don't rely on caches blindly.
 * **Don't go lazy.** Or at least not easily. This obviously stems from the previous point, but
 goes further. Lazy may save some queries here and there, but in practice we rely on it too much.
 In most cases we can be explicit, but we're lazy to be so (so let's not go lazy ourselves either).
@@ -69,21 +69,41 @@ and less lazy is definitely better and we will talk about it in other sections.
 
 ## How does this affect my domain model?
 
-DDD and ORM are closely related (synergies), should we even use ORM without DDD?
+I stated that this book will not be about architecture, but this is the part where we have to
+tackle it a bit. If we talk about [domain model](https://en.wikipedia.org/wiki/Domain_model), we
+probably also talk about [domain driven design](https://en.wikipedia.org/wiki/Domain-driven_design)
+(DDD) best described in [DDD](#bib-ddd). I can't claim experience with DDD because I never saw it
+in practice, but it must work for some, reportedly especially for complex business domains with
+lots of rules, etc. Reading [PoEAA](#bib-poeaa) it is obvious that there's a lot of synergy
+between DDD and ORM. One may even ask whether to use ORM without DDD at all. And I can't answer
+that, sorry.
+
+[PoEAA](#bib-poeaa) recommends other patterns for simpler domain problems (*Transaction Script*,
+*Table Module*) with related data source patterns (*Table Data Gateway*, *Row Data Gateway*
+or *Active Mapper*). There are some newer architectural patterns as well, like *Command Query
+Responsibility Segregation* ([CQRS](http://martinfowler.com/bliki/CQRS.html)) or *Data, context
+and interaction* ([DCI](https://en.wikipedia.org/wiki/Data,_context_and_interaction)), both of them
+perfectly usable with object-oriented languages, but not necessarily for every problem.
+
+Back to domain, though. One anti-pattern often mentioned in relation to ORM/JPA is called
+(Anemic domain model)[http://www.martinfowler.com/bliki/AnemicDomainModel.html]. Let's quote
+master Martin Fowler a bit again:
+
+{icon=quote-right}
+G> In essence the problem with anemic domain models is that they incur all of the costs of a domain
+G> model, without yielding any of the benefits. The primary cost is the awkwardness of mapping to
+G> a database, which typically results in a whole layer of O/R mapping. This is worthwhile iff you
+G> use the powerful OO techniques to organize complex logic. By pulling all the behavior out into
+G> services, however, you essentially end up with Transaction Scripts, and thus lose the advantages
+G> that the domain model can bring. As I discussed in P of EAA, Domain Models aren't always the
+G> best tool.
 
 TODO:
-* should domain model be in JPA entities?
-Quote from http://www.martinfowler.com/bliki/AnemicDomainModel.html
-In essence the problem with anemic domain models is that they incur all of the costs of a domain
-model, without yielding any of the benefits. The primary cost is the awkwardness of mapping to
-a database, which typically results in a whole layer of O/R mapping. This is worthwhile iff you
-use the powerful OO techniques to organize complex logic. By pulling all the behavior out into
-services, however, you essentially end up with Transaction Scripts, and thus lose the advantages
-that the domain model can bring. As I discussed in P of EAA, Domain Models aren't always the
-best tool.
-
-* Domain model over entity model?
+* Domain model over entity model? SRP...
 * Do I incur all of the costs when I tune it down? For me *to-one* was most costly.
+* One thing I respect on Fowler et al. is that they try to balance costs/benefits and they neither
+push ORM always forward nor do they criticize it all the time without offering real alternatives
+for the complex cases.
 
 ## Love and hate for ORM
 

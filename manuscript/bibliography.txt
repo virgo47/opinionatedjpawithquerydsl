@@ -1,5 +1,8 @@
 -# Bibliography
 
+{#bib-ddd}
+[DDD] Evans Eric. *Domain-Driven Design*, Addison-Wesley Professional, 2003.
+
 {#bib-poeaa}
 [PoEAA] Martin Fowler. *Patterns of Enterprise Application Architecture*, Addison-Wesley, 2002.
 
