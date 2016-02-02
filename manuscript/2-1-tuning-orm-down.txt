@@ -104,17 +104,31 @@ TODO:
 * One thing I respect on Fowler et al. is that they try to balance costs/benefits and they neither
 push ORM always forward nor do they criticize it all the time without offering real alternatives
 for the complex cases.
+* Let's accept using entities as "structs" or [DTOs](https://en.wikipedia.org/wiki/Data_transfer_object)
+-- it is still far more advanced compared to a `ResultSet` and similar low-level patterns. We
+have dumb object (anemic model), but we can utilize that in a domain if we need to. Maybe we should
+go for "dumb-object to domain-object" mapping instead. In any case we can hardly get rid of all
+the notions of data store we use. Any "total abstraction" must lead to some mismatch -- and
+typically also to even bigger performance penalty.
+
 
 ## Love and hate for ORM
 
-* Yegor Bugayenko: http://www.yegor256.com/2014/12/01/orm-offensive-anti-pattern.html and
-https://www.youtube.com/watch?v=DEqcn4-freM - he references some of the further resources
-(most well known on their own anyway). (Yegor's solution to many problems is to put the
-the technology right into the object, often all the technologies. There is no SRP in that.)
 * Ted Neward: http://blogs.tedneward.com/post/the-vietnam-of-computer-science/
+  * Query-by-API is much better nowadays, state of the art technologies like Querydsl have very
+  rich fluent API that is also very compact (definitely not "much more verbose than the traditional
+  SQL approach"). Also both type safety and testing practices are much more developed.
+  * Still, written up in 2006 (and referencing discussions two years before that) this post
+  shows how much was known about ORM troubles already. It wasn't so young subject after all.
+  Since then we merely smoothed out some rough edges, added more options (small gap compared to
+  SQL), developed better tools around (like Querydsl) and standardized it (JPA) -- but virtually
+  all the concerns Ted mentioned are still valid.
 * Jeff Atwood: http://blog.codinghorror.com/object-relational-mapping-is-the-vietnam-of-computer-science/
 * Martin Fowler: http://martinfowler.com/bliki/OrmHate.html
 * Laurie Voss: http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern
+* Yegor Bugayenko: http://www.yegor256.com/2014/12/01/orm-offensive-anti-pattern.html and
+https://www.youtube.com/watch?v=DEqcn4-freM (Yegor's solution to many problems is to put the
+the technology right into the object, often all the technologies. There is no SRP in that.)
 
 Other problems:
 * monitoring of SQL from JPA application is difficult (it's kinda "elsewhere") and the
@@ -122,6 +136,8 @@ interaction with the SQL itself has a lot of overhead as well (but this is compl
 JDBC proxy driver is possibility, but how to connect to the business logic or place where it
 happens?)
 * updates of all columns when just one was changed (not inherent JPA problem, but happens)
+* bugs cross-fire, different providers have different bugs, but all are show-stoppers for
+a project
 
 Alternatives sometimes bash ORM on false grounds though:
 * Complaint about using any QL on business level is completely off, as it should be hidden
