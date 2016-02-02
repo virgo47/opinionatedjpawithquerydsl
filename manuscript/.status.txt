@@ -34,6 +34,10 @@ To actually finish something, I want to do this in the 1st edition:
     * H2 Database (50%)
     * Groovy scrips for database initialization
     * How to report JPA provider bugs? (be active, report, vote, creating test cases, ...)
+    * Bugs I experienced myself:
+      * https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042 (CASE thread-safety)
+      * https://bugs.eclipse.org/bugs/show_bug.cgi?id=332309 (delete with to-many when non-id is referenced is not executed)
+      * https://hibernate.atlassian.net/browse/HHH-9711 (delete crossing table generated incorrectly)
 
 Other ideas, maybe for next editions:
 
