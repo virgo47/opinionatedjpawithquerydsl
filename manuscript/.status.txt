@@ -5,7 +5,6 @@
 Where am I with the book and what are my plans? (All is subject to change, of course.)
 
 To actually finish something, I want to do this in the 1st edition:
-
 * Preface (90%) - to explain why this book even exists and some background
 * JPA Good Times, Bad Times
     * Good Parts (60%) - mapping, conversion (type support, lobs), unit of work, caching
@@ -40,7 +39,6 @@ To actually finish something, I want to do this in the 1st edition:
       * https://hibernate.atlassian.net/browse/HHH-9711 (delete crossing table generated incorrectly)
 
 Other ideas, maybe for next editions:
-
 * filtering/pagination
 You may be interested in presented filtering/pagination "framework" too and while it is utilized
 with the JPA back-end in our case, the concept is rather generic. Sometimes I feel like reinventing
