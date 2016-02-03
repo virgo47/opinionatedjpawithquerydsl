@@ -1,4 +1,4 @@
-# Tuning ORM down
+# Tuning ORM down {#ch-tuning-orm-down}
 
 Full-blown object-relational mapping maps database foreign keys as relations between objects.
 Instead of `Integer breedId` you have `Breed breed` where mapping information provides all the
@@ -62,9 +62,9 @@ about a year, I discovered that I indeed **can** `JOIN` on any condition -- and 
 with raw FK. This ultimately led me to some extreme measures and I got rid of *to-one* mappings
 and never looked back.
 
-So that is what the chapter [Moving away from *to-one* relationships](#away-from-to-one) is about.
-Other points are much less radical compared to this one. Long before I learnt that being explicit
-and less lazy is definitely better and we will talk about it in other sections.
+So that is what the chapter [Moving away from *to-one* relationships](#ch-away-from-to-one) is
+about. Other points are much less radical compared to this one. Long before I learnt that being
+explicit and less lazy is definitely better and we will talk about it in other sections.
 
 
 ## How does this affect my domain model?

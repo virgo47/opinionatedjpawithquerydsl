@@ -83,12 +83,25 @@ in this one. Sure, it's closing to 500 pages, but it's structured well. It has m
 the rest of Java EE in *Chapter 3: Enterprise Applications*, but even that may be useful. This
 is currently my go-to book when I need to refresh some area.
 
-I don't know any other relevant book, but there is one more obvious resource -- [Java Persistence
+And then there is [Spring Data](http://www.amazon.com/dp/1449323952) book ([SData](#bib-sdata)).
+For the sake of confusion there are actually two books of this name -- one published by O'Reilly
+and the other one by Packt, both published within a month late in 2012. If you are Spring positive,
+I can only recommend reading at least first 50 pages of the one by O'Reilly (up to chapter 4
+including), even if you don't use Spring Data after all. It's a nice quick overview of JPA and
+Querydsl with examples of Spring configuration both in XML and Java and they even mention
+kind of advanced things like `orphanRemoval` (although rather in passing). It's definitely little
+time well spent anyway. I don't know the Packt one, but it seems to be a short book focusing
+on similar topics like the first half of O'Reilly book.
+
+I don't know any more relevant books, but there is one more obvious resource -- [Java Persistence
 2.1 Specification](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
 itself. There are things you hardly find anywhere else, especially when it comes to corner cases
 like "use of DISTINCT with COUNT is not supported for arguments of embeddable types". So when you
 encounter a problem it is good to search through the specification for keywords. Often JPA
 provider works as specified, even when it does not make sense to us.
+
+There are tons of blog posts, of course, some of them are very influential. I will mention the
+most important ones (from my perspective anyway) in chapter [Tuning ORM down](#ch-tuning-orm-down).
 
 
 ## Looking back to *Patterns of Enterprise Application Architecture*
