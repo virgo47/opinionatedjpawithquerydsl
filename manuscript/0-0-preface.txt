@@ -40,7 +40,7 @@ questions. Some are definitely a bit unorthodox from typical JPA perspective.
 While many parts of the book are usable with *JPA 2.0*, it was the update of the specification to
 *JPA 2.1* that really allowed me to experiment with getting rid of my biggest pain point in the JPA
 mapping -- which were *to-one* relations that are inherently eager unless you use some non-standard
-magic (probably based on bytecode modification). JPA 2.1 introduces ability to explicitly state
+magic (probably based on bytecode modification). *JPA 2.1* introduces ability to explicitly state
 `ON` conditions for joins and this, in my eyes, is a true killer feature of this specification
 update and bit of a hidden gem overshadowed by (also very useful) converters, procedure calls, etc.
 
@@ -77,13 +77,13 @@ recommend [Pro EJB 3: Java Persistence API](http://www.amazon.com/dp/1590596455)
 book is now dead (and yes, in 2016 it celebrates its 10^th^ anniversary).
 
 I can highly recommend [Pro JPA 2](http://www.amazon.com/dp/1430249269)
-in its 2^nd^ Edition ([PJPA2](#bib-projpa2)),
-which is updated to JPA 2.1 (in line with *Java EE 7*). There is hardly anything I haven't found
+in its 2^nd^ Edition [[PJPA2](#bib-projpa2)],
+which is updated to *JPA 2.1* (in line with *Java EE 7*). There is hardly anything I haven't found
 in this one. Sure, it's closing to 500 pages, but it's structured well. It has minimal overlap with
 the rest of Java EE in *Chapter 3: Enterprise Applications*, but even that may be useful. This
 is currently my go-to book when I need to refresh some area.
 
-And then there is [Spring Data](http://www.amazon.com/dp/1449323952) book ([SData](#bib-sdata)).
+And then there is [Spring Data](http://www.amazon.com/dp/1449323952) book [[SData](#bib-sdata)].
 For the sake of confusion there are actually two books of this name -- one published by O'Reilly
 and the other one by Packt, both published within a month late in 2012. If you are Spring positive,
 I can only recommend reading at least first 50 pages of the one by O'Reilly (up to chapter 4
@@ -106,7 +106,7 @@ most important ones (from my perspective anyway) in chapter [Tuning ORM down](#c
 
 ## Looking back to *Patterns of Enterprise Application Architecture*
 
-Martin Fowler wrote his *Patterns of Enterprise Application Architecture* ([PoEAA](#bib-poeaa))
+Martin Fowler wrote his *Patterns of Enterprise Application Architecture* [[PoEAA](#bib-poeaa)]
 in 2002 trying to capture various patterns that were occurring in enterprise applications,
 written not only in Java. Many patterns in the book cover data access layer and many of those
 are clearly ORM related -- starting with *Data Mapper* going through *Unit of Work* or *Lazy Load*

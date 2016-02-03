@@ -55,9 +55,9 @@ I'm not interested in its relations, just wrap those FK values into otherwise em
 relation... actually, you can, but while you are able to related object explicitly (find by id),
 you can't join on that relationship. Or can you?
 
-There are little to no examples of this, because JPA 2.0 could not do that. All the joins were
+There are little to no examples of this, because *JPA 2.0* could not do that. All the joins were
 implicit and without the mapping (`@One/ManyToOne/Many`) it simply dit not work. I actually
-wandered "why can't I join on any value?!" for long time. And then, with JPA 2.1 out in a wild for
+wandered "why can't I join on any value?!" for long time. And then, with *JPA 2.1* out in a wild for
 about a year, I discovered that I indeed **can** `JOIN` on any condition -- and that way I can join
 with raw FK. This ultimately led me to some extreme measures and I got rid of *to-one* mappings
 and never looked back.
@@ -72,13 +72,13 @@ explicit and less lazy is definitely better and we will talk about it in other s
 I stated that this book will not be about architecture, but this is the part where we have to
 tackle it a bit. If we talk about [domain model](https://en.wikipedia.org/wiki/Domain_model), we
 probably also talk about [domain driven design](https://en.wikipedia.org/wiki/Domain-driven_design)
-(DDD) best described in [DDD](#bib-ddd). I can't claim experience with DDD because I never saw it
+(DDD) best described in [[DDD](#bib-ddd)]. I can't claim experience with DDD because I never saw it
 in practice, but it must work for some, reportedly especially for complex business domains with
-lots of rules, etc. Reading [PoEAA](#bib-poeaa) it is obvious that there's a lot of synergy
+lots of rules, etc. Reading [[PoEAA](#bib-poeaa)] it is obvious that there's a lot of synergy
 between DDD and ORM. One may even ask whether to use ORM without DDD at all. And I can't answer
 that, sorry.
 
-[PoEAA](#bib-poeaa) recommends other patterns for simpler domain problems (*Transaction Script*,
+[[PoEAA](#bib-poeaa)] recommends other patterns for simpler domain problems (*Transaction Script*,
 *Table Module*) with related data source patterns (*Table Data Gateway*, *Row Data Gateway*
 or *Active Mapper*). There are some newer architectural patterns as well, like *Command Query
 Responsibility Segregation* ([CQRS](http://martinfowler.com/bliki/CQRS.html)) or *Data, context

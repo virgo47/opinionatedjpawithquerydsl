@@ -32,7 +32,7 @@ of annotations for mapping your entities, the same set of most important classes
 But standards also have their drawbacks, most typically that they are some common subset of the
 features offered in that area. JPA's success is probably based on the fact that it emerged as
 rock-solid subset of features offered by major players in Java ORM world. But starting this way
-it must have trailed behind them. JPA 1 did not offer any criteria API, can you imagine that?
+it must have trailed behind them. *JPA 1* did not offer any criteria API, can you imagine that?
 Now *JPA 2.1* is somewhere else. The features cover nearly anything you need for typical
 applications talking to relational databases.
 
@@ -129,7 +129,7 @@ It better be flexible because it is the most important reason for the whole ORM 
 Field-to-column mapping can specified as annotations on the fields or on the getters -- or
 in XML files. Annotation placement implies access strategy, but it can be overridden using
 `@Access` on the class. In the book I'll use field access mostly, but property access can be
-handy when you want to do something in get/setters. For instance, before JPA 2.1 we did simple
+handy when you want to do something in get/setters. For instance, before *JPA 2.1* we did simple
 conversions there, field was already converted and we used additional get/setters annotated as
 `@Transient` leaving those JPA related accessors only for JPA purposes.
 
@@ -146,7 +146,7 @@ just makes it all more foggy. In any case, this topic is not covered in this boo
 ## Unit of work
 
 [Unit of work](http://martinfowler.com/eaaCatalog/unitOfWork.html) is a pattern described in
-[PoEAA](#bib-poeaa). In Hibernate it was represented by its `Session`, in JPA more descriptive
+[[PoEAA](#bib-poeaa)]. In Hibernate it was represented by its `Session`, in JPA more descriptive
 (and arguably more EE-ish) name `EntityManager` was chosen. To make things just a little tougher
 on newcomers, entity manager manages something called *persistence context* -- but you make
 no big mistake if you treat *entity manager* and *persistence context* as synonyms. Nowadays
