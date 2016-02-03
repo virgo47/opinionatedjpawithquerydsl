@@ -38,7 +38,7 @@ If everything is set up properly, probably just hitting Enter on the JAR in some
 do. If not, try a command:
 
 {linenos=off}
-  $ java -jar $HOME/.m2/repository/com/h2database/h2/1.4.190/h2-1.4.190.jar
+    $ java -jar $HOME/.m2/repository/com/h2database/h2/1.4.190/h2-1.4.190.jar
 
 Of course, adjust the JAR location and name, and if you don't have `java` on your `PATH` (yet!)
 do something about it.

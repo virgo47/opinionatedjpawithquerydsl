@@ -68,7 +68,7 @@ move to field level:
 
 * simple Java types (optionally annotated with `@Basic`) like primitive types, their wrappers,
 `String`, `BigInteger` and `BigDecimal`;
-* temporal types like `java.util.Date/Calendar` in addition to `java.sql.Date/Time/Timestamp`;
+* temporal types like `java.util.Date/Calendar` in addition to types from `java.sql` package;
 * collections -- these might be relations to other entities or embeddable types;
 * enum types -- here you can choose whether it's persisted by its `name()` or by `ordinal()`.
 

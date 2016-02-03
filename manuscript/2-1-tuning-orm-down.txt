@@ -86,7 +86,7 @@ and interaction* ([DCI](https://en.wikipedia.org/wiki/Data,_context_and_interact
 perfectly usable with object-oriented languages, but not necessarily for every problem.
 
 Back to domain, though. One anti-pattern often mentioned in relation to ORM/JPA is called
-(Anemic domain model)[http://www.martinfowler.com/bliki/AnemicDomainModel.html]. Let's quote
+[Anemic domain model](http://www.martinfowler.com/bliki/AnemicDomainModel.html). Let's quote
 master Martin Fowler a bit again:
 
 {icon=quote-right}
@@ -99,6 +99,7 @@ G> that the domain model can bring. As I discussed in P of EAA, Domain Models ar
 G> best tool.
 
 TODO:
+
 * Domain model over entity model? SRP...
 * Do I incur all of the costs when I tune it down? For me *to-one* was most costly.
 * One thing I respect on Fowler et al. is that they try to balance costs/benefits and they neither

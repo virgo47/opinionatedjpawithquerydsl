@@ -184,7 +184,8 @@ is not simple. I study books and online resources, I test my solutions, I try to
 is going on, but sometimes I may just understand something wrong. Sorry for that and please,
 if you know better, let me know.
 
-* Either add an issue on the GitHub repo for the book: https://github.com/virgo47/opinionatedjpawithquerydsl
-* Or just [email me](mailto:virgo47@gmail.com) directly.
+* Either add an issue on the [GitHub repo](https://github.com/virgo47/opinionatedjpawithquerydsl)
+for the book,
+* or just [email me](mailto:virgo47@gmail.com) directly.
 
 Obviously, factual errors are probably most crucial, but other suggestions are welcome too.
