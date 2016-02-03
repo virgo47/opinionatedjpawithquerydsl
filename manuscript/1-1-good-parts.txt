@@ -58,12 +58,14 @@ understand SQL they didn't produce good results.
 ## Natural SQL-Java type mapping
 
 JPA can persist anything that is so called *persistable type*. These are:
+
 * entity classes (annotated with `@Entity`) -- these loosely matches database tables;
 * mapped superclasses (`@MappedSuperclass`) -- when you map class hierarchies;
 * embeddable classes (`@Embeddable`) -- to group multiple columns into a value object;
 
 These were all types on class level, more or less matching whole database tables. Now we will
 move to field level:
+
 * simple Java types (optionally annotated with `@Basic`) like primitive types, their wrappers,
 `String`, `BigInteger` and `BigDecimal`;
 * temporal types like `java.util.Date/Calendar` in addition to `java.sql.Date/Time/Timestamp`;
@@ -92,6 +94,7 @@ support.
 Up to *JPA 2.0* you could not define custom conversions, but *JPA 2.1* changed this. Now you can
 simply annotate your field with `@Convert` and implement `AttributeConverter<X, Y>` with two
 very obvious methods:
+
 * `Y convertToDatabaseColumn (X attribute)`
 * `X convertToEntityAttribute (Y dbData)`
 

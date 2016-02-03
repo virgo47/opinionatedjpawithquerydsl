@@ -11,6 +11,7 @@ and `@ManyToMany`). Mapping foreign keys as relations is probably the most prono
 an ORM. And I'm going to make a case against some of it.
 
 Most of the points I'm going to explain somehow revolve around two rules:
+
 * **Be explicit.** For instance don't leave persistence context (session) open after you leave
 the service layer and don't wait for the presentation layer to load something lazily. Make explicit
 contract and fetch eagerly what you need for presentation, just like you would with plain SQL

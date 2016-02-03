@@ -63,6 +63,7 @@ around the contract between presentation and session layer. I'll talk about infa
 in view* pattern as well.
 
 This book also does not cover:
+
 * JPA native SQL -- I don't use it massively and I have nothing much to say about it.
 * Calling stored procedures -- it works as expected.
 * Criteria API -- because I prefer Querydsl instead.

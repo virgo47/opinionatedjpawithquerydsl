@@ -7,6 +7,7 @@
 *H2* ([project page](http://h2database.com), or
 [on Wikipedia](https://en.wikipedia.org/wiki/H2_%28DBMS%29)) is a SQL database implemented in Java
 with couple of features that are very handy especially for testing:
+
 * Firstly, H2 is all packed in a single JAR which weights way under 2 MB and contains features
 you would not expect in such a cute packaging.
 * It can store its tables both in-memory and on the disk. Using in-memory storage is great for
