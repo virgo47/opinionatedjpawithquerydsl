@@ -5,7 +5,6 @@ perspective -- works like a more expressive and readable version of *Java Persis
 API*. Internally it first generates JPQL and the rest from there is handled by the JPA provider.
 Querydsl can actually talk to many more back-ends: SQL, Hibernate directly, ... and many
 more, but we will focus on Querydsl over JPA here. To use it goes in these steps:
-
 * declare the dependency for Querydsl library and to its annotation processor,
 * add a step in your build to generate metamodel classes,
 * and write queries happily in sort of criteria-like way.
@@ -101,7 +100,6 @@ List<Dog> dogs = em.createQuery(query)
 ~~~
 
 Let's observe now:
-
 * First you need to get `CriteriaBuilder` from existing `em`. You might "cache" this into
 a field but it may not play well with EE component model, so I'd rather get it before using.
 This should not be heavy operation, in most cases entity manager holds this builder already
