@@ -5,7 +5,7 @@ about caching mechanisms and so on. And you should not be oblivious to SQL eithe
 on a system where ORM/JPA was used to its full extent and everybody was really happy with the
 result. The system got slower, [DBAs](https://en.wikipedia.org/wiki/Database_administrator)
 asked why we produce crappy SQLs and so on. We fought with ORM drawbacks before we could benefit
-from the features. It all comes down to inherent complexity of an ORM. Any pro can instantly blame
+from the features. It all comes down to inherent complexity of ORM. Any pro can instantly blame
 us for "just not knowing"... but I think the problem goes deeper.
 
 While I too complain about programmers' laziness to learn more about the technologies they work

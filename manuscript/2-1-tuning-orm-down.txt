@@ -8,7 +8,7 @@ popular nowadays). Relations can be mapped in any direction (even in reverse), f
 directions (then you choose which one is the owner's side, which is kinda more "in control" of
 the relationship) and in any cardinality (with annotations `@OneOnOne`, `@OneToMany`, `@ManyToOne`
 and `@ManyToMany`). Mapping foreign keys as relations is probably the most pronounced feature of
-an ORM. And I'm going to make a case against some of it.
+ORM. And I'm going to make a case against some of it.
 
 Most of the points I'm going to explain somehow revolve around two rules:
 
@@ -80,10 +80,10 @@ that, sorry.
 
 [[PoEAA](#bib-poeaa)] recommends other patterns for simpler domain problems (*Transaction Script*,
 *Table Module*) with related data source patterns (*Table Data Gateway*, *Row Data Gateway*
-or *Active Mapper*). There are some newer architectural patterns as well, like *Command Query
+or *Active Mapper*). There are some newer architectural solutions as well, like *Command Query
 Responsibility Segregation* ([CQRS](http://martinfowler.com/bliki/CQRS.html)) or *Data, context
 and interaction* ([DCI](https://en.wikipedia.org/wiki/Data,_context_and_interaction)), both of them
-perfectly usable with object-oriented languages, but not necessarily for every problem.
+usable with object-oriented languages, but not necessarily for every problem.
 
 Back to domain, though. One anti-pattern often mentioned in relation to ORM/JPA is called
 [Anemic domain model](http://www.martinfowler.com/bliki/AnemicDomainModel.html). Let's quote
@@ -98,24 +98,55 @@ G> services, however, you essentially end up with Transaction Scripts, and thus 
 G> that the domain model can bring. As I discussed in P of EAA, Domain Models aren't always the
 G> best tool.
 
-TODO:
+I'm not able to slip out of this topic and make object purists happy, but there are many other
+styles of programming and the question (far beyond the scope of this book) is whether being purely
+OO is the most important thing after all. In most projects I treated my entities like java beans
+with just a little low-level logic to it -- so it was mostly this "anemic domain model" song. But
+entity objects can be perfect [data transfer objects](https://en.wikipedia.org/wiki/Data_transfer_object)
+(DTOs) in many situations. It is still far more advanced compared to amorphous rows of a
+`ResultSet`. We have dumb model, but we can utilize it in a domain if we need to.
 
-* Domain model over entity model? SRP...
-* Do I incur all of the costs when I tune it down? For me *to-one* was most costly.
-* One thing I respect on Fowler et al. is that they try to balance costs/benefits and they neither
+I even contemplated something like "domain over entity model" solution where entity is as dumb
+as possible (it still has responsibility for me, it maps to a database table) and I can wrap it
+with whatever logic I want in a domain object. This even allows me to reverse some dependencies
+if I wish so -- for instance, in database order items point to the order using a foreign key, but
+in my higher model it can be the other way around, invoice can aggregate items that may not even
+know about an order.
+
+In any case, whatever we do, we can hardly get rid of all the notions of a particular data store
+we use, because any such "total abstraction" must lead to some mismatch -- and that typically
+leads to complexity and often significant performance penalty as well. The way I go with this
+book is trying to get as much benefit from using the JPA without incurring too much cost. Maybe
+I'm not going for the best approach, but I'm trying to avoid the biggest pain points while
+accepting that I have SQL somewhere down there.
+
+One thing I respect on Fowler et al. is that they try to balance costs/benefits and they neither
 push ORM always forward nor do they criticize it all the time without offering real alternatives
-for the complex cases.
-* Let's accept using entities as "structs" or [DTOs](https://en.wikipedia.org/wiki/Data_transfer_object)
--- it is still far more advanced compared to a `ResultSet` and similar low-level patterns. We
-have dumb object (anemic model), but we can utilize that in a domain if we need to. Maybe we should
-go for "dumb-object to domain-object" mapping instead. In any case we can hardly get rid of all
-the notions of data store we use. Any "total abstraction" must lead to some mismatch -- and
-typically also to even bigger performance penalty.
+for the complex cases. Many smart and experienced people dislike ORM on the other hand, but
+listening to "pure haters" does not bring much to a discussion. But some cases are well-argued,
+offering options and you can see the deep understanding of the topic. Which naturally leads us
+to the next section.
 
 
 ## Love and hate for ORM
 
-* Ted Neward: http://blogs.tedneward.com/post/the-vietnam-of-computer-science/
+As I said already, ORM is typically seen as a good fit with domain-driven design (DDD). But
+ORM happened to become extremely popular and people thought it will solve all of their database
+access problems without the need to learn SQL. This way obviously failed and hurt ORM back a lot,
+too. I say it again, ORM is very difficult, even using well documented ORM (like the JPA standard)
+is hard -- there's simply too much in it. We're dealing with complex problem, with a mismatch --
+and some kind of mismatch it is. And it's not the basic principle that hurts, we always get burnt
+on many, too many, details.
+
+### Vietnam of Computer Science
+
+One of the best balanced texts that critique ORM, and probably one of the most famous, is quite
+old actually. In 2006 Ted Neward wrote quite an extensive post with a fitting, if provoking, name
+[The Vietnam of Computer Science](http://blogs.tedneward.com/post/the-vietnam-of-computer-science/).
+If you seriously want to use ORM on any of your projects, you should read this -- unless data
+access is not an important part of that project (who are we kidding, right?). You may skip the
+history of Vietnam war, but definitely give the technical part a dive it deserves.
+
   * Query-by-API is much better nowadays, state of the art technologies like Querydsl have very
   rich fluent API that is also very compact (definitely not "much more verbose than the traditional
   SQL approach"). Also both type safety and testing practices are much more developed.
@@ -124,6 +155,11 @@ typically also to even bigger performance penalty.
   Since then we merely smoothed out some rough edges, added more options (small gap compared to
   SQL), developed better tools around (like Querydsl) and standardized it (JPA) -- but virtually
   all the concerns Ted mentioned are still valid.
+
+### Not much love for ORM
+
+### But a lot of hate
+
 * Jeff Atwood: http://blog.codinghorror.com/object-relational-mapping-is-the-vietnam-of-computer-science/
 * Martin Fowler: http://martinfowler.com/bliki/OrmHate.html
 * Laurie Voss: http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern
