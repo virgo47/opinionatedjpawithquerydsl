@@ -141,47 +141,117 @@ on many, too many, details.
 ### Vietnam of Computer Science
 
 One of the best balanced texts that critique ORM, and probably one of the most famous, is quite
-old actually. In 2006 Ted Neward wrote quite an extensive post with a fitting, if provoking, name
+old actually. In 2006 Ted Neward wrote an extensive post with a fitting, if provoking, name
 [The Vietnam of Computer Science](http://blogs.tedneward.com/post/the-vietnam-of-computer-science/).
 If you seriously want to use ORM on any of your projects, you should read this -- unless data
 access is not an important part of that project (who are we kidding, right?). You may skip the
 history of Vietnam war, but definitely give the technical part a dive it deserves.
 
-  * Query-by-API is much better nowadays, state of the art technologies like Querydsl have very
-  rich fluent API that is also very compact (definitely not "much more verbose than the traditional
-  SQL approach"). Also both type safety and testing practices are much more developed.
-  * Still, written up in 2006 (and referencing discussions two years before that) this post
-  shows how much was known about ORM troubles already. It wasn't so young subject after all.
-  Since then we merely smoothed out some rough edges, added more options (small gap compared to
-  SQL), developed better tools around (like Querydsl) and standardized it (JPA) -- but virtually
-  all the concerns Ted mentioned are still valid.
+ORM wasn't that young anymore in 2006 and various experiences showed that it easily brings more
+problems than benefits - especially if we approach it with partial knowledge, typically based on
+an assumption that "our developers don't need to know SQL". When kind of non-programming architect
+recommends this for a project and they are long gone when the trouble appears it's really easy to
+recommend it again. It was so easy to generate entities from our [DDL](https://en.wikipedia.org/wiki/Data_definition_language)
+after all, wasn't it? Hopefully managers are too high to be an audience for JPA/ORM recommendations,
+but technical guys can hurt themselves well enough. The JPA, for instance, is still shiny, it's a
+standard after all -- and yeah, it is kinda Java EE-ish, but this is the good new EE, right?
+
+Wrong. Firstly, JPA/ORM is so complex when it comes to details, that using it as a tool for "cheap
+developers" who don't need to learn SQL is as silly as it gets. I don't know when learning became
+the bad thing in the first place, but some managers think they can save man-months/time/money
+without learning. When the things get messy -- and they will -- there is nobody around who really
+understands ORM and there is virtually no chance to rewrite data access layer to get rid of it.
+Easiest thing to do is to blame ORM.
+
+You may ask: What has changed since 2016? My personal take on the answer would be:
+
+* Nothing essential could have changed, we merely smoothed some rough edges, got a bit more
+familiar with already familiar topic and in Java space we standardized the beast (JPA).
+* We added more options to query languages to make the gap with SQL smaller. Funny enough, the JPA
+actually didn't help here as it lagged couple of years behind capabilities of the leading ORM
+solutions.
+* Query-by-API (mentioned in the post) is much better nowadays, state of the art technologies like
+Querydsl have very rich fluent API that is also very compact (definitely not "much more verbose
+than the traditional SQL approach"). Also both type safety and testing practices are much more
+developed.
+* Otherwise virtually all the concerns Ted mentioned are still valid.
+
 
 ### Not much love for ORM
 
+Whatever was written back in 2006, ORMs were on the rise since then. Maybe the absolute numbers of
+ORM experts are now higher than then, but I'd bet the ratio of experts is way lower (though I have
+no research to support this). ORM/JPA is easily available, Java EE supports it, Spring supports it,
+you can use it in Java SE easily, you can even generate CRUD scaffolding for your application with
+JPA using some [rapid application development](https://en.wikipedia.org/wiki/Rapid_application_development)
+tools. That means a lot of developers are exposed to it. In many cases it seems deceivingly easy
+when you start using it.
+
+ORM has a bad reputation with our [DBAs](https://en.wikipedia.org/wiki/Database_administrator) --
+and for good reasons too. It takes some effort to make it use reasonable queries, not to mention
+that you typically have to break the ORM abstraction to do so. It's good to start with clean,
+untangled code as it helps tremendously when you need to optimize some queries later. This,
+however, causes many complications. If you explicitly name columns and don't load whole entities
+you may get better performance, but it will be unfriendly to the entity cache. The same goes for
+bulk updates (e.g. "change this column for all entities where..."). There are the right ways to
+do it in the domain model, but learning the right path of OO and domain-driven design is probably
+even harder than starting with JPA -- otherwise we'd see many more DDD-based projects around.
+
+We will tackle caching later in this chapter, but I'd say that misunderstanding around ORM caching
+is reason for a lot of performance problems and potentially for data corruption too. This is when
+it starts to hurt -- and when you can't get easily out, hate often comes with it. When you make
+a mistake with UI library, you may convince someone to rewrite it -- and they can see the
+difference. Rewriting data access layer gives seemingly nothing to the client, unless the data
+access is obviously slow, but then the damage done is already quite big anyway.
+
+
 ### But a lot of hate
 
-* Jeff Atwood: http://blog.codinghorror.com/object-relational-mapping-is-the-vietnam-of-computer-science/
-* Martin Fowler: http://martinfowler.com/bliki/OrmHate.html
-* Laurie Voss: http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern
-* Yegor Bugayenko: http://www.yegor256.com/2014/12/01/orm-offensive-anti-pattern.html and
-https://www.youtube.com/watch?v=DEqcn4-freM (Yegor's solution to many problems is to put the
-the technology right into the object, often all the technologies. There is no SRP in that.)
+When you need to bash some technology, ORM is a safe bet. I don't know whether I should even
+mention [ORM Is an Offensive Anti-Pattern](http://www.yegor256.com/2014/12/01/orm-offensive-anti-pattern.html)
+but as it is now the top result on Google search for ORM, I do it anyway. It wouldn't be fair to
+say the author doesn't provide an alternative, but I had read a lot of his other posts (before I
+stopped) to see where "SQL-speaking objects" are going to. I cannot see
+[single responsibility principle](https://en.wikipedia.org/wiki/Single_responsibility_principle)
+in it at all, and while SRP doesn't have to be the single holy grail of OOP, putting everything
+into the domain object itself is not a good idea. In different post, domain objects were "enriched"
+with all kinds of serialization needed, effectively binding possibly all domain objects to possibly
+all technologies you need. I believe OOP has been there already, maybe not before I was born, but
+definitely long before I started programming.
 
-Other problems:
-* monitoring of SQL from JPA application is difficult (it's kinda "elsewhere") and the
-interaction with the SQL itself has a lot of overhead as well (but this is complex topic anyway,
-JDBC proxy driver is possibility, but how to connect to the business logic or place where it
-happens?)
-* updates of all columns when just one was changed (not inherent JPA problem, but happens)
-* bugs cross-fire, different providers have different bugs, but all are show-stoppers for
-a project
+There are other flaws with this particular post. Mapping is explained on the very primitive case,
+while ORM utilizes unit-of-work for cases where you want to execute multiple updates in a single
+transaction, possibly updates on the same object. If every elementary change on the object emits
+an SQL and we want to set many properties for the same underlying table in a transaction we get
+performance even worse than non-tuned ORM! You can answer with object exposing various methods
+to update this and that, which possibly leads to a
+[combinatorial explosion](https://en.wikipedia.org/wiki/Combinatorial_explosion). Further, in times
+of injection we are shown the most verbose way how to do ORM, the way I haven't seen for years.
 
-Alternatives sometimes bash ORM on false grounds though:
-* Complaint about using any QL on business level is completely off, as it should be hidden
-somewhere else. Where? Maybe in some `User` object if it is *Active Record* pattern. Maybe in
-`UserDao`. In any case, it is possible to change well wrapped access to other underlying storage.
-I doubt it's much easier to switch from RDBMS to something completely else when you're not using
-ORM when you design the rest of the system equally well.
+"SQL-speaking objects" bring us to a more generic topic of modelling objects in our programs. We
+hardly model real-life objects as they act in real life, because in many cases we should not.
+Information systems allow changing information about things that cannot change, because someone
+might have entered the information incorrectly in the first place. And how to model a tin can?
+Should it have `open` method? In real life *someone* opens the *tin* with a *tin opener* -- an
+interaction of three objects. Why do we insist on objects storing themselves then? It still may
+be perfectly valid pattern, as I said real life is not always a good answer to our modelling needs.
+
+In any case I agree with the point that we should not avoid SQL, or at least know JPQL and how
+it maps to SQL. We generally should not avoid of what happens down the stack, especially when
+the abstraction is not perfect. ORM, no question about it, is not a perfect abstraction.
+
+To see a much better case against ORM let's read
+[ORM is an anti-patter](http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern). Here we can
+find summary of all the bad things related to ORM, there is hardly anything we can argue about
+and if you read Ted Neward's post too you can easily map the problems from one post to another.
+We will go the full circle back to Martin Fowler and his
+[ORM Hate](http://martinfowler.com/bliki/OrmHate.html). We simply have to accept ORM as it is
+and either avoid it, or use it with its limitations, knowing tha the abstraction is not perfect.
+If we avoid it, we have to choose relational or object world, but we can hardly have both.
+
+There are, of course, many other problems even if we embrace ORM as it is, after all I named many
+in chapter [Questionable parts](#ch-questionable-parts).
+
 
 ## Caching
 

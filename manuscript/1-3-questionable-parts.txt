@@ -1,4 +1,4 @@
-# Questionable parts
+# Questionable parts {#ch-questionable-parts}
 
 * TODO: is it assured that `@Id @GeneratedValue(strategy = GenerationType.IDENTITY)` has id filled in
 after insert? in case of EclipseLink it happens after fetch (IIRC), Hibernate does it sooner(?)
@@ -19,3 +19,13 @@ TODO: In projpa2 called "in-memory cache", but also "second-level cache" when ta
 ## You can't escape SQL and relation model
 
 TODO: Example: Paging with to-many fetching
+
+Other problems:
+* monitoring of SQL from JPA application is difficult (it's kinda "elsewhere") and the
+interaction with the SQL itself has a lot of overhead as well (but this is complex topic anyway,
+JDBC proxy driver is possibility, but how to connect to the business logic or place where it
+happens?)
+* updates of all columns when just one was changed (not inherent JPA problem, but happens)
+* bugs cross-fire, different providers have different bugs, but all are show-stoppers for
+a project
+
