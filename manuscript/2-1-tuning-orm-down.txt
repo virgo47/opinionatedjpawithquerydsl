@@ -39,21 +39,23 @@ application.
 And it just starts there, because `Person` has an `Address` which -- in case of a rich system --
 may further point to `District`, `County`, `State` and so on. Once I wanted to change something
 like `Currency` in a treasury system. It loaded around 50 objects -- all of them across these
-*to-one* relations. All of this may happen when you naively want change a single attribute in that
+*to-one* relations. This may happen when you naively want to change a single attribute in that
 currency. In SQL terms, that's an update of a single column for a single row.
 
 When you insert or update a `Dog` you can use `em.getReference(clazz, id)` to get a `Breed` object
 containing only id of the breed. This effectively works as a wrapped foreign key (FK). Heck, you
 can just `new` an empty `Breed` and set its id, you don't even have to ask `em` for the reference.
-But if you do this, that `Dog` is probably managed anyway which means it loaded previous values
-for all FKs (cascading further on). Should you just use JPQL update and possibly remove all dogs
-from the second-level cache? How ORM is that?
+In case of update you will not save much as that `Dog` is probably managed already anyway. You
+can either update managed entity -- which means it loaded previous values for all *to-one* FKs
+cascading as far as it needed -- or you can try to *merge* the entity -- but this works only if
+you overwrite it completely, it's not usable for update of a single column. Or should you just use
+JPQL update and possibly remove all dogs from the second-level cache? How ORM is that?
 
 Why JPA doesn't provide better fetch control for finds? I want to work with this `Dog` object now,
 I'm not interested in its relations, just wrap those FK values into otherwise empty entity objects
 (like references) and let me do my stuff! How I wished I could just map raw FK value instead of
-relation... actually, you can, but while you are able to related object explicitly (find by id),
-you can't join on that relationship. Or can you?
+relation... actually, you can, but while you are able to load such related object explicitly
+(find by id), you can't join on that relationship. Or can you?
 
 There are little to no examples of this, because *JPA 2.0* could not do that. All the joins were
 implicit and without the mapping (`@One/ManyToOne/Many`) it simply dit not work. I actually
@@ -73,7 +75,7 @@ I stated that this book will not be about architecture, but this is the part whe
 tackle it a bit. If we talk about [domain model](https://en.wikipedia.org/wiki/Domain_model), we
 probably also talk about [domain driven design](https://en.wikipedia.org/wiki/Domain-driven_design)
 (DDD) best described in [[DDD](#bib-ddd)]. I can't claim experience with DDD because I never saw it
-in practice, but it must work for some, reportedly especially for complex business domains with
+in practice, but it must work for some, reportedly, especially for complex business domains with
 lots of rules, etc. Reading [[PoEAA](#bib-poeaa)] it is obvious that there's a lot of synergy
 between DDD and ORM. One may even ask whether to use ORM without DDD at all. And I can't answer
 that, sorry.
@@ -109,9 +111,9 @@ entity objects can be perfect [data transfer objects](https://en.wikipedia.org/w
 I even contemplated something like "domain over entity model" solution where entity is as dumb
 as possible (it still has responsibility for me, it maps to a database table) and I can wrap it
 with whatever logic I want in a domain object. This even allows me to reverse some dependencies
-if I wish so -- for instance, in database order items point to the order using a foreign key, but
-in my higher model it can be the other way around, invoice can aggregate items that may not even
-know about an order.
+if I wish so -- for instance, in a database my order items point to the order using a foreign key,
+but in my higher model it can be the other way around, invoice can aggregate items that may not
+even know about an order.
 
 In any case, whatever we do, we can hardly get rid of all the notions of a particular data store
 we use, because any such "total abstraction" must lead to some mismatch -- and that typically
@@ -122,10 +124,9 @@ accepting that I have SQL somewhere down there.
 
 One thing I respect on Fowler et al. is that they try to balance costs/benefits and they neither
 push ORM always forward nor do they criticize it all the time without offering real alternatives
-for the complex cases. Many smart and experienced people dislike ORM on the other hand, but
-listening to "pure haters" does not bring much to a discussion. But some cases are well-argued,
-offering options and you can see the deep understanding of the topic. Which naturally leads us
-to the next section.
+for the complex cases. However, many other smart and experienced people dislike ORM. Listening to
+"pure haters" does not bring much to a discussion, but some cases are well-argued, offering options
+and you can sense the deep understanding of the topic. Which naturally leads us to the next section.
 
 
 ## Love and hate for ORM
@@ -147,12 +148,12 @@ If you seriously want to use ORM on any of your projects, you should read this -
 access is not an important part of that project (who are we kidding, right?). You may skip the
 history of Vietnam war, but definitely give the technical part a dive it deserves.
 
-ORM wasn't that young anymore in 2006 and various experiences showed that it easily brings more
-problems than benefits - especially if we approach it with partial knowledge, typically based on
+ORM wasn't that young anymore in 2006 and various experiences had shown that it easily brought more
+problems than benefits - especially if approached with partial knowledge, typically based on
 an assumption that "our developers don't need to know SQL". When kind of non-programming architect
 recommends this for a project and they are long gone when the trouble appears it's really easy to
-recommend it again. It was so easy to generate entities from our [DDL](https://en.wikipedia.org/wiki/Data_definition_language)
-after all, wasn't it? Hopefully managers are too high to be an audience for JPA/ORM recommendations,
+recommend it again. It was so easy to generate entities from our [DDL](https://en.wikipedia.org/wiki/Data_definition_language),
+wasn't it? Hopefully managers are too high to be an audience for JPA/ORM recommendations,
 but technical guys can hurt themselves well enough. The JPA, for instance, is still shiny, it's a
 standard after all -- and yeah, it is kinda Java EE-ish, but this is the good new EE, right?
 
@@ -163,7 +164,7 @@ without learning. When the things get messy -- and they will -- there is nobody 
 understands ORM and there is virtually no chance to rewrite data access layer to get rid of it.
 Easiest thing to do is to blame ORM.
 
-You may ask: What has changed since 2016? My personal take on the answer would be:
+You may ask: What has changed since 2006? My personal take on the answer would be:
 
 * Nothing essential could have changed, we merely smoothed some rough edges, got a bit more
 familiar with already familiar topic and in Java space we standardized the beast (JPA).
@@ -174,16 +175,17 @@ solutions.
 Querydsl have very rich fluent API that is also very compact (definitely not "much more verbose
 than the traditional SQL approach"). Also both type safety and testing practices are much more
 developed.
-* Otherwise virtually all the concerns Ted mentioned are still valid.
+
+Other than that, virtually all the concerns Ted mentioned are still valid.
 
 
 ### Not much love for ORM
 
 Whatever was written back in 2006, ORMs were on the rise since then. Maybe the absolute numbers of
-ORM experts are now higher than then, but I'd bet the ratio of experts is way lower (though I have
-no research to support this). ORM/JPA is easily available, Java EE supports it, Spring supports it,
-you can use it in Java SE easily, you can even generate CRUD scaffolding for your application with
-JPA using some [rapid application development](https://en.wikipedia.org/wiki/Rapid_application_development)
+ORM experts are now higher than then, but I'd bet the ratio of experts among its users plummeted
+(though I have no research to support this). ORM/JPA is easily available, Java EE supports it,
+Spring supports it, you can use it in Java SE easily, you can even generate CRUD scaffolding for
+your application with JPA using some [rapid application development](https://en.wikipedia.org/wiki/Rapid_application_development)
 tools. That means a lot of developers are exposed to it. In many cases it seems deceivingly easy
 when you start using it.
 
@@ -197,12 +199,12 @@ bulk updates (e.g. "change this column for all entities where..."). There are th
 do it in the domain model, but learning the right path of OO and domain-driven design is probably
 even harder than starting with JPA -- otherwise we'd see many more DDD-based projects around.
 
-We will tackle caching later in this chapter, but I'd say that misunderstanding around ORM caching
-is reason for a lot of performance problems and potentially for data corruption too. This is when
-it starts to hurt -- and when you can't get easily out, hate often comes with it. When you make
-a mistake with UI library, you may convince someone to rewrite it -- and they can see the
-difference. Rewriting data access layer gives seemingly nothing to the client, unless the data
-access is obviously slow, but then the damage done is already quite big anyway.
+We will tackle caching later in this chapter, but I'd say that misunderstandings around ORM caching
+are the reason for a lot of performance problems and potentially for data corruption too. This is
+when it starts to hurt -- and when you can't get easily out, hate often comes with it. When you
+make a mistake with a UI library, you may convince someone to let you rewrite it -- and they can
+see the difference. Rewriting data access layer gives seemingly nothing to the client, unless the
+data access is really slow, but then the damage done is already quite big anyway.
 
 
 ### But a lot of hate
@@ -219,7 +221,7 @@ with all kinds of serialization needed, effectively binding possibly all domain 
 all technologies you need. I believe OOP has been there already, maybe not before I was born, but
 definitely long before I started programming.
 
-There are other flaws with this particular post. Mapping is explained on the very primitive case,
+There are other flaws with this particular post. Mapping is explained on a very primitive case,
 while ORM utilizes unit-of-work for cases where you want to execute multiple updates in a single
 transaction, possibly updates on the same object. If every elementary change on the object emits
 an SQL and we want to set many properties for the same underlying table in a transaction we get
@@ -230,27 +232,60 @@ of injection we are shown the most verbose way how to do ORM, the way I haven't 
 
 "SQL-speaking objects" bring us to a more generic topic of modelling objects in our programs. We
 hardly model real-life objects as they act in real life, because in many cases we should not.
-Information systems allow changing information about things that cannot change, because someone
-might have entered the information incorrectly in the first place. And how to model a tin can?
-Should it have `open` method? In real life *someone* opens the *tin* with a *tin opener* -- an
-interaction of three objects. Why do we insist on objects storing themselves then? It still may
-be perfectly valid pattern, as I said real life is not always a good answer to our modelling needs.
+Information systems allow changing data about things that normally cannot change, because someone
+might have entered the information incorrectly in the first place.
 
-In any case I agree with the point that we should not avoid SQL, or at least know JPQL and how
-it maps to SQL. We generally should not avoid of what happens down the stack, especially when
-the abstraction is not perfect. ORM, no question about it, is not a perfect abstraction.
+How to model the behavior of a tin can? Should it have `open` method? Even in real life *someone*
+opens the *tin* with a *tin opener* -- an interaction of three objects. Why do we insist on objects
+storing themselves then? It still may be perfectly valid pattern -- as I said real life is not
+always a good answer to our modelling needs -- but it is often overused. While in real-life human
+does it, we often have various *helper* objects for behavior, often ending with *-er*. While I see
+why this is considered anti-pattern, I personally hate rules like *objects (classes) ending with
+-er are evil* -- even more than ORM. (They let me think, though.)
+
+In any case I agree with the point that we should not avoid SQL. If we use ORM we should also know
+its QL (JPQL for JPA) and how it maps to SQL. We generally should not avoid of what happens down
+the stack, especially when the abstraction is not perfect. ORM, no question about it, is not
+a perfect abstraction.
 
 To see a much better case against ORM let's read
-[ORM is an anti-patter](http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern). Here we can
+[ORM is an anti-pattern](http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern). Here we can
 find summary of all the bad things related to ORM, there is hardly anything we can argue about
-and if you read Ted Neward's post too you can easily map the problems from one post to another.
+and if you read Ted Neward's post too, you can easily map the problems from one post to another.
 We will go the full circle back to Martin Fowler and his
 [ORM Hate](http://martinfowler.com/bliki/OrmHate.html). We simply have to accept ORM as it is
-and either avoid it, or use it with its limitations, knowing tha the abstraction is not perfect.
+and either avoid it, or use it with its limitations, knowing that the abstraction is not perfect.
 If we avoid it, we have to choose relational or object world, but we can hardly have both.
 
 There are, of course, many other problems even if we embrace ORM as it is, after all I named many
 in chapter [Questionable parts](#ch-questionable-parts).
+
+### Is tuning-down a way out?
+
+Using less of JPA and relying less on complex auto-magic features is a way I propose. It builds
+on the premise that we should use ORM where it helps us, avoid it where it does not and know the
+consequences of both cases and their interactions. It may happen that using both ways adds
+complexity too, but from my experience it is not the case if you step back with JPA far enough.
+JPA has much better mapping of values from DB to objects (even if you use them just as DTOs) than
+JDBC. It abstracts concrete SQL flavour away which has its benefits -- and unless this is a real
+issue for more than couple of queries you can resolve the rest with either native SQL support in
+the JPA, or use JDBC based solution.
+
+Coming to relations, there may be many of them where *to-one* does not pose a problem. In that
+case make your life easier and use mapping to objects. If you feel like loosing control over
+queries, remap the object with plain foreign key values and add explicit `JOIN ... ON` to your
+queries. This all renders JPA as a bit lower-level tool than intended, but still extremely useful.
+It still allows you to generate schema from objects if you have control over your RDBMS (sometimes
+you don't) or even just document your database with class diagram of entities[^cdd].
+
+[^cdd]: While class diagram does not say exactly the same like E-R diagram I used it successfully
+to communicate design of tables to my DBA who had absolutely no problem to understand it, even
+for cases where many-to-many associative table was implied by a named line. E-R diagram was much
+easier to generate ex-post for documentation purposes.
+
+We still have to keep unit-of-work and caching in check, but both are very useful if used well.
+I definitely don't avoid using `EntityManager`, how could we? Caching is a different beast though,
+and deserves its own section.
 
 
 ## Caching
