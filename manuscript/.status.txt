@@ -17,9 +17,9 @@ To actually finish something, I want to do this in the 1st edition:
         * Conflict between cache and direct JPQL
         * compare with JDBC, Groovy, Spring JDBC?
 * Opinionated JPA
-    * ORM tuned down (75%)
+    * ORM tuned down (80%)
     * No further steps without Querydsl (40%)
-    * Moving away from eager *to-one* relationships (15%)
+    * Moving away from eager *to-one* relationships (5%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
     * *To-many* relations
     * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
