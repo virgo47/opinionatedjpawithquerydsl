@@ -2,6 +2,7 @@ package tests;
 
 import model00.Dog;
 
+import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -25,9 +26,27 @@ public class CacheAndReferenceDemo {
       System.out.println();
 
 //      referenceAndCacheExperiments(emf, em);
+
+      cacheMultiThreadExperiment(emf);
     } finally {
       emf.close();
     }
+  }
+
+  private static void cacheMultiThreadExperiment(EntityManagerFactory emf) {
+    Cache cache = emf.getCache();
+    System.out.println("Contains 1: " + cache.contains(Dog.class, 1));
+    EntityManager em1 = emf.createEntityManager();
+    EntityManager em2 = emf.createEntityManager();
+    Dog dog1_1 = em1.find(Dog.class, 1);
+    System.out.println("Contains 2: " + cache.contains(Dog.class, 1));
+    Dog dog1_2 = em2.find(Dog.class, 1);
+    System.out.println("Contains 3: " + cache.contains(Dog.class, 1));
+    System.out.println("Equal objects? " + (dog1_1.equals(dog1_2)));
+    System.out.println("Identical objects? " + (dog1_1 == dog1_2));
+
+    em1.close();
+    em2.close();
   }
 
   private static void referenceAndCacheExperiments(EntityManagerFactory emf, EntityManager em) {

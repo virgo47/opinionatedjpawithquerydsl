@@ -27,14 +27,14 @@ annotate it so, deal with it.
 ## Price for relations
 
 For me the biggest problem is that JPA does not provide any convenient way how to stop cascading
-loads for `@ManyToOne` and `@OneToOne` (or just *to-one* in this book) relationships. I don't mind
-*to-many* relations, they have their twists, but at least their lazy works.
-But *to-one* typically triggers find by id. If you have a `Dog` that has an `owner` (type `Person`)
-and is of specific `Breed` you must load these two things along with a dog. Maybe they will be
-joined by the JPA provider (Hibernate does it), maybe not (EclipseLink), maybe they are already
-in second-level cache and will be "loaded" nearly "for free". All these options should be seriously
-considered, analyzed and proved before you can say that you know what is going on in your
-application.
+loads for `@ManyToOne` and `@OneToOne` (commonly named *to-one* in this book as you probably
+noticed) relationships. I don't mind *to-many* relations, they have their twists, but at least
+their lazy works. But *to-one* typically triggers find by id. If you have a `Dog` that has an
+`owner` (type `Person`) and is of specific `Breed` you must load these two things along with a dog.
+Maybe they will be joined by the JPA provider (Hibernate does it), maybe not (EclipseLink), maybe
+they are already in second-level cache and will be "loaded" nearly "for free". All these options
+should be seriously considered, analyzed and proved before you can say that you know what is going
+on in your application.
 
 And it just starts there, because `Person` has an `Address` which -- in case of a rich system --
 may further point to `District`, `County`, `State` and so on. Once I wanted to change something
@@ -290,28 +290,23 @@ and deserves its own section.
 
 ## Caching
 
-TODO: Probably move the general part to 1.3.
+TODO: Follow after 1.3 ideas
 
-While persistence context (`EntityManager` or session) is sometimes considered a cache too, it
-is merely a part of the unit-of-work pattern. The real cache sits underneath and is shared on the
-level of the `EntityManagerFactory` -- or even between more of them across various JVMs in case
-of distributed caches. This is called the *second-level cache*. It is used to enhance performance,
-typically by avoiding round-trips to the database. But caching has consequences.
-
-First one is that if you don't care at all, you don't even know whether and ho you use the cache.
-Without choosing `shared-cache-mode` in your `persistence.xml` it is up to the JPA provider and
-its defaults. This may render any use of `@Cacheable` annotations useless. Being oblivious to the
-cache (not related to *cache-oblivious algorithms* at all) is rather dangerous, if you don't want
-to use cache, set `shared-cache-mode` explicitly to `NONE`. You may revisit your decisions later,
-but at least you know what is happening.
+In that case setting `shared-cache-mode`
+explicitly to `NONE` is probably safer. You may revisit your decisions later, but at least you
+know what is happening.
 
 Any auto-magic can only go so far, and any caching leads to potential inconsistencies. One thing
 that is not very well understood is how the cache is structured. The part easiest to understand is
 called *entity cache*.
 
-* complexity of ORM/JPA caching (query vs 2^nd^-level cache, provider settings)
-* DB has its caches too
+TODO:
+* complexity of ORM/JPA caching (query vs second-level cache, provider settings)
 * anti-patterns: caching returned JPA entities with JSR-107/Spring (first time they are managed,
 next time they are not)
 * explicit application caching
 * how are cached values stored (mutable?)
+
+### Let database to cache it all?
+
+* DB has its caches too

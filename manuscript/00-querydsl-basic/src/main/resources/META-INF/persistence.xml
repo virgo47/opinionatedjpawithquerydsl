@@ -14,6 +14,12 @@
     <class>model00.Dog</class>
     <class>model00.Person</class>
 
+    <!--
+    For Hibernate to cache we need this (or ENABLE_SELECTIVE or similar)
+    EclipseLink caches by default ALL.
+    -->
+    <shared-cache-mode>ALL</shared-cache-mode>
+
     <properties>
       <!-- javax.persistence properties work for both EclipseLink and Hibernate -->
       <!-- <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>

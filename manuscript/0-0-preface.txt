@@ -95,7 +95,8 @@ on similar topics like the first half of O'Reilly book.
 
 I don't know any more relevant books, but there is one more obvious resource -- [Java Persistence
 2.1 Specification](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
-itself. There are things you hardly find anywhere else, especially when it comes to corner cases
+itself [[JPspec](#bib-jpspec)].
+There are things you hardly find anywhere else, especially when it comes to corner cases
 like "use of DISTINCT with COUNT is not supported for arguments of embeddable types". So when you
 encounter a problem it is good to search through the specification for keywords. Often JPA
 provider works as specified, even when it does not make sense to us.

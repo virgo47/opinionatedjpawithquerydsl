@@ -3,6 +3,10 @@
 {#bib-ddd}
 [DDD] Evans Eric. *Domain-Driven Design*, Addison-Wesley Professional, 2003.
 
+{#bib-jpspec}
+[JPspec] Java Persistence 2.1 Expert Group. *JSR 338: JavaTM Persistence API, Version 2.1*, Oracle,
+2013. http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html
+
 {#bib-poeaa}
 [PoEAA] Martin Fowler. *Patterns of Enterprise Application Architecture*, Addison-Wesley, 2002.
 
