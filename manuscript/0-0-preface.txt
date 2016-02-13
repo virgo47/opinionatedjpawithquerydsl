@@ -160,12 +160,8 @@ Once I wrote a book. I was 17 or so and it wasn't a technical book. And it was v
 But I managed to finish it and I'm really proud of that, because it is something I am not able to
 repeat consistently. I wanted to write a book about my simple monitoring library for Java called
 [Java Simon](https://github.com/virgo47/javasimon), because books are often easier to
-read than manuals or Javadoc... but you can guess I haven't finished it up.
-
-With 50% success rate (0% for Java related books) I'll try my luck again. This time about JPA
-which is the standard API for ORM in the Java world with implementations (also called *JPA
-providers*) like [Hibernate](https://en.wikipedia.org/wiki/Hibernate_%28framework%29) or
-[EclipseLink](https://en.wikipedia.org/wiki/EclipseLink).
+read than manuals or Javadoc... but you can guess I haven't finished it up. With 50% success rate
+(0% for Java related books) I'll try my luck again.
 
 On the bright side -- I wrote more than a few posts on [my blog](http://virgo47.wordpress.com/),
 mostly on technical topics, couple of them about JPA. Actually, this book is based on these

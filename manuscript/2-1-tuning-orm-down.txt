@@ -284,14 +284,34 @@ for cases where many-to-many associative table was implied by a named line. E-R 
 easier to generate ex-post for documentation purposes.
 
 We still have to keep unit-of-work and caching in check, but both are very useful if used well.
-I definitely don't avoid using `EntityManager`, how could we? Caching is a different beast though,
+I definitely don't avoid using `EntityManager`, how could I? Caching is a different beast though,
 and deserves its own section.
 
 
 ## Caching
+
+TODO: Probably move the general part to 1.3.
+
+While persistence context (`EntityManager` or session) is sometimes considered a cache too, it
+is merely a part of the unit-of-work pattern. The real cache sits underneath and is shared on the
+level of the `EntityManagerFactory` -- or even between more of them across various JVMs in case
+of distributed caches. This is called the *second-level cache*. It is used to enhance performance,
+typically by avoiding round-trips to the database. But caching has consequences.
+
+First one is that if you don't care at all, you don't even know whether and ho you use the cache.
+Without choosing `shared-cache-mode` in your `persistence.xml` it is up to the JPA provider and
+its defaults. This may render any use of `@Cacheable` annotations useless. Being oblivious to the
+cache (not related to *cache-oblivious algorithms* at all) is rather dangerous, if you don't want
+to use cache, set `shared-cache-mode` explicitly to `NONE`. You may revisit your decisions later,
+but at least you know what is happening.
+
+Any auto-magic can only go so far, and any caching leads to potential inconsistencies. One thing
+that is not very well understood is how the cache is structured. The part easiest to understand is
+called *entity cache*.
 
 * complexity of ORM/JPA caching (query vs 2^nd^-level cache, provider settings)
 * DB has its caches too
 * anti-patterns: caching returned JPA entities with JSR-107/Spring (first time they are managed,
 next time they are not)
 * explicit application caching
+* how are cached values stored (mutable?)
