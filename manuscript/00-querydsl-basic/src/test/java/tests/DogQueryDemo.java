@@ -19,7 +19,7 @@ import java.util.List;
 public class DogQueryDemo {
 
   public static void main(String[] args) {
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("sqldemo");
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("demo-el");
     try {
       EntityManager em = emf.createEntityManager();
       prepareData(em);

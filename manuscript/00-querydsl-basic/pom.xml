@@ -93,9 +93,14 @@
               <!--
               This is needed because by default this runs before persistence.xml is moved to target
               (resource processed) and by default it is searched for there. Without this it would
-              take two mvn package runs to succeed.
+              take two mvn package runs to succeed. Persistence unit must be also explicitly
+              chosen because we have two units in a single persistence.xml, both with the same
+              classes, which results in "Attempt to recreate a file for type ..." error.
               -->
-              <compilerArguments>-Aeclipselink.persistencexml=src/main/resources/META-INF/persistence.xml</compilerArguments>
+              <compilerArguments>
+                -Aeclipselink.persistencexml=src/main/resources/META-INF/persistence.xml
+                -Aeclipselink.persistenceunits=demo-el
+              </compilerArguments>
               <processors>
                 <processor>org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor</processor>
               </processors>
@@ -109,6 +114,17 @@
             <version>${eclipselink.version}</version>
           </dependency>
         </dependencies>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.3.2</version>
+        <configuration>
+          <!-- Specify -Dexec.mainClass on the command line. -->
+          <!-- If any default is specified here, command line option will not override it (shame). -->
+          <classpathScope>test</classpathScope>
+        </configuration>
       </plugin>
     </plugins>
   </build>

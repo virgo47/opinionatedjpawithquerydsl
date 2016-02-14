@@ -5,19 +5,15 @@
   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 
-  <persistence-unit name="sqldemo" transaction-type="RESOURCE_LOCAL">
+  <persistence-unit name="demo-el" transaction-type="RESOURCE_LOCAL">
 
-    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <!--<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>-->
-    <!-- Classes should be specified in SE environment, but Hibernate finds them automatically -->
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <!-- Classes should be specified in SE environment, and EclipseLink requires that -->
     <class>model00.Breed</class>
     <class>model00.Dog</class>
     <class>model00.Person</class>
 
-    <!--
-    For Hibernate to cache we need this (or ENABLE_SELECTIVE or similar)
-    EclipseLink caches by default ALL.
-    -->
+    <!-- EclipseLink caches by default ALL. -->
     <shared-cache-mode>ALL</shared-cache-mode>
 
     <properties>
@@ -26,18 +22,33 @@
       - not necessary, figured out from jdbc.url (must be on classpath of course)
       - the same goes for dialect settings of providers, they both can figure it out
        -->
-      <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:sqldemo"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:demo-el"/>
+      <property name="javax.persistence.jdbc.user" value="sa"/>
+      <property name="javax.persistence.jdbc.password" value=""/>
+
+      <!-- EclipseLink specifics -->
+      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+      <property name="eclipselink.logging.parameters" value="true"/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+    </properties>
+  </persistence-unit>
+
+  <persistence-unit name="demo-hib" transaction-type="RESOURCE_LOCAL">
+
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <!-- Classes should be specified in SE environment, but Hibernate finds them automatically -->
+
+    <!-- For Hibernate to cache we need this (or ENABLE_SELECTIVE or similar), default NONE -->
+    <shared-cache-mode>ALL</shared-cache-mode>
+
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:demo-hib"/>
       <property name="javax.persistence.jdbc.user" value="sa"/>
       <property name="javax.persistence.jdbc.password" value=""/>
 
       <!-- Hibernate specifics -->
       <property name="hibernate.hbm2ddl.auto" value="update"/>
       <property name="hibernate.show_sql" value="true"/>
-
-      <!-- EclipseLink specifics -->
-      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-      <property name="eclipselink.logging.parameters" value="true"/>
-      <property name="eclipselink.logging.level" value="FINE"/>
     </properties>
   </persistence-unit>
 </persistence>
