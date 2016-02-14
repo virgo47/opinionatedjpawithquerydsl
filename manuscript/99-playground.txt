@@ -11,9 +11,9 @@ filter/paging framework
 Code options `{...}` can be used for both `<<` and `~~~` markdown.
 
 {lang="text", linenos=off, starting-line-number=47, crop-start-line=3, crop-end-line=12}
-<<[Random pom.xml](00-querydsl-basic/pom.xml)
+<<[Random pom.xml](../examples/basic/pom.xml)
 
-<<(00-querydsl-basic/src/main/java/model00/Dog.java)
+<<(../examples/basic/src/main/java/model00/Dog.java)
 
 {icon=automobile}
 G> Block with icon from URL down there.

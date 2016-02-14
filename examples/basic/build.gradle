@@ -31,7 +31,7 @@ sourceSets {
   }
 }
 
-// this works, but right now it generates 00-basic.iml which I ignore (using different name for module)
+// this works, but right now it generates basic.iml which I ignore (using different name for module)
 idea {
   module {
     generatedSourceDirs += sourceSets.generated.java.srcDirs

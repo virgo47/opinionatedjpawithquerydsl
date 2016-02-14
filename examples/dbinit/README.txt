@@ -4,7 +4,7 @@ at the start of `start-h2.sh` script.
 
 Then you just run the script with the name of directory with create/init db scrips as a parameter:
 ```
-$ ./start-h2.sh 00-basic
+$ ./start-h2.sh basic
 ```
 
 It starts H2 (or throws exception that the port is already bound if it has been running already,

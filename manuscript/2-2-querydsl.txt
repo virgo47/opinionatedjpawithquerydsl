@@ -122,7 +122,7 @@ While in case of Criteria API you don't need to generate metamodel from the enti
 in Querydsl this is not optional. But using metamodel in Criteria API is advantageous anyway
 so the need to generate the metamodel for Querydsl using annotation processor can hardly be
 considered a drawback. It can be easily integrated with Maven or other build as demonstrated
-in the [companion sources](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/00-basic/pom.xml)
+in the [companion sources](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/basic/pom.xml)
 to this book or [documented](http://www.querydsl.com/static/querydsl/4.0.7/reference/html/ch02.html#d0e127)
 on Querydsl site.
 
