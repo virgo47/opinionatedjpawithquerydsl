@@ -4,14 +4,14 @@
 
 This is a book about my experience with [object-relational mapping](https://en.wikipedia.org/wiki/Object-relational_mapping)
 in general and the [Java Persistence API](https://en.wikipedia.org/wiki/Java_Persistence_API) (JPA)
-specifically. It's a book about [Querydsl](http://www.querydsl.com/) as well, because since I was
+in particular. It's a book about [Querydsl](http://www.querydsl.com/) as well, because since I was
 recommended this library I completely fell in love with it. It never let me down and sometimes
 even generated feeling of sheer happiness -- which is not that common in our programming profession.
 
 Be warned -- this book is (as the title suggests) very opinionated. Sometimes you may even ask:
-"Why the hell this guy even uses JPA?!" Sometimes even I don't know. And sometimes you can hear
+"Why the hell this guy still uses JPA?!" Sometimes even I don't know. And sometimes you can hear
 a feeble voice saying words like "legacy" or similar. It is not a typical tutorial book covering
-the technology (or part of it) systematically -- I cherry-pick instead. It's not best practices
+the technology (or part of it) systematically -- I cherry-pick instead. It's not a best practices
 book either -- and while we use JPA as specified (unless we make a mistake which is not difficult
 with JPA) we definitely don't use it as intended.
 
@@ -155,6 +155,15 @@ Finally, [appendices](#appendices) will provide short references for related tec
 throughout the book (e.g. H2 database).
 
 
+## Using code examples
+
+Book is written on GitHub and all the codes are in the book's
+[GitHub repo](https://github.com/virgo47/opinionatedjpawithquerydsl).
+
+TODO: How to clone/export, build and run.
+`mvn test-compile exec:java -Dexec.mainClass="any.demo.MainClass"`
+
+
 ## My writing background
 
 Once I wrote a book. I was 17 or so and it wasn't a technical book. And it was very short, I admit.
@@ -174,12 +183,12 @@ those is also kind of writing. So I hope both me and this book are not lost caus
 
 ## Feedback
 
-When you work on a technical book alone it may happen that some information are not exactly right.
-Some might even be plain wrong. Obviously, it is not an intention -- on the contrary, I try hard
-to avoid any confusion or leading anyone into a mistake. However, it may happen because the topic
-is not simple. I study books and online resources, I test my solutions, I try to understand what
-is going on, but sometimes I may just understand something wrong. Sorry for that and please,
-if you know better, let me know.
+When you work on a technical book, especially alone, it happens that some information are not
+exactly right. Some might even be plain wrong. Obviously, it is not my intention -- on the contrary,
+I try hard to avoid any confusion or leading anyone into a mistake. However, it may happen because
+the topic is not simple. I study books and online resources, I test my solutions, I try to
+understand what is going on, but sometimes I may just understand something wrong. Sorry for that
+and please, if you know better, let me know.
 
 * Either add an issue on the [GitHub repo](https://github.com/virgo47/opinionatedjpawithquerydsl)
 for the book,
