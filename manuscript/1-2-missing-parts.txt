@@ -1,13 +1,22 @@
-# The Missing Parts
+# The Missing Parts {#ch-missing-parts}
 
-In this part we'll go through things that are missing in *Java Persistence Query Language* (JPQL)
-when compared with SQL, other ORMs, ....
+In this part we'll briefly compare the JPA with ORM capabilities and go through things that are
+missing in *Java Persistence Query Language* (JPQL) when compared with SQL. It's difficult
 
 
-* no support for right-outer-join
+## Compared to ORM providers {#missing-from-orm}
+
+JPA narrowed the gap with 2.0 and virtually closed it with 2.1. But...
+* streaming
+
+## Comparing JPQL to SQL {#missing-from-sql}
+
+* no support for right-outer-join, functions, their placement
 * TODO: what does this mean?
 support for left-outer-join only if the relation in the entities is in the same direction
 * no support for subquery neither in SELECT nor in FROM clauses
+
+## Other missing parts
 
 The best way how to find corner cases that are not supported in the specification is simply to
 search for "not supported".

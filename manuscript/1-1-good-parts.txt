@@ -5,11 +5,10 @@ a particular provider? Mind that this part is just an extended enumeration of va
 not a tutorial material.
 
 The good parts are not absolute though. If you compare the JPA as a standard with a concrete ORM
-there is one set of benefits and related drawbacks. Comparing JPA with SQL is not quite appropriate
-as JPA covers much bigger stack. We may compare JPA with JDBC, or we may compare *Java Persistence
-Query Language* (JPQL) with SQL to a degree.
-
-TODO: Crucial benefit over JDBC and SQL
+you'll get the standardization, but there are [related drawbacks](#missing-from-orm). Comparing
+JPA with SQL is not quite appropriate as JPA covers much bigger stack. We may compare JPA with
+JDBC (read on the good parts), or we may compare *Java Persistence Query Language* (JPQL)
+[with SQL](#missing-from-sql) to a degree.
 
 
 ## JPA is standard
@@ -177,3 +176,8 @@ Java Transaction API (JTA). JPA and JTA are seamlessly integrated from programme
 that we simply take `@Transactional` support for granted.
 
 TODO Spring `@Transactional` warning
+
+## JPA 2.1 goodies
+
+TODO: We talked about custom converters already, but JPA 2.1 brought much more:
+* FUNCTION
