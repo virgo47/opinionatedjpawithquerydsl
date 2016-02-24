@@ -1,5 +1,6 @@
 package tests;
 
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.Param;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -15,6 +16,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.UUID;
 
 public class DogQueryDemo {
 
@@ -23,6 +25,15 @@ public class DogQueryDemo {
     try {
       EntityManager em = emf.createEntityManager();
       prepareData(em);
+
+      // TODO fake select from dual, just testing how to use FUNCTION in JPA 2.1 in Querydsl
+      UUID uuid = new JPAQuery<UUID>(em)
+        .select(Expressions.template(UUID.class, "FUNCTION('random_uuid')"))
+        .from(QDog.dog)
+        .limit(1)
+        .fetchOne();
+
+      System.out.println("uuid = " + uuid);
 
       // pure JPA
       jpqlDemo(em);
