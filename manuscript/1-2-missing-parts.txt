@@ -1,13 +1,35 @@
 # The Missing Parts {#ch-missing-parts}
 
 In this part we'll briefly compare the JPA with ORM capabilities and go through things that are
-missing in *Java Persistence Query Language* (JPQL) when compared with SQL. It's difficult
+missing in *Java Persistence Query Language* (JPQL) when compared with SQL. Otherwise it's
+difficult to say what is missing when we don't compare JPA to anything else.
 
 
 ## Compared to ORM providers {#missing-from-orm}
 
-JPA narrowed the gap with 2.0 and virtually closed it with 2.1. But...
-* streaming
+Couple of years back this section would be a long one -- but the JPA narrowed the gap with 2.0
+and virtually closed it with 2.1. There are still things that may be missing when you compare it
+with ORM. The list of various ORM features not included in the JPA is probably long. However, the
+right question is how much a feature is really missed, how often we use it and how serious impact
+this omission has.
+
+In most cases you can get out of the comfortable "standard" zone and use capabilities of a
+particular ORM without affecting parts that can be pure JPA. Maybe you add some provider-specific
+annotations in your mapping -- so be it, let's be pragmatic.
+
+One particular feature I once missed a lot is something that allows me to go through a result
+set just like in JDBC, but using entities. These don't have to be put into persistence context
+I can process them as they come. On the contrary, they must not be put there, because they just
+bloat the heap without any real use. It's like streaming the result set. This may be extremely
+handy when you produce some very long exports that are streamed straight to the client browser
+or a file. Hibernate seems to offer `ScrollableResults` although I used JDBC with Spring
+`JdbcTemplate` instead and solved the problem without JPA altogether -- obviously, I had to do
+the mapping myself, while Hibernate can do it for you. Even so, as mentioned in this
+[stackoverflow answer](http://stackoverflow.com/q/2826319/658826) this may still cause
+`OutOfMemoryError` or similar memory related issue, this time not on JPA/ORM level, but because
+of silly JDBC driver (or even because of database limitations, but that's rare).
+
+TODO: anything else?
 
 ## Comparing JPQL to SQL {#missing-from-sql}
 
@@ -20,3 +42,5 @@ support for left-outer-join only if the relation in the entities is in the same 
 
 The best way how to find corner cases that are not supported in the specification is simply to
 search for "not supported".
+
+TODO: better control over non-loading to-one entities (references)
