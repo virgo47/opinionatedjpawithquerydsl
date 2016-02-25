@@ -157,8 +157,8 @@ throughout the book (e.g. H2 database).
 
 ## Using code examples
 
-Book is written on GitHub and all the codes are in the book's
-[GitHub repo](https://github.com/virgo47/opinionatedjpawithquerydsl).
+Book is written on GitHub and all the code is in the
+[GitHub repo](https://github.com/virgo47/opinionatedjpawithquerydsl) for the book.
 
 TODO: How to clone/export, build and run.
 `mvn test-compile exec:java -Dexec.mainClass="any.demo.MainClass"`
@@ -173,7 +173,8 @@ repeat consistently. I wanted to write a book about my simple monitoring library
 read than manuals or Javadoc... but you can guess I haven't finished it up. With 50% success rate
 (0% for Java related books) I'll try my luck again.
 
-On the bright side -- I wrote more than a few posts on [my blog](http://virgo47.wordpress.com/),
+On the bright side -- I've written more than a few posts on
+[my blog](http://virgo47.wordpress.com/),
 mostly on technical topics, couple of them about JPA. Actually, this book is based on these
 frustrated experiences. I always felt like a writer -- originally just to share although not
 everything is worth sharing, I know. Later I realized that writing helps me to clarify a lot of
