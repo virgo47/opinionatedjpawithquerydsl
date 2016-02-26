@@ -27,8 +27,30 @@ result. This may not be possible for long lists. Finally, while in SQL you can g
 using SELECT in FROM clause, JPA does not allow this (yet). (By the way, Hibernate supports this,
 even against explicit "not supported". I'd say it's a violation of JPA specification and may be
 problem when porting to another provider.)
-* https://bugs.eclipse.org/bugs/show_bug.cgi?id=433075
-* https://bugs.eclipse.org/bugs/show_bug.cgi?id=466271
-* https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042
-* https://bugs.eclipse.org/bugs/show_bug.cgi?id=449062
-* https://bugs.eclipse.org/bugs/show_bug.cgi?id=332309
+* [Stream API gets no results](https://bugs.eclipse.org/bugs/show_bug.cgi?id=433075) (EclipseLink)
+This one is fixed already. It caused that streams based on lazy lists were empty. It was easy to
+work around it -- just stream the copy of the list -- but it was annoying and unexpected. Reason
+for the bug was the fact that `IndirectList` (lazy list implementation) extended from `Vector`,
+(probably some legacy reasons, JPA does not explicitly mentions `Vector` as specially supported
+collection), but ignored invariants of the superclass and its `protected` fields. This shows
+two things -- first, that when you extend something, you should follow through completely, and
+second, that `Vector` was badly designed back in 1995 or so. Oh, and third, prefer delegation
+instead of extension, of course. That way you can often avoid both previous points.
+* [Abstract MappedSuperclass in separate JAR is not weaved statically](https://bugs.eclipse.org/bugs/show_bug.cgi?id=466271)
+(EclipseLink) This relates to modularity and is reportedly fixed too. TODO: check
+* [JPQL Case operator is not thread-safe](https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042)
+(EclipseLink) TODO: Tricky one, can I create "simple" test case?
+* [H2 dialect generates FOR UPDATE before LIMIT/OFFSET](https://bugs.eclipse.org/bugs/show_bug.cgi?id=449062)
+(EclipseLink) This one is about particular database vendor SQL support. In H2 you need to say
+`FOR UPDATE` after `LIMIT/OFFSET` combo, but EclipseLink does not respect this syntactic detail.
+Fix is currently available only as a patch, you can implement your own custom `H2Platform` (very
+small class) and use that one.
+* [Deleting in a ManyToManyRelation with a JoinTable with referencedColumn != name in JoinColumn is
+not working](https://bugs.eclipse.org/bugs/show_bug.cgi?id=332309) (EclipseLink) This one is rather
+tricky and we hit it when we migrated one table from composite PK to a single one. First we just
+introduced new `IDENTITY` column, we marked it as `@Id` in entity and everything worked fine...
+except for a `@ManyToMany` collection that was mapped using the two `@JoinColumns` from the
+original id (and in DB it was still an ID). This collection did not delete the entries from
+association table (not mapped as an entity). This actually did not relate to the number of columns,
+merely to the fact that they were not `@Id` columns anymore. JPA specification does not mention
+any exception like this.
