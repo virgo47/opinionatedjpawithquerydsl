@@ -2,7 +2,7 @@
 
 -# Appendices {#appendices}
 
-# H2 Database
+# H2 Database {#app-h2}
 
 *H2* ([project page](http://h2database.com), or
 [on Wikipedia](https://en.wikipedia.org/wiki/H2_%28DBMS%29)) is a SQL database implemented in Java

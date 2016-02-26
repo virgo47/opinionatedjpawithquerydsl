@@ -14,5 +14,7 @@
 2-3-away-from-to-one.txt
 
 a1-h2.txt
+a2-bugs.txt
+
 bibliography.txt
 99-playground.txt
