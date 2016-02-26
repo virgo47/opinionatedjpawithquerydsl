@@ -31,7 +31,26 @@ of silly JDBC driver (or even because of database limitations, but that's rare).
 
 TODO: anything else?
 
+
 ## Comparing JPQL to SQL {#missing-from-sql}
+
+Comparing two query languages makes more sense. JPQL gets more and more powerful with every new
+specification version, but obviously it cannot match SQL with proprietary features. Being "object
+query language" it does have its expressiveness on its own though -- for instance you may simply
+say "delete all the dogs where breed name is <this and this>" without explicitly using joins
+(although this relies on to-one mapping we will try to get rid of). When relations are mapped
+properly, joins are implied using the mapping and JPA provider will take care of generating the
+proper SQL for us. You may also ask for dog owners with their dogs and ORM can load it in a single
+query and provide it to you as list of owners, each with their list of dogs -- this is the
+difference between relational and object view.
+
+But there are some very useful constructs that are clearly missing. I personally never needed
+[right outer join](https://en.wikipedia.org/wiki/Join_%28SQL%29#Right_outer_join), so far I was
+always able to choose the right entity to start with and then using left outer joins, but this one
+may hit you sometimes. There is also no full outer join, but this relates to the fact you're
+working with objects, not with rows -- although technically you may work with tuples (and with
+relations in RDBMS meaning). This dumbs down the JPA capabilities a bit, but in many cases it may
+be a good way and actually simplify things, provided you understand SQL world -- which you should.
 
 * no support for right-outer-join, functions, their placement
 * TODO: what does this mean?

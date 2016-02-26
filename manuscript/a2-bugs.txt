@@ -1,0 +1,34 @@
+# Bugs discovered while writing this book
+
+To demonstrate the dark side of JPA, I'll point to couple of bugs I discovered while writing
+this book (or those that lead to it). With a single ORM you seemingly have no choice to switch,
+but the truth is you always trade some bugs (most of the relevant ones known to you already) for
+new bugs. If you have good test coverage, you may be able to make a qualified decision. Otherwise
+you'll find the bugs later and randomly (or your users will).
+
+Some bugs are closed already, I added them to show it makes sense to report them. Other bugs,
+on the other hand, give you feeling it doesn't make sense to report anything -- they are open
+for years and nothing is happening. ORM and JPA are not different from any other projects and
+with open source implementation you'll get some transparency at least.
+
+* [JPA 2.1 FUNCTION not supported?](https://hibernate.atlassian.net/browse/JPA-75) (Hibernate)
+I reported this bug after trying this JPA 2.1 feature successfully on EclipseLink. Hibernate
+provides custom functions in HQL/JPQL, but this is proprietary, standard JPA 2.1 way is not
+supported.
+* [Wrong SQL generated for delete with where crossing tables](https://hibernate.atlassian.net/browse/HHH-9711)
+(Hibernate) Open in Apr 2015, but older linked bug was open in May 2012. Works on EclipseLink.
+* [Bad SQL result for method countDistinct with join from criteria API](https://bugs.eclipse.org/bugs/show_bug.cgi?id=317777)
+(EclipseLink) I haven't reported this one, but I commented on it when we encountered it. However,
+this is not a JPA 2.1 bug as the specification explicitly says: "The use of DISTINCT with COUNT
+is not supported for arguments of embeddable types or map entry types." This is a big blow for
+many reasons. You either cannot use embeddables, or you cannot count such cases in the query. This
+means you actually have to list it (you can use DISTINCT then) and then check the size of the
+result. This may not be possible for long lists. Finally, while in SQL you can go around this
+using SELECT in FROM clause, JPA does not allow this (yet). (By the way, Hibernate supports this,
+even against explicit "not supported". I'd say it's a violation of JPA specification and may be
+problem when porting to another provider.)
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=433075
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=466271
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=449062
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=332309
