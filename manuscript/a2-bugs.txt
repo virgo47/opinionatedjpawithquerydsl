@@ -37,7 +37,7 @@ two things -- first, that when you extend something, you should follow through c
 second, that `Vector` was badly designed back in 1995 or so. Oh, and third, prefer delegation
 instead of extension, of course. That way you can often avoid both previous points.
 * [Abstract MappedSuperclass in separate JAR is not weaved statically](https://bugs.eclipse.org/bugs/show_bug.cgi?id=466271)
-(EclipseLink) This relates to modularity and is reportedly fixed too. TODO: check
+(EclipseLink) This relates to modularity and will be fixed in version 2.7. TODO: check
 * [JPQL Case operator is not thread-safe](https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042)
 (EclipseLink) TODO: Tricky one, can I create "simple" test case?
 * [H2 dialect generates FOR UPDATE before LIMIT/OFFSET](https://bugs.eclipse.org/bugs/show_bug.cgi?id=449062)
