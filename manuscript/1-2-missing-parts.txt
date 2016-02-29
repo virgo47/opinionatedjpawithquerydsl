@@ -38,10 +38,10 @@ Comparing two query languages makes more sense. JPQL gets more and more powerful
 specification version, but obviously it cannot match SQL with proprietary features. Being "object
 query language" it does have its expressiveness on its own though -- for instance you may simply
 say "delete all the dogs where breed name is <this and this>" without explicitly using joins
-(although this relies on to-one mapping we will try to get rid of). When relations are mapped
-properly, joins are implied using the mapping and JPA provider will take care of generating the
-proper SQL for us. You may also ask for dog owners with their dogs and ORM can load it in a single
-query and provide it to you as list of owners, each with their list of dogs -- this is the
+(although this relies on to-one mapping we will try to get rid of). When object relations are
+mapped properly, joins are implied using the mapping and JPA provider will take care of generating
+the proper SQL for us. You may also ask for dog owners with their dogs and ORM can load it in a
+single query and provide it to you as list of owners, each with their list of dogs -- this is the
 difference between relational and object view.
 
 But there are some very useful constructs that are clearly missing. I personally never needed
@@ -52,14 +52,38 @@ working with objects, not with rows -- although technically you may work with tu
 relations in RDBMS meaning). This dumbs down the JPA capabilities a bit, but in many cases it may
 be a good way and actually simplify things, provided you understand SQL world -- which you should.
 
-* no support for right-outer-join, functions, their placement
-* TODO: what does this mean?
-support for left-outer-join only if the relation in the entities is in the same direction
-* no support for subquery neither in SELECT nor in FROM clauses
+When compared to SQL, probably the most striking JPQL limitations are related to subqueries. Some
+scenarios can be replaced by JOINs, but some can't. For instance, you cannot put subqueries into
+a SELECT clause -- this would allow for aggregated results per row. You cannot put them into a FROM
+clause (use the select result as any other table, or more generally, any
+[relation](https://en.wikipedia.org/wiki/Relation_%28database%29)) (in database sense). This would
+allow you, among other things, to count rows for results that current JPA does not support.[^cntemb]
+
+[^cntemb]: My favourite is [JPspec](#bib-jpspec), section 4.8.5, mentioning that *"use of DISTINCT
+with COUNT is not supported for arguments of embeddable types or map entry types"*. In general,
+using embeddables may limit your options, which is a pity and may force design decisions not to use
+them where you otherwise would.
+
+JPA offers a palette of favourite functions, but of course it does not provide all possible
+functions. Before JPA 2.1 you'd have to use ORM provider custom functionality to overcome this, or
+fallback to native SQL. Just because you are consciously sacrificing database portability it does
+not mean you don't want to use JPQL. Now it provides you with `FUNCTION` construct where the name
+of the called function is the first argument with other arguments following behind. Easy to use
+and very flexible -- this effectively closes the gap for functions you can use.
+
 
 ## Other missing parts
 
-The best way how to find corner cases that are not supported in the specification is simply to
-search for "not supported".
+The best way how to find corner cases that are not supported in the specification ([JPspec](#bib-jpspec))
+is simply to search for "not supported" string. Some of these are related to embeddables, some are
+pretty natural (e.g. *"applying setMaxResults or setFirstResult to a query involving fetch joins
+over collections is undefined"*).
+%% TODO: see the discussion in chapter [Avoid N+1 select](#ch-avoid-n-plus-1)
 
-TODO: better control over non-loading to-one entities (references)
+What I dearly miss in JPA is better control over fetching of to-one relations. Current solution
+is trying to be transparent in terms of object-relational mapping, but it may kill your performance
+or requires caching, potentially a lot of it. While to-many relations can be loaded lazily with
+special collection implementation enabling it, to-one cannot work like this without byte-code
+modification. I believe though, that developers should be allowed to decide that this and this
+to-one relation will not be loaded and only detached entities with IDs will be provided. But let's
+wait with this discussion for the [opinionated part](#part-opinionated-jpa).

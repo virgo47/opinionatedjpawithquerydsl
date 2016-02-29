@@ -1,0 +1,1 @@
+# Avoid N+1 select {#ch-avoid-n-plus-1}

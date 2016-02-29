@@ -97,7 +97,7 @@ I don't know any more relevant books, but there is one more obvious resource -- 
 2.1 Specification](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
 itself [[JPspec](#bib-jpspec)].
 There are things you hardly find anywhere else, especially when it comes to corner cases
-like "use of DISTINCT with COUNT is not supported for arguments of embeddable types". So when you
+like *"use of DISTINCT with COUNT is not supported for arguments of embeddable types"*. So when you
 encounter a problem it is good to search through the specification for keywords. Often JPA
 provider works as specified, even when it does not make sense to us.
 
@@ -151,9 +151,10 @@ for the whole opinionated part of the book. Then we'll meet Querydsl before divi
 problems, because I'm not willing to go on without it. And in the rest of this part I'll
 demonstrate how I work around the features I marked as questionable.
 
+%% TODO: [Third part](#part-best-practices) covers the best practices to common problems like N+1 select.
+
 Finally, [appendices](#appendices) will provide short references for related technologies I used
 throughout the book (e.g. H2 database).
-
 
 ## Using code examples
 
