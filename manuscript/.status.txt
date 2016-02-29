@@ -8,10 +8,8 @@ To actually finish something, I want to do this in the 1st edition:
 
 * Preface (90%) - to explain why this book even exists and some background
 * JPA Good Times, Bad Times
-    * Good Parts (70%) - mapping, conversion (type support, lobs), unit of work, caching
-    * Missing Parts (0%) - select from select (count with aggregation, find the problem in spec)
-        * Biggest gripes (0%) - where the JPA pains most
-        * no "streaming" (cursor like iteration, JPA fetches the results, OOM imminent :-))
+    * Good Parts (90%)
+    * Missing Parts (90%)
     * Questionable Parts (0%)
         * https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate/
         * Conflict between cache and direct JPQL
@@ -22,22 +20,23 @@ To actually finish something, I want to do this in the 1st edition:
     * Moving away from eager *to-one* relationships (5%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
     * *To-many* relations
+    * Modularity, if you must
+        * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
+    * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
+        * https://dzone.com/articles/opensessioninview-antipattern (OSIV anti-pattern)
+* Common Problems
+    * Object identity, easy problem, recommended always the same way
+        * Composite `@Id` or `@IdClass`?
+        * Equals object or id? TODO - does it matter? tests with popular ORMs
     * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
     do it when you need to fetch from *to-many* as well (famous N+1 select problem)
         * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
-    * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
     * Injecting EMF for better control (integration/standalone scenarios, not typical for webapps/simple services)
-    * Modularity, if you must
-        * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
-    * Equals object or id? TODO - does it matter?
 * Appendices
     * H2 Database (50%)
     * Groovy scrips for database initialization
+    * Bugs I experienced myself (80%)
     * How to report JPA provider bugs? (be active, report, vote, creating test cases, ...)
-    * Bugs I experienced myself:
-      * https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042 (CASE thread-safety)
-      * https://bugs.eclipse.org/bugs/show_bug.cgi?id=332309 (delete with to-many when non-id is referenced is not executed)
-      * https://hibernate.atlassian.net/browse/HHH-9711 (delete crossing table generated incorrectly)
 
 Other ideas, maybe for next editions:
 
@@ -53,7 +52,3 @@ Talking about frameworks you may ask: "How does this all compare with Spring Dat
 with JPA and Querydsl too!" ... TODO :-)
 
 Mention Make the Magic go away: https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html
-
-## Checklist
-
-* For solutions always state minimal JPA version needed. Try to offer alternatives.

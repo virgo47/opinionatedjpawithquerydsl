@@ -25,9 +25,10 @@ be right for JPA philosophy, others would probably help tremendously, but in any
 responsible to do our best to learn about such a key technology -- that is if we use it. It reads
 and writes data from/to our databases which is a crucial thing for most enterprise applications.
 So let's talk about the limits, let's talk about implications, about lazy loads and their
-consequences, etc. Don't "just fix it with OSIV" (open session in view).
+consequences, etc. Don't "just fix it with OSIV"
+([open session in view](http://stackoverflow.com/tags/open-session-in-view/info)).
 
 In the following chapters we will talk what is really good about JPA, what is missing and what
 is limiting or questionable. I'll try to avoid "plain bad" for these parts because
 it is rather unfairly harsh statement and some of these features are... well, features. Just
-questionable on many occasions, that's it.
+questionable on many occasions, that's all.

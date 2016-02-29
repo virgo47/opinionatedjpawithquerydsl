@@ -148,13 +148,14 @@ any case, this part is just a really short background for any further arguments.
 
 That's what the [second part](#part-opinionated-jpa) of the book is for. First I'll make my case
 for the whole opinionated part of the book. Then we'll meet Querydsl before diving into other
-problems, because I'm not willing to go on without it. And in the rest of this part I'll
-demonstrate how I work around the features I marked as questionable.
+problems, because I'm not willing to go on without it. And in the rest of this part we'll see how
+to work around the features marked as questionable.
 
 %% TODO: [Third part](#part-best-practices) covers the best practices to common problems like N+1 select.
 
 Finally, [appendices](#appendices) will provide short references for related technologies I used
 throughout the book (e.g. H2 database).
+
 
 ## Using code examples
 

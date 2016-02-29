@@ -12,14 +12,14 @@ for years and nothing is happening. ORM and JPA are not different from any other
 with open source implementation you'll get some transparency at least.
 
 * [JPA 2.1 FUNCTION not supported?](https://hibernate.atlassian.net/browse/HHH-10569) (Hibernate)
-I reported this bug after trying this JPA 2.1 feature successfully on EclipseLink. Hibernate
-provides custom functions in HQL/JPQL, but this is proprietary, standard JPA 2.1 way is not
+I reported this bug after trying this *JPA 2.1* feature successfully on EclipseLink. Hibernate
+provides custom functions in HQL/JPQL, but this is proprietary, standard *JPA 2.1* way is not
 supported.
 * [Wrong SQL generated for delete with where crossing tables](https://hibernate.atlassian.net/browse/HHH-9711)
 (Hibernate) Open in Apr 2015, but older linked bug was open in May 2012. Works on EclipseLink.
 * [Bad SQL result for method countDistinct with join from criteria API](https://bugs.eclipse.org/bugs/show_bug.cgi?id=317777)
 (EclipseLink) I haven't reported this one, but I commented on it when we encountered it. However,
-this is not a JPA 2.1 bug as the specification explicitly says: "The use of DISTINCT with COUNT
+this is not a *JPA 2.1* bug as the specification explicitly says: "The use of DISTINCT with COUNT
 is not supported for arguments of embeddable types or map entry types." This is a big blow for
 many reasons. You either cannot use embeddables, or you cannot count such cases in the query. This
 means you actually have to list it (you can use DISTINCT then) and then check the size of the

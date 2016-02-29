@@ -1,6 +1,6 @@
 # Good Parts
 
-First we will look at all the goodies JPA offers to us. Why did I started to prefer JPA over
+First we will look at all the goodies JPA offers to us. Why did I start to prefer JPA over
 a particular provider? Mind that this part is just an extended enumeration of various features,
 not a tutorial material.
 
@@ -30,8 +30,8 @@ of annotations for mapping your entities, the same set of most important classes
 
 But standards also have their drawbacks, most typically that they are some common subset of the
 features offered in that area. JPA's success is probably based on the fact that it emerged as
-rock-solid subset of features offered by major players in Java ORM world. But starting this way
-it must have trailed behind them. *JPA 1* did not offer any criteria API, can you imagine that?
+a rock-solid subset of the features offered by major players in Java ORM world. But starting this
+way it must have trailed behind them. *JPA 1* did not offer any criteria API, can you imagine that?
 Now *JPA 2.1* is somewhere else. The features cover nearly anything you need for typical
 applications talking to relational databases.
 
@@ -46,7 +46,7 @@ That way JPA does not restrain you.
 Let's face it - it's not possible to easily switch from one database to another when you have
 invested in one -- especially if you use stored procedures or anything else beyond simple plain
 SQL. But JPA is not the problem here, on the contrary. It will require much less (if any) changes
-and the application will go on.
+and the application will work on.
 
 Also, if you just start another project and go for different database your application programmers
 using JPA probably don't have to learn anything new. This cuts both ways though. I've heard that
@@ -58,12 +58,12 @@ understand SQL they didn't produce good results.
 
 JPA can persist anything that is so called *persistable type*. These are:
 
-* entity classes (annotated with `@Entity`) -- these loosely matches database tables;
-* mapped superclasses (`@MappedSuperclass`) -- when you map class hierarchies;
-* embeddable classes (`@Embeddable`) -- to group multiple columns into a value object;
+* entity classes (annotated with `@Entity`) -- these loosely matches to database tables;
+* mapped superclasses (`@MappedSuperclass`) -- used when you map class hierarchies;
+* embeddable classes (`@Embeddable`) -- used to group multiple columns into a value object;
 
-These were all types on class level, more or less matching whole database tables. Now we will
-move to field level:
+These were all types on class level, more or less matching whole database tables or at least group
+of columns. Now we will move to field level:
 
 * simple Java types (optionally annotated with `@Basic`) like primitive types, their wrappers,
 `String`, `BigInteger` and `BigDecimal`;
@@ -72,20 +72,19 @@ move to field level:
 * enum types -- here you can choose whether it's persisted by its `name()` or by `ordinal()`.
 
 We can't reasonably compare the first part of the list with JDBC, because the principles are
-completely different. JDBC works on low relational level only. But we can compare how easy it is
-to get the value for any column as your preferred type. Here JDBC
-locks you to low level types without any good conversion capabilities, not even for omnipresent
-types like `java.util.Date`. In JPA you can declare field as `java.util.Date` and just say that
-the column represents time, date or timestamp using `@Temporal` annotation. I feel no need to use
-`java.sql` package anymore.
+completely different. But we can compare how easy it is to get the value for any column as your
+preferred type. Here JDBC locks you to low-level types without any good conversion capabilities,
+not even for omnipresent types like `java.util.Date`. In JPA you can declare field as
+`java.util.Date` and just say that the column represents time, date or timestamp using `@Temporal`
+annotation. I feel no need to use `java.sql` package anymore.
 
 Also enums are much easier, although this applies only for simple cases, not to mention that for
 evolving enums `@Enumerated(EnumType.ORDINAL)` is not an option (it should not be an option at all,
 actually).
 
-The bottom line is that mapping from SQL types to Java field types is much more natural with JDBC.
-And we haven't even mentioned two big guns JPA offers -- custom type converters and large object
-support.
+The bottom line is that mapping from SQL types to Java field types is much more natural with JPA
+than with JDBC. And we haven't even mentioned two big guns JPA offers -- custom type converters
+and large object support.
 
 
 ### Convenient type conversion
@@ -151,7 +150,7 @@ it is very natural to use it. Funny enough, it's not injected with standard `@In
 `@PersistenceContext`.
 
 To explain the pattern simply: Whatever you read or delete through it or whatever new you persist
-with it will be "flushed" at the end of transaction and relevant SQL queries will get executed.
+with it will be "flushed" at the end of a transaction and relevant SQL queries will get executed.
 If the mapping is good enough then the right order of insert/delete is determined. But sometimes
 it needs explicit help from the programmer -- which is allowed.
 
@@ -164,9 +163,9 @@ or "1^st^ level cache". This "cache" however does not survive the unit of work i
 about cache gives this pattern additional -- and confusing -- meaning.
 
 After all the years of experience with `Session` and `EntityManager` it was actually really
-refreshing to read about *unit of work* pattern, especially how it was written back in 2002.
-To see what operations are typical for it, to have it explicitly stated and also to read Fowler's
-speculation how it will be used and implemented. (Most of them are still valid!)
+refreshing to read about the *unit of work* pattern, to see what operations are typical for it,
+to have it explicitly stated and also to read Fowler's speculation how it will be used and
+implemented -- all written back in 2002, and most of it still valid!
 
 
 ## Declarative transactions
@@ -193,7 +192,7 @@ It is advisable to use only Spring's annotation in Spring environment.
 
 ## Other JPA 2.1 goodies
 
-We talked about custom converters already, but JPA 2.1 brought much more, but we will cover only
+We talked about custom converters already, but *JPA 2.1* brought much more, but we will cover only
 the most interesting very quickly.
 
 * As 2.0 brought Criteria, 2.1 extended their usage for updates/deletes as well
@@ -207,7 +206,7 @@ marked as lazy when you know up-front you will need them, but doesn't make to-on
 * There's also an option to call any custom FUNCTION from JPQL. This means also native functions
 of a particular database if needed. While you limit yourself to that vendor (or you need to
 rewrite it) it allows you to perform duties beyond and above JPA's built-in functions.
-* JPA 2.1 also specifies properties that allows you to generate database schema or run SQL scripts,
+* *JPA 2.1* also specifies properties that allows you to generate database schema or run SQL scripts,
 which unifies this configuration for various JPA providers.
 
 For the whole list see either [this part](https://en.wikibooks.org/wiki/Java_Persistence/What_is_new_in_JPA_2.1%3F)
