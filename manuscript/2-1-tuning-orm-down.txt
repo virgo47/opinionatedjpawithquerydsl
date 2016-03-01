@@ -288,7 +288,7 @@ I definitely don't avoid using `EntityManager`, how could I? Caching is a differ
 and deserves its own section.
 
 
-## Caching
+## Caching considerations {#caching-considerations}
 
 TODO: Follow after 1.3 ideas
 
