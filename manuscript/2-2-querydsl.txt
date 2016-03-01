@@ -252,6 +252,12 @@ http://stackoverflow.com/questions/6385036/querydsl-generated-classes-not-able-t
 
 TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
 
+
+## Using FUNCTION template
+
+TODO
+
+
 ## More
 
 http://www.slideshare.net/timowestkamper/querydsl-overview-2014
