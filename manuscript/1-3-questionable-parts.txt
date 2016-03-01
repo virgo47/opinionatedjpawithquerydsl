@@ -21,6 +21,8 @@ exec:java -Dexec.mainClass="tests.GeneratedIdSettingDemo"`
 
 ## Lazy on basic and *to-one* fields {#lazy-problems}
 
+TODO
+
 ## Generated updates
 
 * unit-of-work works only with whole entities, it does not emit partial updates
@@ -32,7 +34,9 @@ readonly transactions, nice example of being explicit)
 
 ## Unit of work vs queries
 
-## Second-level cache vs queries
+TODO
+
+## Second-level cache vs queries {#cache-vs-queries}
 
 While persistence context (`EntityManager` or session) is sometimes considered a cache too, it
 is merely a part of the unit-of-work pattern. The real cache sits underneath and is shared on the
