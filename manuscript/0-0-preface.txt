@@ -67,6 +67,11 @@ This book also does not cover:
 * JPA native SQL -- I don't use it massively and I have nothing much to say about it.
 * Calling stored procedures -- it works as expected.
 * Criteria API -- because I prefer Querydsl instead.
+* Locking, concurrency, validation, caching and other features not affected by the *opinionated*
+approach.
+
+We may mention some of them here and there, but there will be no focus on these. Most of them are
+covered elsewhere anyway. Let's talk about some of the books available in this segment.
 
 
 ## Other JPA books
