@@ -29,7 +29,10 @@ the mapping myself, while Hibernate can do it for you. Even so, as mentioned in 
 `OutOfMemoryError` or similar memory related issue, this time not on JPA/ORM level, but because
 of silly JDBC driver (or even because of database limitations, but that's rare).
 
-TODO: anything else?
+Another area that is not covered by JPA that much is caching. JPA is rather vague about the
+structure of caches, although it does specify some configuration options and annotations. But the
+ORM implementations can still differ significantly. We tackle this topic both in [questionable
+parts](#cache-vs-queries) and about [tuning ORM down](#caching-considerations).
 
 
 ## Comparing JPQL to SQL {#missing-from-sql}
