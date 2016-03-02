@@ -32,6 +32,9 @@ To actually finish something, I want to do this in the 1st edition:
     do it when you need to fetch from *to-many* as well (famous N+1 select problem)
         * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
     * Injecting EMF for better control (integration/standalone scenarios, not typical for webapps/simple services)
+        * Always try to keep create/close in one try/finally block
+        * Multiple transactions ("system/infrastructure" around business)
+    * Embeddable limitations (0%)
 * Appendices
     * H2 Database (50%)
     * Groovy scrips for database initialization
