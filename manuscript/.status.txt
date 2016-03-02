@@ -10,7 +10,7 @@ To actually finish something, I want to do this in the 1st edition:
 * JPA Good Times, Bad Times
     * Good Parts (90%)
     * Missing Parts (90%)
-    * Questionable Parts (0%)
+    * Questionable Parts (20%)
         * https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate/
         * Conflict between cache and direct JPQL
         * compare with JDBC, Groovy, Spring JDBC?
