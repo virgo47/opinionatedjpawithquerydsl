@@ -41,46 +41,38 @@ TODO
 While persistence context (`EntityManager` or session) is sometimes considered a cache too, it
 is merely a part of the unit-of-work pattern. The real cache sits underneath and is shared on the
 level of the `EntityManagerFactory` -- or even between more of them across various JVMs in case
-of distributed caches. This is called the *second-level cache*.[^slc] It is used to enhance performance,
-typically by avoiding round-trips to the database. But caching has consequences.
+of distributed caches. This is called the *second-level cache*.[^slc] It is used to enhance
+performance, typically by avoiding round-trips to the database. But caching has consequences.
 
 [^slc]: Second-level cache is most popular term, used also in [[JPspec](#bib-jpspec)]. It appears
 in [[PJPA2](#bib-projpa2)] too, but *in-memory cache* is used more often there.
 
-[[JPspec](#bib-jpspec)] doesn't say much about caching. It says how to configure it -- starting
-with `shared-cache-mode` in your `persistence.xml`. But I'd probably study caching documentation
-of a particular provider. In general, if you don't care at all, you don't even know whether and
-how you use the cache.
+Caching should be transparent, but just turning it on is a kind of *premature optimization* which
+-- in virtually all cases -- ends up being wrong. Any auto-magic can only go so far, and any
+caching leads to potential inconsistencies. I believe most JPA users don't understand how the cache
+is structured (I'm talking from my own experience too, after all). This depends on a concrete ORM,
+but typically there is an *entity cache* and a *query cache*.
 
-Without choosing `shared-cache-mode` it is up to the JPA provider and its defaults. This may render
-any use of `@Cacheable` annotations useless. Currently, Hibernate typically doesn't cache by
-default, while EclipseLink caches everything by default. Being oblivious to the cache (not related
-to *cache-oblivious algorithms* at all) is rather dangerous, especially if your application is
-not the only one running against the same database.
+Entity cache helps with performance of `EntityManager.find`, or generally with loading by entity's
+`@Id` attribute. But this will not help you if you accidentally obfuscate what you want with a
+query, that would otherwise return the same. The provider has no way to know what entity (with what
+ID) will be loaded just looking at arbitrary where conditions. This is what query cache is for.
+Bulk update and deletes using JPQL go around either of these caches and the safest way how to
+avoid inconsistent data is to evict all entities of the modified type from the caches. This is
+often performed by the ORM provider automatically (again, check documentation and settings).
 
-It is also important to know how the cache is structured. Typically there is an *entity cache*
-that is easy to understand and helps with performance of `EntityManager.find` -- that is loading
-by entity's `@Id` attribute. But this will not help you if you accidentally obfuscate what you
-want with a query, that would otherwise return the same. The provider has no way to know what
-entity (with what ID) will be loaded just looking at arbitrary where conditions. For this there
-may be another cache, so called *query cache*. Bulk update and deletes using JPQL go around either
-of these and the safest way how to avoid inconsistent data is to evict all entities of the modified
-type from the caches.
+If you only work with whole entities the whole time *and* nothing else accesses the database you
+can be pretty sure you always get the right result from the entity cache. You may wonder how this
+cache behaves in concurrent environment (like any EE/Spring application inherently is). If you
+imagine it as a `Map`, even with synchronized access, you may feel the horror of getting the same
+entity instance (`Dog` with the same ID) for two concurrent persistence contexts (like concurrent
+HTTP requests) that subsequently modify various fields on the shared instance. Luckily, ORMs
+provide each thread with its own copy of the entity. Internally they typically keep entities in
+the cache in some "dehydrated" form.[^ecacheorm]
 
-Caching happens also directly on the database level. You still incur a network round-trip but it
-does not necessarily load data from a disk (that would be really slow) and you don't have this
-entity-query duality -- although we don't know how complex the database cache is. In any case, it
-is used whether we use second-level cache or not.
+[^ecacheorm]: Tested with Hibernate and EclipseLink.
 
-Probably the most important question to answer is: Is your application the sole user of a particular
-database? If yes, you may safely use the cache without much thinking (or defaults, which may be no
-cache as well). This does not mean that is a good idea. If you start tuning it be prepared for
-a walk that may be not that easy.
-
-Still, entity cache returning you entities by ID really quickly, is a great idea in ORM world,
-because it makes the problem of eager-loads of to-one relationships much smaller. It doesn't fix
-it though as all those entities are part of your current persistence context whether you want them
-or not. We already mentioned that units of work bigger than necessary are not for free.
+We will discuss caching again when we talk about [tuning it down](#caching-considerations).
 
 
 ## You can't escape SQL and relation model

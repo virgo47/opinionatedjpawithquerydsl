@@ -290,22 +290,40 @@ and deserves its own section.
 
 ## Caching considerations {#caching-considerations}
 
-TODO: Follow after 1.3 ideas
+[[JPspec](#bib-jpspec)] doesn't say much about caching. It says how to configure it -- starting
+with `shared-cache-mode` in your `persistence.xml`. But I'd probably study caching documentation
+of a particular provider, because if you don't care at all, you don't even know whether and how
+you use the cache.
 
-In that case setting `shared-cache-mode`
-explicitly to `NONE` is probably safer. You may revisit your decisions later, but at least you
-know what is happening.
+Without choosing `shared-cache-mode` it is up to the JPA provider and its defaults. This may render
+any use of `@Cacheable` annotations useless. Currently, Hibernate typically doesn't cache by
+default, while EclipseLink caches everything by default. Being oblivious to the cache (not related
+to *cache-oblivious algorithms* at all) is rather dangerous, especially if your application is
+not the only one running against the same database. In that case setting `shared-cache-mode`
+explicitly to `NONE` is by far the best start. You may revisit your decisions later, but at least
+you know what is happening.
 
-Any auto-magic can only go so far, and any caching leads to potential inconsistencies. One thing
-that is not very well understood is how the cache is structured. The part easiest to understand is
-called *entity cache*.
+Caching happens also directly on the database level. You still incur a network round-trip but it
+does not necessarily load data from a disk (that would be really slow) and you don't have this
+entity-query duality -- although we don't know how complex the database cache is. In any case, it
+is used whether we use second-level cache or not.
+
+Probably the most important question to answer is: Is your application the sole user of a particular
+database? If yes, you may safely use the cache without much thinking (or defaults, which may be no
+cache as well). This does not mean that is a good idea. If you start tuning it be prepared for
+a walk that may be not that easy.
+
+Still, entity cache returning you entities by ID really quickly, is a great idea in ORM world,
+because it makes the problem of eager-loads of to-one relationships much smaller. It doesn't fix
+it though as all those entities are part of your current persistence context whether you want them
+or not. We already mentioned that units of work bigger than necessary are not for free.
 
 TODO:
-* complexity of ORM/JPA caching (query vs second-level cache, provider settings)
 * anti-patterns: caching returned JPA entities with JSR-107/Spring (first time they are managed,
 next time they are not)
 * explicit application caching
-* how are cached values stored (mutable?)
+* entity cache memory considerations
+
 
 ### Let database to cache it all?
 
