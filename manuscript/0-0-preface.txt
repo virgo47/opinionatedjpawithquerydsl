@@ -11,14 +11,14 @@ even generated feeling of sheer happiness -- which is not that common in our pro
 Be warned -- this book is (as the title suggests) very opinionated. Sometimes you may even ask:
 "Why the hell this guy still uses JPA?!" Sometimes even I don't know. And sometimes you can hear
 a feeble voice saying words like "legacy" or similar. It is not a typical tutorial book covering
-the technology (or part of it) systematically -- I cherry-pick instead. It's not a best practices
-book either -- and while we use JPA as specified (unless we make a mistake which is not difficult
-with JPA) we definitely don't use it as intended.
+the technology (or part of it) systematically -- I cherry-pick instead. It's not a typical best
+practices book either -- and while we use JPA as specified (unless we make a mistake which is not
+difficult with JPA) we definitely don't use it as intended.
 
 We decided to take control over the [SQL](https://en.wikipedia.org/wiki/SQL) statements our
 system produces. You can't rely much on lazy or eager fetch types, because often (as the
-specification says) these are mere hints, not real promises. We decided to use SQL-like style
-with JPA because it still provides big benefits over plain
+specification says) these are mere hints, not real promises. We decided to still use the JPA, even
+with rather SQL-like approach, because it still provides big benefits over plain
 [JDBC](https://en.wikipedia.org/wiki/Java_Database_Connectivity). We tuned down the ORM part of
 the JPA a little bit and mapped our entities to resemble "raw" tables more. You may feel like
 shouting "that's all wrong!" -- which is OK. Let me answer the following question first...
@@ -35,17 +35,19 @@ Some of the considerations are related to ORM in general and may be applicable f
 providers, but I can't guarantee that. Some parts of the book are more generic and based on common
 sense (like "avoid N+1 select"), others are strictly JPA related (like how to achieve modularity).
 Some are probably complete answers, recipes even, others are open topics that only raise further
-questions. Some are definitely a bit unorthodox from typical JPA perspective.
+questions. Some are definitely a bit unorthodox from a typical JPA perspective.
 
 While many parts of the book are usable with *JPA 2.0*, it was the update of the specification to
 *JPA 2.1* that really allowed me to experiment with getting rid of my biggest pain point in the JPA
-mapping -- which were *to-one* relations that are inherently eager unless you use some non-standard
-magic (probably based on bytecode modification). *JPA 2.1* introduces ability to explicitly state
-`ON` conditions for joins and this, in my eyes, is a true killer feature of this specification
-update and bit of a hidden gem overshadowed by (also very useful) converters, procedure calls, etc.
+mapping -- which were *to-one* relations. These are inherently eager unless you use some
+non-standard magic (probably based on bytecode modification). *JPA 2.1* introduces ability to
+explicitly state `ON` conditions for joins which allows you to map foreign-key values instead of
+relations and perform joins explicitly. That's why this `ON` for joins is, in my eyes, a true
+killer feature of this specification update and bit of a hidden gem overshadowed by (also very
+useful) converters, procedure calls, etc.
 
 
-## Not in the book
+## Not in the book TODO: REVIEW from here
 
 This is not an introductory book about JPA, see the next section about other JPA related books.
 I expect you know ORM and JPA at least superficially, you work with it for whatever reason (or
