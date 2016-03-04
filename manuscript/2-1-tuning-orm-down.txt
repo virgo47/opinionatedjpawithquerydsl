@@ -303,7 +303,7 @@ not the only one running against the same database. In that case setting `shared
 explicitly to `NONE` is by far the best start. You may revisit your decisions later, but at least
 you know what is happening.
 
-T> ## JPA is not the only one caching
+T> ### JPA is not the only one caching
 T>
 T> Caching happens also directly on the database level. You still incur a network round-trip but it
 T> does not necessarily load data from a disk (that would be really slow) and you don't have this
@@ -321,7 +321,7 @@ because it makes the problem of eager-loads of to-one relationships much smaller
 it though as all those entities are part of your current persistence context whether you want them
 or not. We already mentioned that units of work bigger than necessary are not for free.
 
-T> ## When JPA is not the only one caching
+T> ### When JPA is not the only one caching
 T>
 T> TODO:
 T> anti-patterns: caching returned JPA entities with JSR-107/Spring (first time they are managed, next time they are not)
@@ -330,6 +330,7 @@ T> anti-patterns: caching returned JPA entities with JSR-107/Spring (first time 
 * entity cache memory considerations
 
 
-### Let database to cache it all?
-
-* DB has its caches too
+D> ### Let database to cache it all?
+D>
+D> TODO: As said DB has its caches too. If we distribute and pay the price for remote access
+D> maybe we can drop JPA caches altogether?
