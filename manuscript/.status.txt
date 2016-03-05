@@ -25,16 +25,16 @@ To actually finish something, I want to do this in the 1st edition:
     * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
         * https://dzone.com/articles/opensessioninview-antipattern (OSIV anti-pattern)
 * Common Problems
-    * Object identity, easy problem, recommended always the same way
-        * Composite `@Id` or `@IdClass`?
-        * Equals object or id? TODO - does it matter? tests with popular ORMs
+%%    * Object identity, easy problem, recommended always the same way
+%%        * Composite `@Id` or `@IdClass`?
+%%        * Equals object or id? TODO - does it matter? tests with popular ORMs
     * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
     do it when you need to fetch from *to-many* as well (famous N+1 select problem)
         * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
-    * Injecting EMF for better control (integration/standalone scenarios, not typical for webapps/simple services)
-        * Always try to keep create/close in one try/finally block
-        * Multiple transactions ("system/infrastructure" around business)
-    * Embeddable limitations (0%)
+%%    * Injecting EMF for better control (integration/standalone scenarios, not typical for webapps/simple services)
+%%        * Always try to keep create/close in one try/finally block
+%%        * Multiple transactions ("system/infrastructure" around business)
+%%    * Embeddable limitations (0%)
 * Appendices
     * H2 Database (50%)
     * Groovy scrips for database initialization

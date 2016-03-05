@@ -21,7 +21,40 @@ exec:java -Dexec.mainClass="tests.GeneratedIdSettingDemo"`
 
 ## Lazy on basic and *to-one* fields {#lazy-problems}
 
-TODO
+This problem is the reason for this book, without it, I'd probably not go beyond couple of blog
+posts. While you can map these fields as lazy, the behaviour is actually not covered properly in
+the JPA specification ([[JPspec](#bib-jpspec)]). Its section 2.2, page 25, states:
+
+Q> If property access is used and lazy fetching is specified, portable applications should not
+Q> directly access the entity state underlying the property methods of managed instances until
+Q> after it has been fetched by the persistence provider.
+
+And the attached footnote adds:
+
+Q> Lazy fetching is a hint to the persistence provider and can be specified by means of the
+Q> `Basic`, `OneToOne`, `OneToMany`, `ManyToOne`, `ManyToMany`, and `ElementCollection` annotations
+Q> and their XML equivalents.
+
+While ORMs generally have no problem to make collections lazy (e.g. both *to-many* annotations),
+for *to-one* mappings this gets more complicated. [[PoEAA](#bib-poeaa)] offers couple of solutions
+for *lazy load* pattern: *lazy initialization*, *virtual proxy*, *value holder*, and *ghost*. Not
+all are usable for *to-one* mapping.
+
+The essential trouble is that such a field contains an entity directly. There is no indirection
+like a collection, that can provide lazy implementation, in case of *to-many* mappings. JPA does
+not offer any generic solution for indirect *value holder*. *Virtual proxy* would require some
+interface to implement, or byte-code manipulation on the target class, *ghost* would definitely
+require byte-code manipulation on the target class, and *lazy initialization* would require
+byte-code manipulation, or at least some special implementation, on the source class. JPA design
+neither offers any reasonable way how to introduce this indirection without advanced auto-magic
+solutions nor ways how to do it explicitly in a way programmer can control.
+
+Removing *to-one* mappings and replace them with raw foreign key values is possible, but this
+would disable our ability to join entities in queries -- before *JPA 2.1* came out and brought
+`ON` clause. Of course, this was probably meant for additional join conditions, but we can use
+it to explicitly state primary-foreign key condition which is normally implied from mapping.
+We will expand on this in a [dedicated chapter](#ch-away-from-to-one).
+
 
 ## Generated updates
 

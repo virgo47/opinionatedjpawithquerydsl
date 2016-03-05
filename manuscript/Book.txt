@@ -13,8 +13,10 @@
 2-2-querydsl.txt
 2-3-away-from-to-one.txt
 
+3-1-avoid-n+1-select.txt
+
 a1-h2.txt
-a2-bugs.txt
+a2-bugs-found.txt
 
 bibliography.txt
 99-playground.txt
