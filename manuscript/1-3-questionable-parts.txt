@@ -58,16 +58,81 @@ We will expand on this in a [dedicated chapter](#ch-away-from-to-one).
 
 ## Generated updates
 
-* unit-of-work works only with whole entities, it does not emit partial updates
+Programmer using JPA should see the *object* side of the ORM mapping which typically means that
+an object is also the granularity on which ORM works. If you change a single attribute on an object
+most ORMs simply generate full update for all columns (except for those marked `updatable = false`,
+of course). This by itself is probably not such a big deal, but if nothing else, it makes SQL
+debug output less useful to check what really changed.
 
-## Big unit of work
+I'd not even expect ORM to eliminate the column from update when it's equal, I'd rather expect
+them to include it only when it was set. But we are already in the domain of ORM auto-magic (again)
+as they somehow have to know what has changed. Our entities are typically enhanced somehow, either
+during the build of a project, or during class-loading. It would probably be more complex to store
+touched columns instead of marking the whole entity as "dirty".
 
-* unit-of-work "caching" and tracking a lot of data that are to be viewed (can be fixed with
-readonly transactions, nice example of being explicit)
+All in all, this is just a minor annoyance when you're used to log generated queries, typically
+during development, and you simply cannot see what changed among dozens of columns. For this --
+and for the cases when you want to change many entities at once in the same way -- you can use
+`UPDATE` clause, also known as *bulk update*. But these tend to interfere with caches and with
+persistence context. Let's talk about that next.
+
 
 ## Unit of work vs queries
 
-TODO
+JPA without direct SQL-like capabilities (that is JPQL) would be very limited. Sure, there are
+projects you can happily sail through with queries based on criteria API only, but those are the
+easy ones. I remember a project, it was an important budgeting system with hierarchical
+organizational structure with thousands of organizations. There were budget items and limits for
+them with multiple categories, each of them being a hierarchy too. When we needed to recalculate
+some items for some category specification (possibly with wildcards) we loaded these items and
+then perform these things in memory.
+
+Sometimes it must have been done, rules were simply too complicated for an update. But sometimes
+it didn't have to be this way. When the user approved the budget for an organization (and all its
+sub-units) we merely needed to set a flag on all these items. That's what you can do with a bulk
+update. `UPDATE` and `DELETE` clauses were in the JPA specification since day 0, with the latest
+*JPA 2.1* you can do this not only in JPQL, but also in Criteria API.[^capiq]
+
+[^capiq]: We will, however, prefer more expressive Querydsl that generates JPQL.
+
+When you can formulate simple bulk update, you know what to set and `WHERE` to set it, you can
+gain massive performance boost. Instead of iterating and generating N updates you just send a
+single SQL to the database and that way you can go down from a cycle taking minutes to an operation
+taking seconds. But there is one big "but" related to the persistence context (entity manager).
+If you have the entities going to be affected by the bulk update in your persistence context, they
+will not be touched at all. Bulk updates go around entity manager's "cache" for unit of work, which
+means you should not mix bulk updates with modification of entities attached to the persistence
+context, unless these are completely separate entities. In general, I try to avoid any complex
+logic with attached entities after I execute bulk update/delete -- and typically the scenario does
+not require it anyway.
+
+To demonstrate the problem with a snippet of code:
+{title="BulkUpdateVsPersistenceContext.java", lang=java}
+~~~
+System.out.println("dog.name = " + dog.getName()); // Rex
+
+new JPAUpdateClause(em, QDog.dog)
+  .set(QDog.dog.name, "Dex")
+  .execute();
+
+dog = em.find(Dog.class, 1); // find does not do much here
+System.out.println("dog.name = " + dog.getName()); // still Rex
+
+em.refresh(dog); // this reads the real data now
+System.out.println("after refresh: dog.name = " + dog.getName()); // Dex
+~~~
+
+The same problem applies to JPQL queries that happen after changes to entities within a transaction
+on the current persistence context. Here the behaviour is controlled by entity manager's flush mode
+and it defaults to `FlushModeType.AUTO`.[^flushmode] Flush mode `AUTO` enforces the persistence
+context to flush all updates into the database before executing the query. But with flush mode
+`COMMIT` you'd get to inconsistencies just like in the scenario with bulk update. Obviously,
+flushing the changes is a reasonable option -- you'd flush it sooner or later anyway. Bulk update
+scenario, on the other hand, requires us to refresh attached entities which is much more disruptive
+and also costly.
+
+[^flushmode]: See [[JPspec](#bib-jpspec)], section 3.10.8.
+
 
 ## Second-level cache vs queries {#cache-vs-queries}
 
@@ -120,6 +185,18 @@ happens?)
 * updates of all columns when just one was changed (not inherent JPA problem, but happens)
 * bugs cross-fire, different providers have different bugs, but all are show-stoppers for
 a project
+
+
+## Big unit of work
+
+Let's get back to unit of work again. I believe that this pattern is really neat, especially when
+you have support from tools like ORM. Even if we don't mix bulk updates and complex persistence
+contexts, we can still run into troubles when the context is simply too big.
+TODO:
+* unit-of-work "caching" and tracking a lot of data that are to be viewed
+* can be fixed with readonly transactions, nice example of being explicit -- is it possible without Spring?
+* reference missing feature for cursor-like result-set "streaming"
+
 
 ## And there is more
 
