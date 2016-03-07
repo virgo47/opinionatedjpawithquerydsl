@@ -16,3 +16,7 @@ https://leanpub.com/high-performance-java-persistence
 
 {#bib-projpa2}
 [ProJPA2] Mike Keith, Merrick Schincariol. *Pro JPA 2*, Apress Media, LLC, 2013.
+
+{#bib-sdata}
+[SData] Mark Pollack, Oliver Gierke, Thomas Risberg, Jon Brisbin, and Michael Hunger.
+*Spring Data*, O’Reilly Media, Inc., 2012.
