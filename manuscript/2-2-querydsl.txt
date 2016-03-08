@@ -1,6 +1,6 @@
 # No further step without Querydsl {#ch-querydls}
 
-To put it simply -- [Querydsl](www.querydsl.com) is a library that -- from programmer's
+To put it simply -- [Querydsl](http://www.querydsl.com) is a library that -- from programmer's
 perspective -- works like a more expressive and readable version of *Java Persistence Criteria
 API*. Internally it first generates JPQL and the rest from there is handled by the JPA provider.
 Querydsl can actually talk to many more back-ends: SQL, Hibernate directly, ... and many
