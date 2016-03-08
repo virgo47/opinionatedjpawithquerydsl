@@ -1,5 +1,3 @@
-.status.txt
-
 0-0-preface.txt
 0-1-acknowledgement.txt
 
@@ -19,4 +17,3 @@ a1-h2.txt
 a2-bugs-found.txt
 
 bibliography.txt
-99-playground.txt

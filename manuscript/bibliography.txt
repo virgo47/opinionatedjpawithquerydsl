@@ -3,6 +3,7 @@
 {#bib-ddd}
 [DDD] Evans Eric. *Domain-Driven Design*, Addison-Wesley Professional, 2003.
 
+%% TODO: double check what we use from here:
 {#bib-hpjp}
 [HPJP] Vlad Mihalcea. *High Performance Java Persistence*, Leanpub, 2016 (in-progress).
 https://leanpub.com/high-performance-java-persistence
