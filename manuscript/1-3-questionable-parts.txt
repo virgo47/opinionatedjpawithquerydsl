@@ -16,8 +16,8 @@ cannot know what value for ID it should use. Maybe your usage of ID value was no
 *ORM way*, maybe you should have use the whole entity somewhere, but the point is that if you do
 the same with Hibernate, it would work. You simply cannot assume that the ID is set.[^demoid]
 
-[^demoid]: You can see this demonstrated in `examples/basic` if you run: `mvn test-compile
-exec:java -Dexec.mainClass="tests.GeneratedIdSettingDemo"`
+[^demoid]: You can see this demonstrated in `examples/basic` if you run:
+    `mvn test-compile exec:java -Dexec.mainClass="tests.GeneratedIdSettingDemo"`
 
 ## Lazy on basic and *to-one* fields {#lazy-problems}
 
@@ -122,7 +122,7 @@ em.refresh(dog); // this reads the real data now
 System.out.println("after refresh: dog.name = " + dog.getName()); // Dex
 ~~~
 
-The same problem applies to JPQL queries that happen after changes to entities within a transaction
+The same problem applies to JPQL queries that happen after the changes to the entities within a transaction
 on the current persistence context. Here the behaviour is controlled by entity manager's flush mode
 and it defaults to `FlushModeType.AUTO`.[^flushmode] Flush mode `AUTO` enforces the persistence
 context to flush all updates into the database before executing the query. But with flush mode
@@ -143,7 +143,7 @@ of distributed caches. This is called the *second-level cache*.[^slc] It is used
 performance, typically by avoiding round-trips to the database. But caching has consequences.
 
 [^slc]: Second-level cache is most popular term, used also in [[JPspec](#bib-jpspec)]. It appears
-in [[PJPA2](#bib-projpa2)] too, but *in-memory cache* is used more often there.
+    in [[PJPA2](#bib-projpa2)] too, but *in-memory cache* is used more often there.
 
 Caching should be transparent, but just turning it on is a kind of *premature optimization* which
 -- in virtually all cases -- ends up being wrong. Any auto-magic can only go so far, and any

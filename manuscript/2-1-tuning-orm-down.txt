@@ -279,9 +279,9 @@ It still allows you to generate schema from objects if you have control over you
 you don't) or even just document your database with class diagram of entities[^cdd].
 
 [^cdd]: While class diagram does not say exactly the same like E-R diagram I used it successfully
-to communicate design of tables to my DBA who had absolutely no problem to understand it, even
-for cases where many-to-many associative table was implied by a named line. E-R diagram was much
-easier to generate ex-post for documentation purposes.
+    to communicate design of tables to my DBA who had absolutely no problem to understand it, even
+    for cases where many-to-many associative table was implied by a named line. E-R diagram was
+    much easier to generate ex-post for documentation purposes.
 
 We still have to keep unit-of-work and caching in check, but both are very useful if used well.
 I definitely don't avoid using `EntityManager`, how could I? Caching is a different beast though,

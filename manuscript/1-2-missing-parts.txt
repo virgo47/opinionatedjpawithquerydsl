@@ -63,9 +63,9 @@ clause (use the select result as any other table, or more generally, any
 allow you, among other things, to count rows for results that current JPA does not support.[^cntemb]
 
 [^cntemb]: My favourite is [JPspec](#bib-jpspec), section 4.8.5, mentioning that *"use of DISTINCT
-with COUNT is not supported for arguments of embeddable types or map entry types"*. In general,
-using embeddables may limit your options, which is a pity and may force design decisions not to use
-them where you otherwise would.
+    with COUNT is not supported for arguments of embeddable types or map entry types"*. In general,
+    using embeddables may limit your options, which is a pity and may force design decisions not to
+    use them where you otherwise would.
 
 JPA offers a palette of favourite functions, but of course it does not provide all possible
 functions. Before *JPA 2.1* you'd have to use ORM provider custom functionality to overcome this, or
