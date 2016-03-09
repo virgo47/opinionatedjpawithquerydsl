@@ -107,6 +107,7 @@ logic with attached entities after I execute bulk update/delete -- and typically
 not require it anyway.
 
 To demonstrate the problem with a snippet of code:
+
 {title="BulkUpdateVsPersistenceContext.java", lang=java}
 ~~~
 System.out.println("dog.name = " + dog.getName()); // Rex

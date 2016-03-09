@@ -193,7 +193,8 @@ and later clone it with entity manager provided:
 {title="Querydsl, detached query", lang=java}
 ~~~
 private static QDog DOG_ALIAS = new QDog("d1");
-private static Param<String> DOG_NAME_PREFIX = new Param<String>(String.class);
+private static Param<String> DOG_NAME_PREFIX =
+  new Param<String>(String.class);
 private static JPAQuery<Dog> DOG_QUERY = new JPAQuery<Dog>()
   .select(DOG_ALIAS)
   .from(DOG_ALIAS)
@@ -207,10 +208,10 @@ List<Dog> dogs = DOG_QUERY.clone(em)
 
 The benefit is questionable though. You need to name the query well enough so it expresses what
 it does while seeing the query sometimes says it better. You have to walk the distance to introduce
-parameters explicitly (you wouldn't like it constant). And I doubt there is any performance benefit
-as the clone (I guess) clones the query anyway. I'm sure there are legitimate cases when to use
+parameters explicitly -- you don't want it constant. And I doubt there is any performance benefit
+as we clone the query. I'm sure there are legitimate cases when to use
 this feature, but I personally use it only in query objects wrapping complicated query where I have
-a lot of aliases around anyway -- and even then mostly without the where part which I rather add
+a lot of aliases around already -- and even then mostly without the where part which I rather add
 dynamically later.
 
 
