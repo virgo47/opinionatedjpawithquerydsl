@@ -80,8 +80,10 @@ and very flexible -- this effectively closes the gap for functions you can use.
 The best way how to find corner cases that are not supported in the specification ([JPspec](#bib-jpspec))
 is simply to search for "not supported" string. Some of these are related to embeddables, some are
 pretty natural (e.g. *"applying setMaxResults or setFirstResult to a query involving fetch joins
-over collections is undefined"*).
-%% TODO: see the discussion in chapter [Avoid N+1 select](#ch-avoid-n-plus-1)
+over collections is undefined"*).[^paging]
+
+[^paging]: For paginating with fetch across to-many relations see the discussion in chapter
+[Avoid N+1 select](#ch-avoid-n-plus-1), concretely [this section](#to-many-paginating).
 
 What I dearly miss in JPA is better control over fetching of to-one relations. Current solution
 is trying to be transparent in terms of object-relational mapping, but it may kill your performance

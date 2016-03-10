@@ -13,6 +13,8 @@ public class Person implements Serializable {
 
   private Integer uniqId;
 
+  private String name;
+
   @ManyToMany
   @JoinTable(name = "Person_Dog",
     joinColumns = @JoinColumn(name = "puid", referencedColumnName = "uniqId"),
@@ -35,7 +37,16 @@ public class Person implements Serializable {
     return "Person{" +
       "id=" + id +
       ", uniqId=" + uniqId +
+      ", name=" + name +
       ", dogs=" + dogs +
       '}';
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

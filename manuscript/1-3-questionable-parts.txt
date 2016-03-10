@@ -176,16 +176,36 @@ We will discuss caching again when we talk about [tuning it down](#caching-consi
 
 ## You can't escape SQL and relation model
 
-TODO: Example: Paging with to-many fetching
+Somewhere under cover there is SQL lurking and we better know how it works. We will tackle this
+topic with more passion in the second part of the book, but for now we will just demonstrate that
+not knowing simply cannot work. Imagine we want a list of all dog owners, and because there is many
+of them we want to paginate it. This is 101 of any enterprise application. In JPA we can use
+methods `setFirstResult` and `setMaxResults` on `Query` object which corresponds to SQL `OFFSET`
+and `LIMIT` clauses.[^pagstand]
+
+[^pagstand]: In many popular databases that is. Standard SQL pagination is quite young and I doubt
+  database vendors agreed to implement it.
+
+Let's have a model situation with the following owners (and their dogs): Alan (with dogs Alan,
+Beastie and Cessna), Charlie (no dog), Joe (with Rex) and Mike (with Lassie and Dunco). If you
+query for the first two owners ordered by name -- pagination without order doesn't make sense --
+you'll get Alan and Charlie. However, imagine you want to display names of their dogs in each row.
+If you join dogs too, you'll just get Alan twice, courtesy of his many dogs. You may select without
+the join and then select dogs for each row, which is our infamous N+1 select problem. This may not
+be a big deal for a page of 2, but for 30 or 100 you can see the difference.
+
+These are the effects of the underlying relational model and you can simply escape them. It's not
+difficult to deal with them if you accept the relational world underneath. If you fight it, it
+fights back.
+
+
+## Additional layer
 
 Other problems:
 * monitoring of SQL from JPA application is difficult (it's kinda "elsewhere") and the
 interaction with the SQL itself has a lot of overhead as well (but this is complex topic anyway,
 JDBC proxy driver is possibility, but how to connect to the business logic or place where it
 happens?)
-* updates of all columns when just one was changed (not inherent JPA problem, but happens)
-* bugs cross-fire, different providers have different bugs, but all are show-stoppers for
-a project
 
 
 ## Big unit of work
@@ -203,3 +223,6 @@ TODO:
 
 This list of potential surprises is far from complete and we will continue in similar tone at
 the beginning of the following part.
+
+TODO: mention bugs cross-fire, different providers have different bugs, but all are show-stoppers
+for a project

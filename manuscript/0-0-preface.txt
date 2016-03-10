@@ -47,7 +47,8 @@ killer feature of this specification update and bit of a hidden gem overshadowed
 useful) converters, procedure calls, etc.
 
 
-## Not in the book TODO: REVIEW from here
+## Not in the book
+%%TODO: REVIEW from here
 
 This is not an introductory book about JPA, see the next section about other JPA related books.
 I expect you know ORM and JPA at least superficially, you work with it for whatever reason (or
@@ -98,9 +99,9 @@ including), even if you don't use Spring Data after all. It's a nice quick overv
 Querydsl with examples of Spring configuration both in XML and Java and they even mention
 kind of advanced things like `orphanRemoval` (although rather in passing). It's definitely little
 time well spent anyway. I don't know the Packt one, but it seems to be a short book focusing
-on similar topics like the first half of O'Reilly book.
+on similar topics like the first half of the O'Reilly book.
 
-I don't know any more relevant books, but there is one more obvious resource -- [Java Persistence
+I don't know any other relevant books, but there is one more obvious resource -- [Java Persistence
 2.1 Specification](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
 itself [[JPspec](#bib-jpspec)].
 There are things you hardly find anywhere else, especially when it comes to corner cases
@@ -158,7 +159,8 @@ for the whole opinionated part of the book. Then we'll meet Querydsl before divi
 problems, because I'm not willing to go on without it. And in the rest of this part we'll see how
 to work around the features marked as questionable.
 
-%% TODO: [Third part](#part-best-practices) covers the best practices to common problems like N+1 select.
+[Third part](#part-common-problems) talks about common problems you encounter when working with
+the JPA (like paginating and N+1 select) and offers solutions for them.
 
 Finally, [appendices](#appendices) will provide short references for related technologies I used
 throughout the book (e.g. H2 database).

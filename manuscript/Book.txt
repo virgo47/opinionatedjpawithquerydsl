@@ -11,6 +11,7 @@
 2-2-querydsl.txt
 2-3-away-from-to-one.txt
 
+3-0-common-problems.txt
 3-1-avoid-n+1-select.txt
 
 a1-h2.txt
