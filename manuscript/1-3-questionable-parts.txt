@@ -219,10 +219,16 @@ TODO:
 * reference missing feature for cursor-like result-set "streaming"
 
 
+## JPA alternatives?
+
+TODO: compare with JDBC, Groovy, Spring JDBC?
+
+
 ## And there is more
 
 This list of potential surprises is far from complete and we will continue in similar tone at
 the beginning of the following part.
 
 TODO: mention bugs cross-fire, different providers have different bugs, but all are show-stoppers
-for a project
+for a project:
+https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate/

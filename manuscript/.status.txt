@@ -8,12 +8,9 @@ To actually finish something, I want to do this in the 1st edition:
 
 * Preface (90%) - to explain why this book even exists and some background
 * JPA Good Times, Bad Times
-    * Good Parts (90%)
-    * Missing Parts (90%)
-    * Questionable Parts (20%)
-        * https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate/
-        * Conflict between cache and direct JPQL
-        * compare with JDBC, Groovy, Spring JDBC?
+    * Good Parts (100%) NEEDS REVIEW
+    * Missing Parts (100%) NEEDS REVIEW
+    * Questionable Parts (50%)
 * Opinionated JPA
     * ORM tuned down (80%)
     * No further steps without Querydsl (40%)
@@ -35,6 +32,7 @@ To actually finish something, I want to do this in the 1st edition:
 %%        * Always try to keep create/close in one try/finally block
 %%        * Multiple transactions ("system/infrastructure" around business)
 %%    * Embeddable limitations (0%)
+    * Advanced Querydsl (5%)
 * Appendices
     * H2 Database (50%)
     * Groovy scrips for database initialization

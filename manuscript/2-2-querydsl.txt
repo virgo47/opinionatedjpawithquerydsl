@@ -180,39 +180,9 @@ and at the same time it allows for easy dynamic query creation.
 If you're familiar with JPQL more than me (which is not that hard, after all) you may ask about
 named queries. Here I admit right away, that Querydsl necessarily introduces overhead (see
 [cons](#querydsl-cons) section), but when it comes to query reuse from programmer's perspective,
-there is an answer called...
-
-
-## Detached queries
-
-While we can create all the queries in methods provided with `EntityManager` parameter, but
-sometimes it feels more natural to put queries into a constant a reuse them later. This is
-possible using so called "detached queries" -- simply create a query without entity manager
-and later clone it with entity manager provided:
-
-{title="Querydsl, detached query", lang=java}
-~~~
-private static QDog DOG_ALIAS = new QDog("d1");
-private static Param<String> DOG_NAME_PREFIX =
-  new Param<String>(String.class);
-private static JPAQuery<Dog> DOG_QUERY = new JPAQuery<Dog>()
-  .select(DOG_ALIAS)
-  .from(DOG_ALIAS)
-  .where(DOG_ALIAS.name.startsWith(DOG_NAME_PREFIX));
-
-//... and somewhere in a method
-List<Dog> dogs = DOG_QUERY.clone(em)
-  .set(DOG_NAME_PREFIX, "Re")
-  .fetch();
-~~~
-
-The benefit is questionable though. You need to name the query well enough so it expresses what
-it does while seeing the query sometimes says it better. You have to walk the distance to introduce
-parameters explicitly -- you don't want it constant. And I doubt there is any performance benefit
-as we clone the query. I'm sure there are legitimate cases when to use
-this feature, but I personally use it only in query objects wrapping complicated query where I have
-a lot of aliases around already -- and even then mostly without the where part which I rather add
-dynamically later.
+Querydsl offers so called detached queries. While these are not covered in their reference manual
+(as of March 2016), we will talk [more about them](#querydsl-detached-queries) in a chapter
+about [advanced Querydsl topics](#ch-advanced-querydsl).
 
 
 ## And the cons? {#querydsl-cons}
@@ -248,18 +218,8 @@ it is well compensated with the code clarity Querydsl gave us.
 
 http://stackoverflow.com/questions/6385036/querydsl-generated-classes-not-able-to-access-second-level-elements-for-querying
 
-
-## Tricky predicate parts
-
-TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
-
-
-## Using FUNCTION template
-
-TODO
-
-
 ## More
 
 http://www.slideshare.net/timowestkamper/querydsl-overview-2014
 Slides about older version 3, but except for the fluent API changes the concept is the same.
+See also chapter with [advanced Querydsl topics](#ch-advanced-querydsl).
