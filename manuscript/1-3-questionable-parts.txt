@@ -201,11 +201,40 @@ fights back.
 
 ## Additional layer
 
-Other problems:
-* monitoring of SQL from JPA application is difficult (it's kinda "elsewhere") and the
-interaction with the SQL itself has a lot of overhead as well (but this is complex topic anyway,
-JDBC proxy driver is possibility, but how to connect to the business logic or place where it
-happens?)
+Reasoning about common structured, procedural code is quite simple for simple scenarios. We add
+higher-level concepts and abstractions to deal with ever more complex problems. When you use JDBC
+you know exactly where in the code your SQL is sent to the database, it's easy to control it,
+debug it, monitor it, etc. With JPA we are one level higher. You still can try to measure
+performance of your queries -- after all typical query is executed where you call it -- but there
+are some twists.
+
+First, it can be cached in a query cache -- which may be good if it provides correct results -- but
+it also significantly distorts any performance measuring. JPA layer itself takes some time. Query
+has to be parsed (add Querydsl serialization to it when used) and entities created and registered
+with the persistence context, so they are *managed* as expected. This distorts the result for the
+worse, not to mention that for big results it may trigger some additional GC that plain JDBC would
+not have.
+
+Best bet is to monitor performance of the SQL on the server itself. Most decent RDBMS provide
+some capabilities in this aspect. You can also use JDBC proxy driver that wraps the real one and
+performs some logging on the way. Maybe your ORM provides this to a degree, at least in the logs
+if nowhere else. This may not be easy to process, but it's still better than no visibility at all.
+More sophisticated system may provide nice measuring, but can also add performance penalty -- which
+perhaps doesn't affect the monitoring too much, but it can still affect the overall application
+performance. Monitoring overhead is, of course, not related to JPA, we would get to it using just
+plain JDBC as well.
+
+I will not cover monitoring topics in the book -- they are natural problems with any framework,
+although we can argue that access to RDBMS is kinda critical. Unit of work pattern causes real DB
+work to happen somewhere else than the domain code would indicate. For simple CRUD-like scenarios
+it's not a problem, not even from performance perspective (mostly). For complex scenarios, for
+which the pattern was designed in the first place, we may need to revisit what we send to the
+database if we encounter performance issues. This may even affect our domain. Maybe there are
+clean answers for this, but I don't know them. I typically rather tune down how I use the JPA.
+
+All in all, the fact that JPA adds complexity is very natural aspect of any layer that sits on top
+of another layer. This is probably one of the least questionable parts of JPA. You either want it
+and accept its "additional layer-ness" or choose not to use it.
 
 
 ## Big unit of work

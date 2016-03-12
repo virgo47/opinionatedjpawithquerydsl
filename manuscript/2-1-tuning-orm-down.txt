@@ -334,3 +334,7 @@ D> ### Let database to cache it all?
 D>
 D> TODO: As said DB has its caches too. If we distribute and pay the price for remote access
 D> maybe we can drop JPA caches altogether?
+
+## When to tune down and when not?
+
+TODO:...
