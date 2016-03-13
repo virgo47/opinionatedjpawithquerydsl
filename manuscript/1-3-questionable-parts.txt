@@ -229,7 +229,7 @@ although we can argue that access to RDBMS is kinda critical. Unit of work patte
 work to happen somewhere else than the domain code would indicate. For simple CRUD-like scenarios
 it's not a problem, not even from performance perspective (mostly). For complex scenarios, for
 which the pattern was designed in the first place, we may need to revisit what we send to the
-database if we encounter performance issues. This may even affect our domain. Maybe there are
+database if we encounter performance issues. This may also affect our domain. Maybe there are
 clean answers for this, but I don't know them. I typically rather tune down how I use the JPA.
 
 All in all, the fact that JPA adds complexity is very natural aspect of any layer that sits on top
@@ -239,9 +239,24 @@ and accept its "additional layer-ness" or choose not to use it.
 
 ## Big unit of work
 
-Let's get back to unit of work again. I believe that this pattern is really neat, especially when
-you have support from tools like ORM. Even if we don't mix bulk updates and complex persistence
-contexts, we can still run into troubles when the context is simply too big.
+I believe that *unit of work* pattern is really neat, especially when you have support from tools
+like ORM. Even if we don't mix bulk updates and complex persistence contexts, we can still run into
+troubles when the context is simply too big. This may easily happen with complicated business
+scenarios and it may cause no problem. Often, though, users may see the problem. Request takes too
+long or nightly scheduled task is still running late in the morning. Code looks good, it's ORM-ish
+as it can be -- it's just slow.
+
+You can monitor or debug how many objects are managed, often you can see effects on the heap. When
+this happens something has to change, obviously. Sometimes you can deal with the problem within
+your domain model and let ORM shield you from the database. Sometimes it's not possible and you
+have to let relational world leak into your code.
+
+I've seen advices how to perform some updates or delete in "more object-oriented manner" -- and
+they were probably right from that perspective. But that pulls much more unnecessary data into
+memory to perform something that can be expressed easily with JPQL.
+
+D> TODO: Example with delete across relations where LIKE
+
 TODO:
 * unit-of-work "caching" and tracking a lot of data that are to be viewed
 * can be fixed with readonly transactions, nice example of being explicit -- is it possible without Spring?
