@@ -255,7 +255,39 @@ I've seen advices how to perform some updates or delete in "more object-oriented
 they were probably right from that perspective. But that pulls much more unnecessary data into
 memory to perform something that can be expressed easily with JPQL.
 
-D> TODO: Example with delete across relations where LIKE
+D> ### How object-oriented is JPQL?
+D>
+D> If JPQL is part of JPA, just like other QLs are parts of concrete ORM solutions, then it
+D> arguably *is* part of the abstraction. Let's say we have some test cases creating some dog and
+D> breed objects. In ideal case we would delete all of them between tests, but as it happens, we
+D> are working on database that contains some fixed set of dogs and breeds as well (don't ask).
+D> So we mark our test breeds with 'TEST' description. Dog creation is part of tested code, but
+D> we know they will be of our testing breeds. To delete all the testing dogs we may then write:
+D>
+D> ~~~
+D> delete from Dog d where d.breed.description = 'TEST'
+D> ~~~
+D>
+D> That's pretty clear JPQL. Besides the fact that it (fails on Hibernate)[https://hibernate.atlassian.net/browse/HHH-9711]
+D> it does not touch our persistence context at all and does its job. We can do the same with
+D> subquery if we are stuck to Hibernate -- or we can fetch testing breeds into a list (they
+D> are now managed) and then execute JPQL like this:
+D>
+D> ~~~
+D> delete from Dog d where d.breed in :breeds
+D> ~~~
+D>
+D> Here `breeds` would be parameter with a list containing the testing breeds as its value. We may
+D> fetch a plain list of breed.id instead, this does not get managed, takes less memory and pulls
+D> less data from the database with the same effect, we just say `where d.breed.id in :breedIds`
+D> instead (if supported like this by your ORM, but it's definitely OK with JPA). I've heard
+D> arguments that this is less object-oriented. I was like "what?"
+D>
+D> Finally, what you can do is start with fetching the testing breeds and then fetch all the
+D> dogs with these breeds and call `em.remove(dog)` in a cycle. I hope this, object-oriented as it
+D> is, is considered a bit of a stretch by most programmers. But I saw it in teams where JPQL
+D> and bulk updates were not very popular (read also as "not part of the knowledge base").
+
 
 TODO:
 * unit-of-work "caching" and tracking a lot of data that are to be viewed
