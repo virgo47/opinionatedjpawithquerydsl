@@ -139,7 +139,7 @@ is hard -- there's simply too much in it. We're dealing with complex problem, wi
 and some kind of mismatch it is. And it's not the basic principle that hurts, we always get burnt
 on many, too many, details.
 
-### Vietnam of Computer Science
+### Vietnam of Computer Science {#vietnam}
 
 One of the best balanced texts that critique ORM, and probably one of the most famous, is quite
 old actually. In 2006 Ted Neward wrote an extensive post with a fitting, if provoking, name
