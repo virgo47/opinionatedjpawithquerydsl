@@ -253,10 +253,10 @@ have to let relational world leak into your code.
 
 D> ### How object-oriented is JPQL?
 D>
-D> I've seen advices how to perform some updates or delete in "more object-oriented manner" -- and
-D> they were probably right from that perspective. But that pulls much more unnecessary data into
-D> memory to perform something that can be expressed easily with JPQL. If JPQL is part of JPA, just
-D> like other QLs are parts of concrete ORM solutions, then it arguably *is* part of the
+D> I've seen advices how to perform some updates or deletes in "more object-oriented manner" -- and
+D> they were probably right from that perspective. But that often pulls a lot of unnecessary data
+D> into memory to perform something that can be expressed easily with JPQL. If JPQL is part of JPA,
+D> just like other QLs are parts of concrete ORM solutions, then it arguably *is* part of the
 D> abstraction. Let's examine various options in the following example.
 
 Let's say we have some test cases creating some dog and breed objects. In ideal case we would
@@ -269,10 +269,10 @@ To delete all the testing dogs we may then write:
 delete from Dog d where d.breed.description = 'TEST'
 ~~~
 
-That's pretty clear JPQL. Besides the fact that it (fails on Hibernate)[https://hibernate.atlassian.net/browse/HHH-9711]
+That's pretty clear JPQL. Besides the fact that it [fails on Hibernate](https://hibernate.atlassian.net/browse/HHH-9711)
 it does not touch our persistence context at all and does its job. We can do the same with
-subquery if we are stuck to Hibernate -- or we can fetch testing breeds into a list (they
-are now managed) and then execute JPQL like this:
+subquery (works for Hibernate as well) -- or we can fetch testing breeds into a list (they
+are now managed by the persistence context) and then execute JPQL like this:
 
 ~~~
 delete from Dog d where d.breed in :breeds
@@ -281,12 +281,12 @@ delete from Dog d where d.breed in :breeds
 Here `breeds` would be parameter with a list containing the testing breeds as its value. We may
 fetch a plain list of breed.id instead, this does not get managed, takes less memory and pulls
 less data from the database with the same effect, we just say `where d.breed.id in :breedIds`
-instead (if supported like this by your ORM, but it's definitely OK with JPA). I've heard
+instead -- if supported like this by your ORM, but it's definitely OK with JPA. I've heard
 arguments that this is less object-oriented. I was like "what?"
 
 Finally, what you can do is start with fetching the testing breeds and then fetch all the
 dogs with these breeds and call `em.remove(dog)` in a cycle. I hope this, object-oriented as it
-is, is considered a bit of a stretch by most programmers. But I saw it in teams where JPQL
+is, is considered a bit of a stretch even by OO programmers. But I saw it in teams where JPQL
 and bulk updates were not very popular (read also as "not part of the knowledge base").
 
 W> In most cases the persistence context is short-lived, so even when a lot of data flows through,
@@ -310,10 +310,16 @@ whether they are changed or not (dirty checking). How the dirty checking is perf
 scope of this book, typically some byte-code manipulation is used. The problem is that this takes
 longer when the persistence context is big. When it's big for a reason, then you have to do what
 you have to do, but when it's big because we didn't harness bulk updates/deletes, than it's simply
-wasteful. This problem somehow overlaps with missing cursor-like result set streaming mentioned in
-section covering [missing features](#missing-from-orm) some ORM providers do have.
+wasteful. Often it also takes a lot of code when a simple JPQL says the same. I don't accept an
+answer that reading JPQL or SQL is hard. If we use RDBMS we *must* know it reasonably well.
 
-D> ### Do I need transactions for read-only scenarios?
+Sometimes bulk update is not a feasible option, but you still just want to loop through some
+result, modify the entity, flush it (or batch the update if possible) but you don't want it
+managed. This relates to the missing "cursor-like result set streaming" mentioned in the section
+covering [missing features](#missing-from-orm) some ORM providers do have. You just want to do
+something on the entity as you loop through the results
+
+D> ### Do I need transactions for reading?
 D>
 D> This is a tricky one. Maybe not, but I encountered strange things happening when use cases
 D> loaded stale data. This happened when we used Spring and its `@Transactional` annotation.
