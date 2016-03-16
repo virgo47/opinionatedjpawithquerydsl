@@ -342,7 +342,16 @@ D> I don't know how to mark transaction as read-only with JTA `@Transactional` a
 
 ## JPA alternatives?
 
-TODO: compare with JDBC, Groovy, Spring JDBC?
+When JPA suddenly stands in your way instead of helping you, you can still fallback gracefully
+to JDBC level. Personally I don't mix this within a single scenario, but you can. For that you
+have to know what provider you use, unwrap its concrete implementation of `EntityManager` and ask
+it for a `java.sql.Connection` in non-portable manner. When I don't mix scenarios, I simply ask
+Spring (or possibly other container) to inject underlying `javax.sql.DataSource` and then I can
+access `Connection` without using JPA at all. Talking about Spring, I definitely go for their
+`JdbcTemplate` to avoid all the JDBC boilerplate. Otherwise I prefer JPA for all the reasons
+mentioned in the [Good Parts](#ch-good-parts).
+
+TODO: compare with Groovy Sql or GORM
 
 
 ## And there is more

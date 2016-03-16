@@ -10,7 +10,7 @@ To actually finish something, I want to do this in the 1st edition:
 * JPA Good Times, Bad Times
     * Good Parts (100%) NEEDS REVIEW
     * Missing Parts (100%) NEEDS REVIEW
-    * Questionable Parts (50%)
+    * Questionable Parts (80%)
 * Opinionated JPA
     * ORM tuned down (80%)
     * No further steps without Querydsl (40%)

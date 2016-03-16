@@ -1,4 +1,4 @@
-# Good Parts
+# Good Parts {#ch-good-parts}
 
 First we will look at all the goodies JPA offers to us. Why did I start to prefer JPA over
 a particular provider? Mind that this part is just an extended enumeration of various features,
