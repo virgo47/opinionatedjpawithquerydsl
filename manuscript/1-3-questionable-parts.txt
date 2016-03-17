@@ -351,7 +351,33 @@ access `Connection` without using JPA at all. Talking about Spring, I definitely
 `JdbcTemplate` to avoid all the JDBC boilerplate. Otherwise I prefer JPA for all the reasons
 mentioned in the [Good Parts](#ch-good-parts).
 
-TODO: compare with Groovy Sql or GORM
+We've lightly compared JPA with concrete ORMs already, but they are still the same concept -- it
+is much more fun to compare it with something else altogether, let's say a different language --
+like [Groovy](http://www.groovy-lang.org/). We're still firmly on JVM although it's not very likely
+to do your persistence in Groovy and the rest of the application in Java. Firstly, Groovy language
+also has its ORM. It's called [GORM](https://grails.github.io/grails-data-mapping/latest/) and
+while not built into the core project it is part of [Grails framework](https://grails.org/). I
+don't have any experience with it, but I don't expect radical paradigm shift as it uses Hibernate
+ORM to access RDBMS (although it supports also No-SQL solutions). Knowing Groovy I'm sure it brings
+some fun into the mix, but it still is ORM.
+
+I often use core Groovy [support for relation databases](http://www.groovy-lang.org/databases.html)
+and I really like it. It is no ORM, but it makes working with database very easy compared to
+JDBC. I readily use it to automate data population as it is much more expressive than SQL
+statements -- you mostly just use syntax based on Groovy Maps. With little support code you create
+helper insert/update methods that can provide reasonable defaults for columns you don't want to
+specify every time or insert whole aggregates (master-slave table structures). It's very easy to
+use returned auto-increment primary keys (as named variables, of course) where you need to use
+them as foreign keys and it's also very easy to create repetitive data in a loop.
+
+I use this basic database support in Groovy even on projects where I already have entities in JPA,
+but for whatever reason I don't want to use them. You actually don't need to map anything into
+objects, mostly couple of methods will do. Sure you have to rename columns in the code when you
+refactor, but column names are hidden in just a couple places, often just a single one. Bottom
+line? Very convenient, natural type conversion (although not perfect, mind you), little to no
+boilerplate code and it all plays nicely with Groovy syntax. It definitely doesn't bring so much
+negative passion with it as JPA does -- perhaps because the level of sophistication is not so high.
+But in many cases even simple solutions can deliver.
 
 
 ## And there is more
