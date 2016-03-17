@@ -388,9 +388,30 @@ But in many cases even simple solutions can deliver.
 
 ## And there is more
 
-This list of potential surprises is far from complete and we will continue in similar tone at
-the beginning of the following part.
+This list of potential surprises is far from complete, but for the rest of the book we will narrow
+our focus to relationships. We will review their mapping and how it affects querying.
 
-TODO: mention bugs cross-fire, different providers have different bugs, but all are show-stoppers
-for a project:
-https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate/
+I'd like to mention one more problem, kind of natural outcome of real-life software development.
+JPA is implemented by couple of projects and these projects have bugs. If the bug is generally
+critical, they fix it quite soon. If it's critical only for your project, they may not. Most
+ORM projects are now open-sourced and you may try to fix it yourselves, although managing patches
+for updated OSS project is rather painful.
+
+It's all about how serious your trouble is -- if you can find work-around, do it. When EclipseLink
+returned [empty `stream()`](https://bugs.eclipse.org/bugs/show_bug.cgi?id=433075) for lazy lists
+(because officially they didn't support Java 8, but unofficially they had broken `Vector` subclass)
+we simply copied the list and called `stream()` on the copy and we had utility for it. Sure it
+wasn't nice, but it worked and it was very easy to remove later. When they fixed the issue we
+simplified the code in the utility method and then inlined all the occurrences and it looked like
+it never happened.
+
+You may thing about switching your provider -- and JPA 2.1 brought a lot of goodies to make it
+even easier as many properties in `persistence.xml` are now non-proprietary. But you still have
+to go through the configuration (focus on caching especially) to make it work "as before" and then
+you may get caught into *bug cross-fire*, as I call it. I used Hibernate for many years when I
+joined another project using EclipseLink. After a few months we wanted to switch to Hibernate as
+we discovered that most of the team was more familiar with it. But some of our JPA queries didn't
+work on Hibernate because of a [bug](https://hibernate.atlassian.net/browse/HHH-9711).
+
+So even something that should work in theory may be [quite a horror](http://wp.me/pcxwh-bT) in
+practice. Hope you have tests to catch any potential bug affecting your project.
