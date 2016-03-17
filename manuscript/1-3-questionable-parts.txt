@@ -334,10 +334,16 @@ D> disables dirty checking on the persistence context which makes sense. Unfortu
 D> accidentally use some modification SQL via bulk update/delete or even going down to JDBC, it
 D> may get committed, as not all JDBC drivers respect `connection.setReadOnly(true)`. While it's
 D> an obvious bug (or missing feature, whatever), marking transaction as read-only does *not*
-D> guarantee that nothing gets committed. It still says clearly your intention and it brings some
-D> time-saving on the *unit of work* level.
+D> guarantee that nothing gets committed. It still says clearly your intention and it *should*
+D> bring some time-saving on the *unit of work* level. Unfortunately, again, this does not work
+D> universally, not even on the ORM level. Hibernate's session does not get flushed, but I'm
+D> pretty sure EclipseLink flushes updates to the database on the JPA level and does not set
+D> JDBC connection to [read-only either](https://jira.spring.io/browse/SPR-7891).
 D>
 D> I don't know how to mark transaction as read-only with JTA `@Transactional` annotation.
+D>
+D> I highly recommend reading older but still very relevant article [Transaction strategies:
+D> Understanding transaction pitfalls](http://www.ibm.com/developerworks/java/library/j-ts1/)
 
 
 ## JPA alternatives?
