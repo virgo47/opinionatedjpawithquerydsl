@@ -120,7 +120,8 @@ dog = em.find(Dog.class, 1); // find does not do much here
 System.out.println("dog.name = " + dog.getName()); // still Rex
 
 em.refresh(dog); // this reads the real data now
-System.out.println("after refresh: dog.name = " + dog.getName()); // Dex
+System.out.println("after refresh: dog.name = " +
+  dog.getName()); // Dex
 ~~~
 
 The same problem applies to JPQL queries that happen after the changes to the entities within a transaction
