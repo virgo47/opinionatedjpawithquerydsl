@@ -10,7 +10,7 @@ To actually finish something, I want to do this in the 1st edition:
 * JPA Good Times, Bad Times
     * Good Parts (100%) NEEDS REVIEW
     * Missing Parts (100%) NEEDS REVIEW
-    * Questionable Parts (80%)
+    * Questionable Parts (100%) NEEDS REVIEW
 * Opinionated JPA
     * ORM tuned down (80%)
     * No further steps without Querydsl (40%)
@@ -35,7 +35,7 @@ To actually finish something, I want to do this in the 1st edition:
     * Advanced Querydsl (5%)
 * Appendices
     * H2 Database (50%)
-    * Groovy scrips for database initialization
+%%    * Groovy scrips for database initialization
     * Bugs I experienced myself (80%)
     * How to report JPA provider bugs? (be active, report, vote, creating test cases, ...)
 
@@ -48,8 +48,5 @@ this part for every project I've made.
 * DAO vs Repository vs...?
 * http://stackoverflow.com/questions/23625885/does-querydsl-suffers-of-the-same-limitations-as-jpa-criteria-api
 `JPASQLQuery`? How does it use JPA mapping?
-
-Talking about frameworks you may ask: "How does this all compare with Spring Data? It can be used
-with JPA and Querydsl too!" ... TODO :-)
 
 Mention Make the Magic go away: https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html
