@@ -8,17 +8,17 @@ in particular. It's a book about [Querydsl](http://www.querydsl.com/) as well, b
 recommended this library I completely fell in love with it. It never let me down and sometimes
 even generated feeling of sheer happiness -- which is not that common in our programming profession.
 
-Be warned -- this book is (as the title suggests) very opinionated. Sometimes you may even ask:
+Be warned -- this book is, as the title suggests, very opinionated. Sometimes you may even ask:
 "Why the hell this guy still uses JPA?!" Sometimes even I don't know. And sometimes you can hear
 a feeble voice saying words like "legacy" or similar. It is not a typical tutorial book covering
-the technology (or part of it) systematically -- I cherry-pick instead. It's not a typical best
-practices book either -- and while we use JPA as specified (unless we make a mistake which is not
-difficult with JPA) we definitely don't use it as intended.
+the technology systematically -- I cherry-pick instead. It's not a typical best practices book
+either. We use JPA as specified, unless we make a mistake -- which is not difficult with JPA, but
+we definitely don't use it as intended.
 
 We decided to take control over the [SQL](https://en.wikipedia.org/wiki/SQL) statements our
 system produces. You can't rely much on lazy or eager fetch types, because often (as the
-specification says) these are mere hints, not real promises. We decided to still use the JPA, even
-with rather SQL-like approach, because it still provides big benefits over plain
+specification says) these are mere hints, not real promises. Even with rather SQL-like approach
+JPA still provides big benefits over plain
 [JDBC](https://en.wikipedia.org/wiki/Java_Database_Connectivity). We tuned down the ORM part of
 the JPA a little bit and mapped our entities to resemble "raw" tables more. You may feel like
 shouting "that's all wrong!" -- which is OK. Let me answer the following question first...
@@ -27,9 +27,9 @@ shouting "that's all wrong!" -- which is OK. Let me answer the following questio
 ## Is this book for you?
 
 This book is for anyone who actively uses JPA -- preferably in version 2.1 (*Java EE 7*) --
-and is not completely happy with it. Primarily it tackles some difficult JPA points, features
-that combine benefits with unavoidable drawbacks. Even if you're happy with JPA as it is, the book
-still can give you more options how to solve your problems.
+and is not completely happy with it. It's main focuses is on painful points related to relationship
+mapping where benefits mix with unavoidable drawbacks. Even if you're happy with JPA as it is, the
+book still can give you more options how to solve your problems.
 
 Some of the considerations are related to ORM in general and may be applicable for non-JPA ORM
 providers, but I can't guarantee that. Some parts of the book are more generic and based on common
@@ -46,6 +46,9 @@ relations and perform joins explicitly. That's why this `ON` for joins is, in my
 killer feature of this specification update and bit of a hidden gem overshadowed by (also very
 useful) converters, procedure calls, etc.
 
+Last, but not least, we use Querydsl throughout the book -- and this library is still not covered
+as much as it deserves, I believe.
+
 
 ## Not in the book
 %%TODO: REVIEW from here
@@ -56,7 +59,7 @@ will, or want to) and you are interested in something beyond reference material.
 this is a difficult book though, as I always try to talk about some concrete problem related to
 JPA or SQL (you should know that one too, of course) which makes the explanation easier to grasp.
 
-This is not a book focusing on architecture, at least not primarily, although patterns how to use
+This is not a book about architecture, at least not primarily, although patterns how to use
 JPA are somewhere in this area. I take kind of "Fowlerish" liberty of mixing design and architecture
 and blur the line between them. I admit I have not yet worked on such a project where thinking
 architecturally big would pay off. But I have seen architecture effort on other projects where the
