@@ -16,7 +16,6 @@ To actually finish something, I want to do this in the 1st edition:
     * No further steps without Querydsl (40%)
     * Moving away from eager *to-one* relationships (5%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
-    * *To-many* relations
     * Modularity, if you must
         * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
     * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
@@ -25,6 +24,7 @@ To actually finish something, I want to do this in the 1st edition:
 %%    * Object identity, easy problem, recommended always the same way
 %%        * Composite `@Id` or `@IdClass`?
 %%        * Equals object or id? TODO - does it matter? tests with popular ORMs
+%%    * *Many-to-many* relations mapping consequences, what SQL it generates, explicit/implicit mapping
     * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
     do it when you need to fetch from *to-many* as well (famous N+1 select problem)
         * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
