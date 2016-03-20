@@ -6,8 +6,6 @@ import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CacheAndReferenceDemo {
 
@@ -28,9 +26,7 @@ public class CacheAndReferenceDemo {
       System.out.println("\ngetReference");
       Dog reference = em.getReference(Dog.class, 1);
       System.out.println("\nfind");
-      Map<String, Object> props = new HashMap<String, Object>();
-      // TODO any hint to load "references" (objects with id only) instead of cascading?
-      Dog dog = em.find(Dog.class, 1, props);
+      Dog dog = em.find(Dog.class, 1);
       Tools.println();
 
 //      referenceAndCacheExperiments(emf, em);
