@@ -50,3 +50,10 @@ this part for every project I've made.
 `JPASQLQuery`? How does it use JPA mapping?
 
 Mention Make the Magic go away: https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html
+
+Investigate more about Entity Graphs:
+http://www.thoughts-on-java.org/jpa-21-entity-graph-part-1-named-entity/
+http://www.thoughts-on-java.org/jpa-21-entity-graph-part-2-define/
+Also projpa2, p.321
+
+However, I doubt this tackles the problem of inherently eager *to-one* mappings.

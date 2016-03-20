@@ -33,11 +33,3 @@ if cached) when I just want to update this single one". And that's how it all st
 I know about JPA the less of it I use. But it still has goodies I don't want to let go.
 
 So the question is: How can we tune the JPA down without crippling it -- or ourselves?
-
-TODO - this goes away - just notes:
-Investigate more about Entity Graphs:
-http://www.thoughts-on-java.org/jpa-21-entity-graph-part-1-named-entity/
-http://www.thoughts-on-java.org/jpa-21-entity-graph-part-2-define/
-Also projpa2, p.321
-
-However, I doubt this tackles the problem of inherently eager *to-one* mappings.
