@@ -22,6 +22,7 @@ Querydsl code into JPQL or Criteria yourself, which is perfectly doable, of cour
 not disrupt the stack under it, it is "just" slapped over the JPA to make it more convenient.
 
 I> Appendix [Project example](#app-project-example) shows the details needed in your build files
+I> to set up annotation processor for Querydsl.
 
 Querydsl brings in a [domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language)
 (or DSL) in the form of its fluent API. It happens to be so-called internal DSL because it's still
