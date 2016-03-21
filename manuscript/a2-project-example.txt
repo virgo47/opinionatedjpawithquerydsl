@@ -1,0 +1,15 @@
+# Project example {#app-project-example}
+
+TODO
+
+## Querydsl annotation processor
+
+TODO
+
+### Querydsl and Maven
+
+TODO
+
+### Querydsl and Gradle
+
+TODO

@@ -16,6 +16,7 @@
 3-x-advanced-querydsl.txt
 
 a1-h2.txt
-a2-bugs-found.txt
+a2-project-example.txt
+ax-bugs-found.txt
 
 bibliography.txt

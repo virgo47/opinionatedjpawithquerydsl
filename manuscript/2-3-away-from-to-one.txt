@@ -7,14 +7,29 @@ an entity with such a relationship when we are not interested in this relation.
 ## Simple example
 
 We will continue experimenting on dogs in the demonstration of to-one mapping. The code is
-available in a GitHub sub-project [many-to-one-eager](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/examples/many-to-one-eager)
-but as it is our first serious experiment we will include most of it in the text as well.
+available in a GitHub sub-project [many-to-one-eager](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/examples/many-to-one-eager).
+This particular demo project is also referenced in appendix [Project example](#app-project-example)
+where particulars of build files and `persistence.xml` are described. We will skip these but
+because this is our first serious experiment in the book we will still include more of the code
+listing to establish kind of a baseline.
 
 Our model is simple, but there is a twist to it. We have a `Dog` and `Breed` entities where a `Dog`
 points to its `Breed` -- and to make things just a little bit tricky the `Breed` is a hierarchy
 where each `Breed` points to its parent via attribute called `derivedFrom`.
 
 ![Class diagram of our entity model](images/many-to-one-example.png)
+
+Our entities are quite plain - `Dog` looks like this:
+
+{lang="java", crop-end-line=15}
+<<[Dog.java](../examples/many-to-one-eager/src/main/java/modeltoone/Dog.java)
+
+The rest are getters/setters -- complete code is [here](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-eager/src/main/java/modeltoone/Dog.java).
+Referenced `Breed` is mapped like this ([full source code](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-eager/src/main/java/modeltoone/Breed.java)):
+
+{lang="java", crop-end-line=15}
+<<[Breed.java](../examples/many-to-one-eager/src/main/java/modeltoone/Breed.java)
+
 
 http://stackoverflow.com/questions/18746259/lazy-loading-does-not-works-for-manytoone-in-eclipselink
 http://stackoverflow.com/questions/9400930/using-ecliplselink-jpa-how-can-i-disable-all-the-relationship-lookups-when-persi

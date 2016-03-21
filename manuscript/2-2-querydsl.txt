@@ -1,5 +1,10 @@
 # No further step without Querydsl {#ch-querydls}
 
+D> I do realize I'm breaking a flow of the book a little bit, but since I've been introduced
+D> to this neat library I became a huge fan and I never looked back. It doesn't affect JPA itself
+D> because it sits above it but in your code it virtually replaces both JPQL and especially
+D> Criteria API.
+
 To put it simply -- [Querydsl](http://www.querydsl.com) is a library that -- from programmer's
 perspective -- works like a more expressive and readable version of *Java Persistence Criteria
 API*. Internally it first generates JPQL and the rest from there is handled by the JPA provider.
@@ -15,6 +20,8 @@ non-standard third-party library when it does not provide any additional advanta
 hate this idea, then you probably can stop reading this book -- or you can translate all my
 Querydsl code into JPQL or Criteria yourself, which is perfectly doable, of course! Querydsl does
 not disrupt the stack under it, it is "just" slapped over the JPA to make it more convenient.
+
+I> Appendix [Project example](#app-project-example) shows the details needed in your build files
 
 Querydsl brings in a [domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language)
 (or DSL) in the form of its fluent API. It happens to be so-called internal DSL because it's still
