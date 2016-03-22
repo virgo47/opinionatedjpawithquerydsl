@@ -37,7 +37,8 @@ We will prepare data like this:
 
 {title="Preparing a dog", lang=java}
 ~~~
-EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName);
+EntityManagerFactory emf = Persistence
+  .createEntityManagerFactory(persistenceUnitName);
 try {
   EntityManager em = emf.createEntityManager();
   em.getTransaction().begin();
