@@ -4,7 +4,7 @@ Now we can get back to the topics I foreshadowed in the introduction to this opi
 We will show an example of `@ManyToOne` mapping and we will analyze our options how to load
 an entity with such a relationship when we are not interested in this relation.
 
-## Simple example
+## Simple example of `@ManyToOne`
 
 We will continue experimenting on dogs in the demonstration of to-one mapping. The code is
 available in a GitHub sub-project [many-to-one-eager](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/examples/many-to-one-eager).
@@ -30,6 +30,101 @@ Referenced `Breed` is mapped like this ([full source code](https://github.com/vi
 {lang="java", crop-end-line=15}
 <<[Breed.java](../examples/many-to-one-eager/src/main/java/modeltoone/Breed.java)
 
+There is nothing special on these entities, but let's see what happens when we load some dog. In
+the process we will also compare Hibernate and EclipseLink, that's why we have two nearly
+equivalent persistence units in our [persistence.xml](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-eager/src/main/resources/META-INF/persistence.xml).
+We will prepare data like this:
+
+{title="Preparing a dog", lang=java}
+~~~
+EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName);
+try {
+  EntityManager em = emf.createEntityManager();
+  em.getTransaction().begin();
+
+  Breed wolf = new Breed();
+  wolf.setName("wolf");
+  em.persist(wolf);
+
+  Breed germanShepherd = new Breed();
+  germanShepherd.setName("german shepherd");
+  germanShepherd.setDerivedFrom(wolf);
+  em.persist(germanShepherd);
+
+  Breed collie = new Breed();
+  collie.setName("collie");
+  collie.setDerivedFrom(germanShepherd);
+  em.persist(collie);
+
+  Dog lassie = new Dog();
+  lassie.setName("Lassie");
+  lassie.setBreed(collie);
+  em.persist(lassie);
+
+  em.getTransaction().commit();
+  em.clear();
+  emf.getCache().evictAll();
+
+  // here comes "demo" code
+} finally {
+  emf.close();
+}
+~~~
+
+Sorry for copy/pasting, eventually the breed and dog creation would end up in separate methods,
+but for our demo this code will do. Also the breed tree is probably far from reality, but that's
+not the point. Let's say that collie was bred from shepherd which descends from wolf.
+
+Notice the clearing of the entity manager, alternatively we could close and reopen one. Another
+thing is we are clearing up the second-level cache as well. We may argue what the real case is,
+but unless you have all your entities cached all the time an empty cache simulates real-life
+scenario. And we're just finding the dog by its ID -- we know it's 1:
+
+{title="Finding a dog", lang=java}
+~~~
+Dog dog = em.find(Dog.class, 1);
+~~~
+
+What happens at this line? Let's see the console for Hibernate:
+
+{title="Hibernate find dog by id", lang=text}
+~~~
+Hibernate: select dog0_.id as id1_1_0_, dog0_.breed_id as breed_id3_1_0_, dog0_.name as name2_1_0_, breed1_.id as id1_0_1_, breed1_.derivedFrom_id as derivedF3_0_1_, breed1_.name as name2_0_1_, breed2_.id as id1_0_2_, breed2_.derivedFrom_id as derivedF3_0_2_, breed2_.name as name2_0_2_ from Dog dog0_ left outer join Breed breed1_ on dog0_.breed_id=breed1_.id left outer join Breed breed2_ on breed1_.derivedFrom_id=breed2_.id where dog0_.id=?
+Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_, breed0_.name as name2_0_0_, breed1_.id as id1_0_1_, breed1_.derivedFrom_id as derivedF3_0_1_, breed1_.name as name2_0_1_ from Breed breed0_ left outer join Breed breed1_ on breed0_.derivedFrom_id=breed1_.id where breed0_.id=?
+~~~
+
+Two selects that load a dog and all three breeds -- not that bad. If you know traverse up the breed
+tree, there would be no more select. On the other hand, if you cared about the actual breed of this
+dog and not about what this breed is derived from we fetched those unnecessarily. There is no way
+to tell the JPA that dummy breed with shepherd's ID would do on the collie entity and that you
+don't want this to-one relationship fetching to propagate any further.
+
+Let's look at EclipseLink now:
+
+{title="EclipseLink find dog by id", lang=text}
+~~~
+[EL Fine]: sql: 2016-03-22 18:08:19.28--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, BREED_ID FROM DOG WHERE (ID = ?)
+	bind => [1]
+[EL Fine]: sql: 2016-03-22 18:08:19.281--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+	bind => [3]
+[EL Fine]: sql: 2016-03-22 18:08:19.282--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+	bind => [2]
+[EL Fine]: sql: 2016-03-22 18:08:19.282--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+	bind => [1]
+~~~
+
+This is as obvious as it gets. Each entity is loaded with a separate query. Effect is the same
+like with Hibernate, EclipseLink just needs more round-trips to the database. Personally I don't
+care how many selects it takes in the end as this is part of the JPA provider strategy. We are not
+going to fine-tune Hibernate or EclipseLink. We're going to cut off this loading chain.
+
+## How about going lazy?
+
+TODO
+
+## Removing `@ManyToOne` altogether
+
+TODO
 
 http://stackoverflow.com/questions/18746259/lazy-loading-does-not-works-for-manytoone-in-eclipselink
 http://stackoverflow.com/questions/9400930/using-ecliplselink-jpa-how-can-i-disable-all-the-relationship-lookups-when-persi

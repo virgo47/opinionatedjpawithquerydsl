@@ -10,11 +10,8 @@ import javax.persistence.Persistence;
 public class SingleEntityRead {
 
   public static void main(String[] args) {
-    Tools.setPrefix("EL> ");
     run("demo-el");
-    Tools.setPrefix("HIB> ");
     run("demo-hib");
-    Tools.printResult();
   }
 
   private static void run(String persistenceUnitName) {
@@ -26,7 +23,12 @@ public class SingleEntityRead {
 
       System.out.println("\nfind");
       Dog dog = em.find(Dog.class, 1);
-      Tools.println();
+      System.out.println("\ntraversing");
+      Breed breed = dog.getBreed();
+      while (breed.getDerivedFrom() != null) {
+        breed = breed.getDerivedFrom();
+      }
+      System.out.println("breed = " + breed.getName());
     } finally {
       emf.close();
     }
