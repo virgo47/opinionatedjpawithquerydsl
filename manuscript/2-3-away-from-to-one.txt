@@ -180,13 +180,14 @@ Just like before EclipseLink generates four selects and executes them all right 
 find the entity. How is this possible? Firstly, from the [[JPspec](#bib-jpspec)] perspective (page
 25):
 
-Q> If property access is used and lazy fetching is specified, portable applications should not
-Q> directly access the entity state underlying the property methods of managed instances until
-Q> after it has been fetched by the persistence provider.[4]
-Q>
-Q> [4] Lazy fetching is a hint to the persistence provider and can be specified by means of the
-Q> `Basic`, `OneToOne`, `OneToMany`, `ManyToOne`, `ManyToMany`, and `ElementCollection` annotations
-Q> and their XML equivalents...
+{icon=quote-right}
+G> If property access is used and lazy fetching is specified, portable applications should not
+G> directly access the entity state underlying the property methods of managed instances until
+G> after it has been fetched by the persistence provider.[4]
+G>
+G> [4] Lazy fetching is a hint to the persistence provider and can be specified by means of the
+G> `Basic`, `OneToOne`, `OneToMany`, `ManyToOne`, `ManyToMany`, and `ElementCollection` annotations
+G> and their XML equivalents...
 
 Footnote [4] is important here, obviously. So "it should" but it's just "a hint".
 
