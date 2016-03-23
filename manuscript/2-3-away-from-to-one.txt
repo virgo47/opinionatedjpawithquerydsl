@@ -245,6 +245,18 @@ works with any JPA provider (sans bugs, of course).
 W> This solution builds on JPA 2.1 capabilities as it requires usage of `ON` clause. Older JPA
 W> will not support it.
 
+
+### Was `ON` introduced for this?
+
+I doubt it. I missed the ability to join arbitrarily on anything a long time ago -- and my first
+motivation was what I described here, to tune down mapping. But `ON` was dearly missing for other
+practical reasons. While this does not relate to to-one mapping, let's see an example:
+
+TODO example with translations for various languages
+
+
+### Loosing information without mapping annotations
+
 TODO
 
 http://stackoverflow.com/questions/18746259/lazy-loading-does-not-works-for-manytoone-in-eclipselink
