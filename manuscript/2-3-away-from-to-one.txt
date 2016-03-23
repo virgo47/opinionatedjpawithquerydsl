@@ -121,9 +121,128 @@ going to fine-tune Hibernate or EclipseLink. We're going to cut off this loading
 
 ## How about going lazy?
 
-TODO
+Let's be a bit naive (I was!) and mark the relationships as lazy:
+
+{title="Marking relationships lazy", lang=java}
+~~~
+@ManyToOne(fetch = FetchType.LAZY)
+private Breed breed;
+~~~
+
+And the same for `Breed.derivedFrom`. Our testing code is like this:
+
+{title="Testing code", lang=java}
+~~~
+System.out.println("\nfind");
+Dog dog = em.find(Dog.class, 1);
+System.out.println("\ntraversing");
+Breed breed = dog.getBreed();
+while (breed.getDerivedFrom() != null) {
+  breed = breed.getDerivedFrom();
+}
+System.out.println("breed = " + breed.getName());
+~~~
+
+This way we should see what selects are executed when. Hibernate out of the box works as expected:
+
+{title="Hibernate lazy find and traversing", lang=text}
+~~~
+find
+Hibernate: select dog0_.id as id1_1_0_, dog0_.breed_id as breed_id3_1_0_, dog0_.name as name2_1_0_ from Dog dog0_ where dog0_.id=?
+
+traversing
+Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_, breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
+Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_, breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
+Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_, breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
+breed = wolf
+~~~
+
+Selects are executed as needed (lazily). For long-term Hibernate users this often gives an
+impression that it should work like this. Let's migrate to EclipseLink then:
+
+{title="EclipseLink lazy find and traversing", lang=text}
+~~~
+find
+[EL Fine]: sql: 2016-03-23 14:45:29.349--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, BREED_ID FROM DOG WHERE (ID = ?)
+	bind => [1]
+[EL Fine]: sql: 2016-03-23 14:45:29.35--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+	bind => [3]
+[EL Fine]: sql: 2016-03-23 14:45:29.35--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+	bind => [2]
+[EL Fine]: sql: 2016-03-23 14:45:29.35--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+	bind => [1]
+
+traversing
+breed = wolf
+~~~
+
+Just like before EclipseLink generates four selects and executes them all right away when you
+find the entity. How is this possible? Firstly, from the [[JPspec](#bib-jpspec)] perspective (page
+25):
+
+Q> If property access is used and lazy fetching is specified, portable applications should not
+Q> directly access the entity state underlying the property methods of managed instances until
+Q> after it has been fetched by the persistence provider.[4]
+Q>
+Q> [4] Lazy fetching is a hint to the persistence provider and can be specified by means of the
+Q> `Basic`, `OneToOne`, `OneToMany`, `ManyToOne`, `ManyToMany`, and `ElementCollection` annotations
+Q> and their XML equivalents...
+
+Footnote [4] is important here, obviously. So "it should" but it's just "a hint".
+
+### How bulletproof is Hibernate's solution?
+
+Pretty much bulletproof, I have to say. As presented here, we annotated fields, which means we
+implied `Access(FIELD)`. Hibernate can't get away with just intercepting getters/setters, it has
+to do better. Let's try a bit of reflection:
+
+{title="Reading breed with reflection", lang=java}
+~~~
+System.out.println("\nfind");
+Dog dog = em.find(Dog.class, 1);
+System.out.println("\nhacking");
+Field breedField = dog.getClass().getDeclaredField("breed");
+System.out.println(breedField.getType());
+breedField.setAccessible(true);
+Object val = breedField.get(dog);
+System.out.println("val = " + val);
+~~~
+
+And now the console output mixed with logs:
+
+{title="Hibernate output for reflection access", lang=text}
+~~~
+find
+Hibernate: select dog0_.id as id1_1_0_, dog0_.breed_id as breed_id3_1_0_, dog0_.name as name2_1_0_ from Dog dog0_ where dog0_.id=?
+
+hacking
+class modeltoone.Breed
+Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_, breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
+val = Breed{id=3, name='collie'}
+~~~
+
+This is perfectly lazy. The solution seems even magic when you think about it. Doing lazy
+collection (`@OneToMany` or `@ManyToMany`) is not a problem, we would probably mess around a bit
+but eventually we would create some collection implementation that does it right. The trick is we
+have the actual entities wrapped in a collection that works as an intermediary. We don't need to
+perform any bytecode voodoo on the entity class.
+
+With to-one situation changes dramatically as you have no intermediary. It would be interesting
+if JPA at least offered some wrapper to enforce lazy behavior when you really need it regardless
+of the JPA provider, but that would give away you're using some ORM (like you don't know) and
+even more voices would talk about that "leaking abstraction".
+
+While my tests with Hibernate looked great, the results are not portable across JPA providers as
+we saw. Also, I'd not bet that you'll get the same results because there's still a lot of questions
+how to make Hibernate lazy for to-one relationships, many of them quite new. But let's discover
+a solution that is no magic, that is explicit (you probably write a bit more code too) and that
+works with any JPA provider (sans bugs, of course).
+
 
 ## Removing `@ManyToOne` altogether
+
+W> This solution builds on JPA 2.1 capabilities as it requires usage of `ON` clause. Older JPA
+W> will not support it.
 
 TODO
 
@@ -132,4 +251,4 @@ http://stackoverflow.com/questions/9400930/using-ecliplselink-jpa-how-can-i-disa
 
 options for avoiding eager fetch:
 - state all the columns except for relations (tedious)
-- black byte-code magic, not ensured by the JPA standard
+- black bytecode magic, not ensured by the JPA standard

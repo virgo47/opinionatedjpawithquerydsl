@@ -88,7 +88,7 @@ over collections is undefined"*).[^paging]
 What I dearly miss in JPA is better control over fetching of to-one relations. Current solution
 is trying to be transparent in terms of object-relational mapping, but it may kill your performance
 or requires caching, potentially a lot of it. While to-many relations can be loaded lazily with
-special collection implementation enabling it, to-one cannot work like this without byte-code
+special collection implementation enabling it, to-one cannot work like this without bytecode
 modification. I believe though, that developers should be allowed to decide that this and this
 to-one relation will not be loaded and only detached entities with IDs will be provided. But let's
 wait with this discussion for the [opinionated part](#part-opinionated-jpa).

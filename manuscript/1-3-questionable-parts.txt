@@ -43,9 +43,9 @@ all are usable for *to-one* mapping.
 The essential trouble is that such a field contains an entity directly. There is no indirection
 like a collection, that can provide lazy implementation, in case of *to-many* mappings. JPA does
 not offer any generic solution for indirect *value holder*. *Virtual proxy* would require some
-interface to implement, or byte-code manipulation on the target class, *ghost* would definitely
-require byte-code manipulation on the target class, and *lazy initialization* would require
-byte-code manipulation, or at least some special implementation, on the source class. JPA design
+interface to implement, or bytecode manipulation on the target class, *ghost* would definitely
+require bytecode manipulation on the target class, and *lazy initialization* would require
+bytecode manipulation, or at least some special implementation, on the source class. JPA design
 neither offers any reasonable way how to introduce this indirection without advanced auto-magic
 solutions nor ways how to do it explicitly in a way programmer can control.
 
@@ -308,7 +308,7 @@ W> solutions. We will get to this when we talk about [Vietnam of Computer Scienc
 Persistence context (unit of work) has a lot to do when the transaction is committed. It needs to
 be flushed which means it needs to check all the *managed* (or attached) entities, and figure out
 whether they are changed or not (dirty checking). How the dirty checking is performed is beyond the
-scope of this book, typically some byte-code manipulation is used. The problem is that this takes
+scope of this book, typically some bytecode manipulation is used. The problem is that this takes
 longer when the persistence context is big. When it's big for a reason, then you have to do what
 you have to do, but when it's big because we didn't harness bulk updates/deletes, than it's simply
 wasteful. Often it also takes a lot of code when a simple JPQL says the same. I don't accept an
