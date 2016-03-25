@@ -11,7 +11,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
 
-public class SingleEntityReadLazy {
+public class SingleEntityReadRaw {
 
   public static void main(String[] args) {
     run("demo-el");
