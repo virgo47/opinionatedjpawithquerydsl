@@ -119,6 +119,7 @@ like with Hibernate, EclipseLink just needs more round-trips to the database. Pe
 care how many selects it takes in the end as this is part of the JPA provider strategy. We are not
 going to fine-tune Hibernate or EclipseLink. We're going to cut off this loading chain.
 
+
 ## How about going lazy?
 
 Let's be a bit naive (I was!) and mark the relationships as lazy:
@@ -189,7 +190,10 @@ G> [4] Lazy fetching is a hint to the persistence provider and can be specified 
 G> `Basic`, `OneToOne`, `OneToMany`, `ManyToOne`, `ManyToMany`, and `ElementCollection` annotations
 G> and their XML equivalents...
 
-Footnote [4] is important here, obviously. So "it should" but it's just "a hint".
+Footnote [4] is important here, obviously. So "it should" but it's just "a hint". These results
+can be recreated by running `SingleEntityReadLazy` (in test classpath) from GitHub sub-project
+[many-to-one-lazy](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/examples/many-to-one-lazy).
+
 
 ### How bulletproof is Hibernate's solution?
 
@@ -244,6 +248,25 @@ works with any JPA provider (sans bugs, of course).
 
 W> This solution builds on JPA 2.1 capabilities as it requires usage of `ON` clause. Older JPA
 W> will not support it.
+
+To get full control over the fetching -- and to do it without any high-tech solution -- we have to
+drop the relation and map row foreign key instead. How does it work?
+
+TODO: SEEMS I GOT TO AN UNEXPECTED DEAD-END!
+1) the whole stuff until now works only for EclipseLink
+2) it is beyond specification, because JPspec, page 176 and following 4.4.5.x sections clearly
+state that JOIN can be followed by *join_association_path_expression* defined as:
+
+~~
+join_association_path_expression ::=
+  join_collection_valued_path_expression |
+  join_single_valued_path_expression |
+  TREAT(join_collection_valued_path_expression AS subtype) |
+  TREAT(join_single_valued_path_expression AS subtype)
+~~
+
+None of this allows simple entity not followed by its attribute. This is just ridiculous to
+figure out in this stage... In this case Hibernate's "no-no" is obviously right.
 
 
 ### Was `ON` introduced for this?
