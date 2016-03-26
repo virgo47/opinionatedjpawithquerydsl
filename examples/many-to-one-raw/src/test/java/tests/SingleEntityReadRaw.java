@@ -35,6 +35,8 @@ public class SingleEntityReadRaw {
       }
       System.out.println("breed = " + breed.getName());
 
+      // This is invalid JPQL according to spec, because LEFT JOIN must be followed by
+      // an association path
       List<Dog> dogs = em.createQuery(
         "select dog from Dog dog left join Breed breed on breed.id = dog.breedId" +
         " where breed.name like '%ll%'", Dog.class).getResultList();
