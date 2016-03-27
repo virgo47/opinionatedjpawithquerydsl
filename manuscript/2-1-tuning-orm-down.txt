@@ -24,6 +24,9 @@ a provider, but it's not guaranteed. That's nothing for me. Let's face it -- any
 is eager, unless you add some complexity to your system to make it lazy. It's not lazy because you
 annotate it so, deal with it.
 
+%% TODO: this does not mean we don't annotate collections as lazy
+
+
 ## Price for relations
 
 For me the biggest problem is that JPA does not provide any convenient way how to stop cascading
@@ -129,6 +132,8 @@ for the complex cases. However, many other smart and experienced people dislike 
 and you can sense the deep understanding of the topic. Which naturally leads us to the next section.
 
 
+%% TODO move to Questionable parts
+
 ## Love and hate for ORM
 
 As I said already, ORM is typically seen as a good fit with domain-driven design (DDD). But
@@ -138,6 +143,7 @@ too. I say it again, ORM is very difficult, even using well documented ORM (like
 is hard -- there's simply too much in it. We're dealing with complex problem, with a mismatch --
 and some kind of mismatch it is. And it's not the basic principle that hurts, we always get burnt
 on many, too many, details.
+
 
 ### Vietnam of Computer Science {#vietnam}
 
