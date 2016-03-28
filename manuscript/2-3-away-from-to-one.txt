@@ -1,5 +1,8 @@
 # Moving away from *to-one* relationships {#ch-away-from-to-one}
 
+%% TODO: rename
+%% TODO: mention also that even if lazy works, it is not guaranteed, it can change when misconfigured, etc...
+
 Now we can get back to the topics I foreshadowed in the introduction to this opinionated part.
 We will show an example of `@ManyToOne` mapping and we will analyze our options how to load
 an entity with such a relationship when we are not interested in this relation.
