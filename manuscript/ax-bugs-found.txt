@@ -54,3 +54,5 @@ original id (and in DB it was still an ID). This collection did not delete the e
 association table (not mapped as an entity). This actually did not relate to the number of columns,
 merely to the fact that they were not `@Id` columns anymore. JPA specification does not mention
 any exception like this.
+
+%% JPA spec change to add support for root entities in JOINs: https://java.net/jira/browse/JPA_SPEC-128
