@@ -40,3 +40,6 @@ as we clone the query. I'm sure there are legitimate cases when to use
 this feature, but I personally use it only in query objects wrapping complicated query where I have
 a lot of aliases around already -- and even then mostly without the where part which I rather add
 dynamically later.
+
+%% TODO: revisit clone and other methods in multi-threaded environments, with 3.x we must use
+%% synchronized for these cases
