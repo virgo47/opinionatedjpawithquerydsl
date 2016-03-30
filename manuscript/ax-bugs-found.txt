@@ -39,7 +39,9 @@ instead of extension, of course. That way you can often avoid both previous poin
 * [Abstract MappedSuperclass in separate JAR is not weaved statically](https://bugs.eclipse.org/bugs/show_bug.cgi?id=466271)
 (EclipseLink) This relates to modularity and will be fixed in version 2.7. TODO: check
 * [JPQL Case operator is not thread-safe](https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042)
-(EclipseLink) TODO: Tricky one, can I create "simple" test case?
+(EclipseLink) CASE in named queries or with normal queries combined with caching hint cause
+randomly either `ArrayIndexOutOfBoundsException` in EclipseLink stack or `SQLException` because
+the CASE clause is serialized wrongly in the SQL.
 * [H2 dialect generates FOR UPDATE before LIMIT/OFFSET](https://bugs.eclipse.org/bugs/show_bug.cgi?id=449062)
 (EclipseLink) This one is about particular database vendor SQL support. In H2 you need to say
 `FOR UPDATE` after `LIMIT/OFFSET` combo, but EclipseLink does not respect this syntactic detail.
