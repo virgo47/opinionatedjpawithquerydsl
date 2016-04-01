@@ -9,11 +9,10 @@ recommended this library I completely fell in love with it. It never let me down
 even generated feeling of sheer happiness -- which is not that common in our programming profession.
 
 Be warned -- this book is, as the title suggests, very opinionated. Sometimes you may even ask:
-"Why the hell this guy still uses JPA?!" Sometimes even I don't know. And sometimes you can hear
-a feeble voice saying words like "legacy" or similar. It is not a typical tutorial book covering
-the technology systematically -- I cherry-pick instead. It's not a typical best practices book
-either. We use JPA as specified, unless we make a mistake -- which is not difficult with JPA, but
-we definitely don't use it as intended.
+"Why the hell this guy still uses JPA?!" It is not a typical tutorial book covering the technology
+systematically -- I cherry-pick instead. It's not a typical best practices book either. We use ORM
+technology but not quite as intended. We even left the safe water of JPA specification -- although
+originally unintentionally because reference implementation let us.
 
 We decided to take control over the [SQL](https://en.wikipedia.org/wiki/SQL) statements our
 system produces. You can't rely much on lazy or eager fetch types, because often (as the
@@ -37,17 +36,8 @@ sense (like "avoid N+1 select"), others are strictly JPA related (like how to ac
 Some are probably complete answers, recipes even, others are open topics that only raise further
 questions. Some are definitely a bit unorthodox from a typical JPA perspective.
 
-While many parts of the book are usable with *JPA 2.0*, it was the update of the specification to
-*JPA 2.1* that really allowed me to experiment with getting rid of my biggest pain point in the JPA
-mapping -- which were *to-one* relations. These are inherently eager unless you use some
-non-standard magic (probably based on bytecode modification). *JPA 2.1* introduces ability to
-explicitly state `ON` conditions for joins which allows you to map foreign-key values instead of
-relations and perform joins explicitly. That's why this `ON` for joins is, in my eyes, a true
-killer feature of this specification update and bit of a hidden gem overshadowed by (also very
-useful) converters, procedure calls, etc.
-
 Last, but not least, we use Querydsl throughout the book -- and this library is still not covered
-as much as it deserves, I believe.
+in books as much as it deserves, I believe.
 
 
 ## Not in the book
