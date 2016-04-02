@@ -58,16 +58,17 @@ Why JPA doesn't provide better fetch control for finds? I want to work with this
 I'm not interested in its relations, just wrap those FK values into otherwise empty entity objects
 (like references) and let me do my stuff! How I wished I could just map raw FK value instead of
 relation... actually, you can, but while you are able to load such related object explicitly
-(find by id), you can't join on that relationship. Or can you?
+(find by id), you can't join on that relationship.
 
-There are little to no examples of this, because *JPA 2.0* could not do that. All the joins were
-implicit and without the mapping (`@One/ManyToOne/Many`) it simply dit not work. I actually
-wandered "why can't I join on any value?!" for long time. And then, with *JPA 2.1* out in a wild for
-about a year, I discovered that I indeed **can** `JOIN` on any condition -- and that way I can join
-with raw FK. This ultimately led me to some extreme measures and I got rid of *to-one* mappings
-and never looked back.
+If you use EclipseLink you can do it, but that means you can't switch to other JPA 2.1 providers
+reliably, not to mention that dropping the mapping is by no means a minor detour from standard
+path. However the problems with to-one ultimately led me to these extreme measures and I got rid
+of *to-one* mappings and never looked back. Because I based my work on reference implementation of
+JPA 2.1 (EclipseLink) it took me more than a year to discover I diverged from the standard -- and
+even that only because I started to do testing with both major JPA providers in course of writing
+this book.
 
-So that is what the chapter [Moving away from *to-one* relationships](#ch-away-from-to-one) is
+More about this in the chapter [Troubles with *to-one* relationships](#ch-to-one-troubles) is
 about. Other points are much less radical compared to this one. Long before I learnt that being
 explicit and less lazy is definitely better and we will talk about it in other sections.
 

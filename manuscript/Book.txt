@@ -9,7 +9,7 @@
 2-0-opinionated-jpa.txt
 2-1-tuning-orm-down.txt
 2-2-querydsl.txt
-2-3-away-from-to-one.txt
+2-3-to-one-troubles.txt
 
 3-0-common-problems.txt
 3-1-avoid-n+1-select.txt

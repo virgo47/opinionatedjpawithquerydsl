@@ -1,4 +1,4 @@
-# Moving away from *to-one* relationships {#ch-away-from-to-one}
+# Troubles with *to-one* relationships {#ch-to-one-troubles}
 
 %% TODO: rename
 %% TODO: mention also that even if lazy works, it is not guaranteed, it can change when misconfigured, etc...

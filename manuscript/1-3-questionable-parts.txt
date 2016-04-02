@@ -49,11 +49,9 @@ bytecode manipulation, or at least some special implementation, on the source cl
 neither offers any reasonable way how to introduce this indirection without advanced auto-magic
 solutions nor ways how to do it explicitly in a way programmer can control.
 
-Removing *to-one* mappings and replace them with raw foreign key values is possible, but this
-would disable our ability to join entities in queries -- before *JPA 2.1* came out and brought
-`ON` clause. Of course, this was probably meant for additional join conditions, but we can use
-it to explicitly state primary-foreign key condition which is normally implied from mapping.
-We will expand on this in a [dedicated chapter](#ch-away-from-to-one).
+Removing *to-one* mappings and replace them with raw foreign key values is currently not possible
+with pure JPA even though *JPA 2.1* brought `ON` clause for JPQL but it does not allow root
+entities in `JOIN`s. We will expand on this in a [dedicated chapter](#ch-to-one-troubles).
 
 
 ## Generated updates
