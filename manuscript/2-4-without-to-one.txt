@@ -1,0 +1,45 @@
+# Removing `@ManyToOne` altogether {#ch-without-to-one}
+
+%% TODO fix, add warning
+W> This solution builds on JPA 2.1 capabilities as it requires usage of `ON` clause. Older JPA
+W> will not support it.
+
+To get full control over the fetching -- and to do it without any high-tech solution -- we have to
+drop the relation and map row foreign key instead. How does it work?
+
+TODO: SEEMS I GOT TO AN UNEXPECTED DEAD-END!
+1) the whole stuff until now works only for EclipseLink
+2) it is beyond specification, because JPspec, page 176 and following 4.4.5.x sections clearly
+state that JOIN can be followed by *join_association_path_expression* defined as:
+
+~~
+join_association_path_expression ::=
+  join_collection_valued_path_expression |
+  join_single_valued_path_expression |
+  TREAT(join_collection_valued_path_expression AS subtype) |
+  TREAT(join_single_valued_path_expression AS subtype)
+~~
+
+None of this allows simple entity not followed by its attribute. This is just ridiculous to
+figure out in this stage... In this case Hibernate's "no-no" is obviously right.
+
+
+### Was `ON` introduced for this?
+
+I doubt it. I missed the ability to join arbitrarily on anything a long time ago -- and my first
+motivation was what I described here, to tune down mapping. But `ON` was dearly missing for other
+practical reasons. While this does not relate to to-one mapping, let's see an example:
+
+TODO example with translations for various languages
+
+
+### Loosing information without mapping annotations
+
+TODO
+
+http://stackoverflow.com/questions/18746259/lazy-loading-does-not-works-for-manytoone-in-eclipselink
+http://stackoverflow.com/questions/9400930/using-ecliplselink-jpa-how-can-i-disable-all-the-relationship-lookups-when-persi
+
+options for avoiding eager fetch:
+- state all the columns except for relations (tedious)
+- black bytecode magic, not ensured by the JPA standard

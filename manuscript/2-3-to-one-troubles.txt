@@ -1,8 +1,5 @@
 # Troubles with *to-one* relationships {#ch-to-one-troubles}
 
-%% TODO: rename
-%% TODO: mention also that even if lazy works, it is not guaranteed, it can change when misconfigured, etc...
-
 Now we can get back to the topics I foreshadowed in the introduction to this opinionated part.
 We will show an example of `@ManyToOne` mapping and we will analyze our options how to load
 an entity with such a relationship when we are not interested in this relation.
@@ -235,6 +232,9 @@ but eventually we would create some collection implementation that does it right
 have the actual entities wrapped in a collection that works as an intermediary. We don't need to
 perform any bytecode voodoo on the entity class.
 
+
+### Lazy to-one not guaranteed
+
 With to-one situation changes dramatically as you have no intermediary. It would be interesting
 if JPA at least offered some wrapper to enforce lazy behavior when you really need it regardless
 of the JPA provider, but that would give away you're using some ORM (like you don't know) and
@@ -242,52 +242,40 @@ even more voices would talk about that "leaking abstraction".
 
 While my tests with Hibernate looked great, the results are not portable across JPA providers as
 we saw. Also, I'd not bet that you'll get the same results because there's still a lot of questions
-how to make Hibernate lazy for to-one relationships, many of them quite new. But let's discover
-a solution that is no magic, that is explicit (you probably write a bit more code too) and that
-works with any JPA provider (sans bugs, of course).
+how to make Hibernate lazy for to-one relationships, many of them quite new.
 
+D> Are there any other options how JPA could have give us lazy and transparent to-one relations?
+D> Not without bytecode manipulation, really. It could have supported explicit non-fetching of such
+D> a relation though. Imagine a scenario where you know for sure you want to just modify attributes
+D> of the entity, but not any related entity. You'd load it by ID with explicit instruction *not to
+D> load* any related to-one entries. With some kind of metadata you'd even be able to specify
+D> relations one by one.
+D>
+D> How to represent these unloaded relations? There are various options, but some are plain bad.
+D> Not to load them at all is wrong -- what does the `null` mean when you save the entity at the
+D> end of the transaction? Normally it means you removed the relation, there is no meaningful way
+D> for save operation to know it means something else in this scenario. There could be some wrapper
+D> around the relation, but that spoils the domain model. I'd personally just instantiate the
+D> related entity with only ID filled-in -- or leave the relation `null` if empty (as usual now).
+D>
+D> This plays nicely with current way of saving objects. If you replace any relation with
+D> unmanaged object containing ID, it will work just fine.
+%% TODO: double-check with specification :-)
 
-## Removing `@ManyToOne` altogether
+So the whole trouble with to-one is that you rely on out-of-language features (bytecode
+manipulation) for `LAZY` support or suffer potentially very costly cascade of relation loading.
+The cost may be alleviated by a cache somewhat, but you just trade CPU/network cost for memory
+-- even if you don't need most of the loaded data at all (maybe ever).
 
-W> This solution builds on JPA 2.1 capabilities as it requires usage of `ON` clause. Older JPA
-W> will not support it.
+## What to do?
 
-To get full control over the fetching -- and to do it without any high-tech solution -- we have to
-drop the relation and map row foreign key instead. How does it work?
+With current state of standard there are following options available:
 
-TODO: SEEMS I GOT TO AN UNEXPECTED DEAD-END!
-1) the whole stuff until now works only for EclipseLink
-2) it is beyond specification, because JPspec, page 176 and following 4.4.5.x sections clearly
-state that JOIN can be followed by *join_association_path_expression* defined as:
+* Leave *to-one* as `EAGER` and compensate with caches.
+* Configure your ORM to make it `LAZY`. This may be easy, it may even be provided out of the box,
+but it can also change with upgrade. It is simply not guaranteed by the JPA standard.
 
-~~
-join_association_path_expression ::=
-  join_collection_valued_path_expression |
-  join_single_valued_path_expression |
-  TREAT(join_collection_valued_path_expression AS subtype) |
-  TREAT(join_single_valued_path_expression AS subtype)
-~~
-
-None of this allows simple entity not followed by its attribute. This is just ridiculous to
-figure out in this stage... In this case Hibernate's "no-no" is obviously right.
-
-
-### Was `ON` introduced for this?
-
-I doubt it. I missed the ability to join arbitrarily on anything a long time ago -- and my first
-motivation was what I described here, to tune down mapping. But `ON` was dearly missing for other
-practical reasons. While this does not relate to to-one mapping, let's see an example:
-
-TODO example with translations for various languages
-
-
-### Loosing information without mapping annotations
-
-TODO
-
-http://stackoverflow.com/questions/18746259/lazy-loading-does-not-works-for-manytoone-in-eclipselink
-http://stackoverflow.com/questions/9400930/using-ecliplselink-jpa-how-can-i-disable-all-the-relationship-lookups-when-persi
-
-options for avoiding eager fetch:
-- state all the columns except for relations (tedious)
-- black bytecode magic, not ensured by the JPA standard
+In the next chapter I'm going to present an alternative using EclipseLink that is not JPA
+compliant, but tries to do without *to-one* relations altogether. If you insist on pure JPA you
+may just skip the following chapter.
+%% TODO: and continue with <link>
