@@ -267,6 +267,16 @@ manipulation) for `LAZY` support or suffer potentially very costly cascade of re
 The cost may be alleviated by a cache somewhat, but you just trade CPU/network cost for memory
 -- even if you don't need most of the loaded data at all (maybe ever).
 
+
+## Use DTO and select columns manually
+
+While we cannot control `em.find(...)` much, we can try to select only the columns we are
+interested in using a query. Let's try it:
+%% TODO example
+
+%% TODO mention automation/generation possibility, but it's still annoying
+
+
 ## What to do?
 
 With current state of standard there are following options available:
@@ -274,6 +284,8 @@ With current state of standard there are following options available:
 * Leave *to-one* as `EAGER` and compensate with caches.
 * Configure your ORM to make it `LAZY`. This may be easy, it may even be provided out of the box,
 but it can also change with upgrade. It is simply not guaranteed by the JPA standard.
+* Select only the columns you're interested in. This is very cumbersome for read/update scenarios
+of a single entity and bearable but still inconvenient for selecting of lists for tables, etc.
 
 In the next chapter I'm going to present an alternative using EclipseLink that is not JPA
 compliant, but tries to do without *to-one* relations altogether. If you insist on pure JPA you

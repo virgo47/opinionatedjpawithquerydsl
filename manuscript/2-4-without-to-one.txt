@@ -24,22 +24,20 @@ None of this allows simple entity not followed by its attribute. This is just ri
 figure out in this stage... In this case Hibernate's "no-no" is obviously right.
 
 
-### Was `ON` introduced for this?
+## Why do we need `ON` anyway?
 
-I doubt it. I missed the ability to join arbitrarily on anything a long time ago -- and my first
-motivation was what I described here, to tune down mapping. But `ON` was dearly missing for other
-practical reasons. While this does not relate to to-one mapping, let's see an example:
+`ON` was dearly missing for other practical reasons. While this does not relate to to-one mapping,
+let's see an example:
 
 TODO example with translations for various languages
 
 
-### Loosing information without mapping annotations
+## Loosing information without mapping annotations
 
-TODO
+TODO custom @References annotation
 
 http://stackoverflow.com/questions/18746259/lazy-loading-does-not-works-for-manytoone-in-eclipselink
 http://stackoverflow.com/questions/9400930/using-ecliplselink-jpa-how-can-i-disable-all-the-relationship-lookups-when-persi
 
 options for avoiding eager fetch:
 - state all the columns except for relations (tedious)
-- black bytecode magic, not ensured by the JPA standard
