@@ -272,7 +272,7 @@ The cost may be alleviated by a cache somewhat, but you just trade CPU/network c
 
 While we cannot control `em.find(...)` much, we can try to select only the columns we are
 interested in using a query. Let's try it:
-%% TODO example
+%% TODO example SingleEntityReadSelectedColumns
 
 %% TODO mention automation/generation possibility, but it's still annoying
 
