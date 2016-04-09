@@ -9,10 +9,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-public class UpdateWithWrappedFkDemo {
+public class UpdateAndInsertWithWrappedFkDemo {
 
   public static void main(String[] args) {
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("sqldemo");
+    run("demo-el");
+    run("demo-hib");
+  }
+
+  public static void run(String unitName) {
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory(unitName);
     try {
       EntityManager em = emf.createEntityManager();
       DogQueryDemo.prepareData(em);
@@ -29,6 +34,12 @@ public class UpdateWithWrappedFkDemo {
       Breed collieGhost = new Breed();
       collieGhost.setId(collie.getId());
       rex.setBreed(collieGhost);
+
+      // This fails on Hibernate if breed cascades PERSIST, see JPspec 3.2.2, 4th bullet
+      Dog newDog = new Dog();
+      newDog.setBreed(collieGhost);
+      newDog.setName("NewDog");
+      em.persist(newDog);
 
       em.getTransaction().commit();
 
