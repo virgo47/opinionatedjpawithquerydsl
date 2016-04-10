@@ -13,7 +13,7 @@ public class UpdateAndInsertWithWrappedFkDemo {
 
   public static void main(String[] args) {
     run("demo-el");
-    run("demo-hib");
+//    run("demo-hib");
   }
 
   public static void run(String unitName) {
@@ -57,8 +57,8 @@ public class UpdateAndInsertWithWrappedFkDemo {
   private static Dog findDogByName(EntityManager em, String name) {
     QDog d = QDog.dog;
     return new JPAQuery<Dog>(em).select(d)
-          .from(d)
-          .where(d.name.eq(name))
-          .fetchOne();
+      .from(d)
+      .where(d.name.eq(name))
+      .fetchOne();
   }
 }
