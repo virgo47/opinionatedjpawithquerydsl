@@ -256,11 +256,18 @@ D> Not to load them at all is wrong -- what does the `null` mean when you save t
 D> end of the transaction? Normally it means you removed the relation, there is no meaningful way
 D> for save operation to know it means something else in this scenario. There could be some wrapper
 D> around the relation, but that spoils the domain model. I'd personally just instantiate the
-D> related entity with only ID filled-in -- or leave the relation `null` if empty (as usual now).
+D> related entity with only ID filled-in (ghost) -- or leave the relation `null` if empty (as
+D> usual now).
 D>
-D> This plays nicely with current way of saving objects. If you replace any relation with
-D> unmanaged object containing ID, it will work just fine.
-%% TODO: double-check with specification :-)
+D> This plays nicely with current way of saving objects without `PERSIST` cascade. If you replace
+D> any relation with unmanaged object containing ID, it will work just fine. With `cascade =
+D> PERSIST` it works fine with EclipseLink, but Hibernate throws `PersistenceException` with
+D> message "detached entity passed to persist" which relates to the ghost, not to the root entity
+D> being persisted. Both is allowed according to [[JPspec](#bib-jpspec)], section 3.2.2, which
+D> states that "If X is detached object ... `EntityExistsException` or another
+D> `PersistenceException` may be thrown". X here is our ghost representing the relation and
+D> `cascade=PERSIST` (or `ALL`) causes persist on the root entity to recursively persist the ghost.
+D> Damn "may" in specification, although strictly speaking Hibernate behavior seems logical.
 
 So the whole trouble with to-one is that you rely on out-of-language features (bytecode
 manipulation) for `LAZY` support or suffer potentially very costly cascade of relation loading.
