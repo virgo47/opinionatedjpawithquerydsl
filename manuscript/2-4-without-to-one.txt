@@ -1,27 +1,30 @@
 # Removing `@ManyToOne` altogether {#ch-without-to-one}
 
-%% TODO fix, add warning
-W> This solution builds on JPA 2.1 capabilities as it requires usage of `ON` clause. Older JPA
-W> will not support it.
+W> This solution builds on JPA 2.1 `ON` clause but is not JPA compliant because it also uses
+W> root entity after `JOIN` keyword that is only supported in EclipseLink and not according to
+W> [[JPspec](#bib-jpspec)]. Specification details this on page 176 and the following sections
+W> 4.4.5.x. I discovered this option when I played with Querydsl
+W> and various options how to state my joins -- and it worked on the reference implementation!
+W> With this I was more than a year in a mistake that we're bending JPA, using it as it was not
+W> intended, but still within the rules. I hit the wall when I tried it with Hibernate in course
+W> of writing this book. Checking with the specification I realized I ran into serious troubles
+W> and got caught by the irony of me saying "JPA is hard and complex".
+W>
+W> Sure there is "nobody's fault but mine" part to it. I experimented trying to fight JPA. I tried
+W> to get us from the quagmire of that ORM Vietnam and got us into another quagmire, still in ORM
+W> war, obviously -- but now out of specification fences. There is no real problem for us as we
+W> cannot switch to Hibernate with the project easily anyway (for Hibernate real bugs for a
+W> change), but when using ORM on Java I always voted for JPA way (well, since *JPA 2.0* at least).
+W>
+W> Anyway, the solution -- or a pattern if you will -- is still interesting enough for me to
+W> present. I'd just be more happy if the option for joining root entities was in the
+W> specification. To that end I also filed [an issue](https://java.net/jira/browse/JPA_SPEC-128),
+W> although the recent (non-)activity on that Jira project lets me wonder where all the JPA
+W> developers/specifiers are.
 
 To get full control over the fetching -- and to do it without any high-tech solution -- we have to
-drop the relation and map row foreign key instead. How does it work?
-
-TODO: SEEMS I GOT TO AN UNEXPECTED DEAD-END!
-1) the whole stuff until now works only for EclipseLink
-2) it is beyond specification, because JPspec, page 176 and following 4.4.5.x sections clearly
-state that JOIN can be followed by *join_association_path_expression* defined as:
-
-~~
-join_association_path_expression ::=
-  join_collection_valued_path_expression |
-  join_single_valued_path_expression |
-  TREAT(join_collection_valued_path_expression AS subtype) |
-  TREAT(join_single_valued_path_expression AS subtype)
-~~
-
-None of this allows simple entity not followed by its attribute. This is just ridiculous to
-figure out in this stage... In this case Hibernate's "no-no" is obviously right.
+drop the relation and map row foreign key instead. Before we go on, we will discuss the important
+addition of the `ON` keyword in *JPA 2.1*.
 
 
 ## Why do we need `ON` anyway?
