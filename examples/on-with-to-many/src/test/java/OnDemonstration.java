@@ -1,5 +1,3 @@
-package tests;
-
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import modelon.Breed;

@@ -32,7 +32,72 @@ addition of the `ON` keyword in *JPA 2.1*.
 `ON` was dearly missing for other practical reasons. While this does not relate to to-one mapping,
 let's see an example:
 
-TODO example with translations for various languages
+![Class diagram of our entity model for 'ON' demo](images/on-clause-example.png)
+
+Here the `Breed` does not have a name, only some synthetic code, and names are offered in multiple
+languages thanks to `BreedLocalizedName`. Demo code is
+[here](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/on-with-to-many/src/test/java/OnDemonstration.java).
+Our favourite breeds are:
+
+* wolf, with code `WLF` and localized names for English and Slovak (*wolf* and *vlk* respectively),
+* collie, with code `COL` with localized name available only for Slovak (kólia).
+
+Now imagine we want to get list of all breeds with English names. If the localized name is not
+available for our requested language, we still want to see the breed with its code in the list in
+any case. This may seem ridiculous to SQL guys, but it's a real problem for some Java programmers.
+The first naive attempt may be:
+
+{title="Naive `JOIN` to localized names", lang=java}
+~~~
+QBreedLocalizedName qbn = QBreedLocalizedName.breedLocalizedName;
+List<Tuple> breedEnNames = new JPAQuery<Breed>(em)
+  .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
+  .from(QBreed.breed)
+  .join(QBreed.breed.names, qbn)
+  .where(qbn.language.eq("en"))
+  .fetch();
+~~~
+
+But this produces unsatisfiable results containing only `[1, WLF, wolf]`. "When I join the
+localized names to the breed list some results are gone!" our programmer complains. Ok, let's
+introduce the `LEFT JOIN` concept to them. Next attempt:
+
+{title="`LEFT JOIN` without `ON` clause", lang=java}
+~~~
+breedEnNames = new JPAQuery<Breed>(em)
+  .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
+  .from(QBreed.breed)
+  .leftJoin(QBreed.breed.names, qbn)
+  .where(qbn.language.eq("en"))
+  .fetch();
+~~~
+
+It seems promising at first, but the result is again only a single lone wolf. There is one
+difference though, although the `WHERE` clause wipes it out. If there was any breed without any
+localized name at all it would be preserved after the `JOIN`. `WHERE` eliminates it only because
+the value for `language` column would be NULL and not "en". We could try to overcome it by an
+additional `.or(qbn.language.isNull())` in the `WHERE` part, but this would work only for rows
+with no localized name -- but not for those who have missing "en" localizations.
+
+The trick is that the condition must be part of the `LEFT JOIN` -- and that's what `ON` is all
+about. Let's do it right after all:
+
+{title="`LEFT JOIN` with `ON` clause", lang=java}
+~~~
+breedEnNames = new JPAQuery<Breed>(em)
+  .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
+  .from(QBreed.breed)
+  .leftJoin(QBreed.breed.names, qbn).on(qbn.language.eq("en"))
+  .fetch();
+~~~
+
+And, voila, the result is `[1, WLF, wolf], [2, COL, null]` -- with collie as well, although
+without the name localized to English. Now we could add `.where(qbr.name.isNull())` to filter
+these cases and report them, for instance.
+
+But this is the essence of `ON`. It's a special `WHERE` that works very closely with related
+`JOIN` and while the difference is virtually none for inner joins, it is essential for those outer
+ones.
 
 
 ## Loosing information without mapping annotations
