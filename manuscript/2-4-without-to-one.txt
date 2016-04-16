@@ -99,6 +99,22 @@ But this is the essence of `ON`. It's a special `WHERE` that works very closely 
 `JOIN` and while the difference is virtually none for inner joins, it is essential for those outer
 ones.
 
+D> When you use `LEFT JOIN` in JPQL you actually imply SQL `ON` clause undercover with JPA before
+D> version 2.1 as well. When you LEFT JOIN `breed.names` to `breed`, JPA determines the content
+D> for underlying SQL `ON` clause from the mapping -- naturally it is that the primary key from one
+D> table equals the foreign key of the other. This works fine if you follow to-one relations and
+D> join optional relations to existing rows.
+D>
+D> The situations changes dramatically if you follow to-many relations and want to select a
+D> concrete one for each row with particular conditions (like a language in our example). This left
+D> you in the dark with previous JPA versions. That's why the addition of `ON` is so important for
+D> these cases.
+
+
+## Dropping to-one annotations
+
+TODO
+
 
 ## Loosing information without mapping annotations
 
