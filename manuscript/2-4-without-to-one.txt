@@ -1,4 +1,4 @@
-# Removing `@ManyToOne` altogether {#ch-without-to-one}
+# Removing *to-one* altogether {#ch-without-to-one}
 
 W> This solution builds on JPA 2.1 `ON` clause but is not JPA compliant because it also uses
 W> root entity after `JOIN` keyword that is only supported in EclipseLink and not according to

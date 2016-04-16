@@ -44,7 +44,7 @@ dynamically later.
 %% TODO: revisit clone and other methods in multi-threaded environments, with 3.x we must use
 %% synchronized for these cases
 
-## Note for Querydsl 3 versus 4
+## Note about Querydsl 3 versus 4
 
 I've used major versions 2 and 3 in my projects and started to use version 4 only when I started
 writing this book. After initial investigation I realized that I'll hardly switch from version 3
