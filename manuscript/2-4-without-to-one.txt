@@ -99,7 +99,7 @@ But this is the essence of `ON`. It's a special `WHERE` that works very closely 
 `JOIN` and while the difference is virtually none for inner joins, it is essential for those outer
 ones.
 
-D> When you use `LEFT JOIN` in JPQL you actually imply SQL `ON` clause undercover with JPA before
+D> When you used `LEFT JOIN` in JPQL you actually implied SQL `ON` clause undercover with JPA before
 D> version 2.1 as well. When you LEFT JOIN `breed.names` to `breed`, JPA determines the content
 D> for underlying SQL `ON` clause from the mapping -- naturally it is that the primary key from one
 D> table equals the foreign key of the other. This works fine if you follow to-one relations and
@@ -112,6 +112,70 @@ D> these cases.
 
 
 ## Dropping to-one annotations
+
+Having accepted that we're out of pure JPA land it is otherwise easy to get rid of to-one
+relationships. Instead of:
+
+{title="To-one as we know it", lang=java}
+~~~
+@ManyToOne
+private Breed breed;
+~~~
+
+We can simply map the raw value of the foreign key:
+
+{title="Mapping raw foreign key", lang=java}
+~~~
+@Column(...)
+private Integer breedId;
+~~~
+
+If you want to load `Breed` by its ID, you use `EntityManager.find` explicitly. This has domain
+consequences, because unless we give the entities some way to get to entity manager, such a code
+cannot be directly on the entity. We will try to mend it and bridge this gap that JPA automagic
+creates for our convenience -- which is a good thing, and better part of the abstraction. The point
+is there is no technological problem to obtain the referenced entity by its ID.
+
+Queries are where the problem lies. Firstly, and this cannot be overcome with current JPA, we need
+to use root entity in the `JOIN` clause. EclipseLink gives us this beyond and above its JPA duty.
+This enriched experience cuts both ways, of course, as we may believe we're still in JPA world
+when we're in fact not (my story). Second thing we need is `ON` clause, which is something *JPA 2.1*
+provides. As discussed at the end of previous sections, `ON` clauses were generated for joins
+before -- but only as implied by the mapping and a particular *association path* used in the join.
+We need to make this implicit `ON` condition explicit. Let's see an example:
+
+{title="JOIN to root entity and explicit ON", lang=java}
+~~~
+List<Dog> dogs = new JPAQuery<Dog>(em)
+  .select(QDog.dog)
+  .from(QDog.dog)
+  .leftJoin(QBreed.breed).on(QBreed.breed.id.eq(QDog.dog.breedId))
+  .where(QBreed.breed.name.contains("ll"))
+  .fetch();
+~~~
+
+The key part is how the `leftJoin` is made. Querydsl doesn't mind at all that we're breaking JPA
+rules here, it allows root entity and produces JPQL that works the same like the following code:
+
+{title="JPQL equivalent", lang=java}
+~~~
+List<Dog> dogs = em.createQuery(
+  "select dog from Dog dog left join Breed breed on breed.id = dog.breedId" +
+  " where breed.name like '%ll%'", Dog.class).getResultList();
+~~~
+
+So this leaves us covered. Queries are just a bit more explicit, but otherwise nothing you would
+not write into your SQL. We can argue that this way we can compare that `breedId` with any other
+integer and we're loosing the safety that ORM mapping gives us. On the mapping you specify what
+columns are related on a single place and not in each query. This is true, indeed, although not
+really a big deal. When talking to your DB admins they will probably see even better what you do,
+although smart DBAs have no problem to understand JPQL either. But with dropping the mapping we're
+loosing this comfort too. In theory we could leave some logical mapping information on the
+attribute, but without redesigning JPA we cannot benefit it in our queries anyway. We will try to
+tackle the problem of missing metadata on the plain FK-typed attribute later in this chapter.
+
+
+## Loading of the relation on the entity
 
 TODO
 

@@ -15,7 +15,7 @@ public class SingleEntityReadRaw {
 
   public static void main(String[] args) {
     run("demo-el");
-    run("demo-hib");
+//    run("demo-hib"); // not working with Hibernate, because it's not JPA compliant
   }
 
   private static void run(String persistenceUnitName) {
@@ -50,13 +50,11 @@ public class SingleEntityReadRaw {
 
   private static void querydslDemo(EntityManager em) {
     // Does not work on Hibernate - because of WITH generated instead of ON?
-    JPAQuery<Dog> query = new JPAQuery<Dog>(em)
+    List<Dog> dogs = new JPAQuery<Dog>(em)
       .select(QDog.dog)
       .from(QDog.dog)
       .leftJoin(QBreed.breed).on(QBreed.breed.id.eq(QDog.dog.breedId))
-      .where(QBreed.breed.name.contains("ll"));
-    System.out.println("query = " + query);
-    List<Dog> dogs = query
+      .where(QBreed.breed.name.contains("ll"))
       .fetch();
     System.out.println("dogs = " + dogs);
   }
