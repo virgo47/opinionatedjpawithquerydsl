@@ -177,7 +177,18 @@ tackle the problem of missing metadata on the plain FK-typed attribute later in 
 
 ## Loading of the relation on the entity
 
-TODO
+Queries are typically executed in the context out of the object itself -- in a repository or DAO,
+you name it. There is no problem to get hold of `EntityManager` at these places. But if you want
+some loading from your entity, things necessarily get a little messy. But before we get to the
+messy part let's step back a little, because we have two broad options how to do it:
+
+* We can have a real object attribute, but `@Transient`, and we can load it when the scenario
+requires it. This is actually pretty handy because you can load the entity with its relations
+with an optimized query -- especially if you don't expect that data in the cache, or don't want
+to use the cache at all, etc. Very explicit, but does exactly what it says. This does not require
+us to put any infrastructure code into the entity as we fill the attribute from the outside in a
+code that loads the whole object graph.
+* We can load it lazily when and if needed. TODO
 
 
 ## Loosing information without mapping annotations
