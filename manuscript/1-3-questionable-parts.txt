@@ -56,9 +56,12 @@ entities in `JOIN`s. We will expand on this in a [dedicated chapter](#ch-to-one-
 
 ## Generated updates
 
+TODO: rework this, EclipseLink is actually pretty good with updates (but it may depend on weaving
+mode), examine Hibernate too + compare it with merge scenarios where situation is different altogether
+
 Programmer using JPA should see the *object* side of the ORM mapping which typically means that
 an object is also the granularity on which ORM works. If you change a single attribute on an object
-most ORMs simply generate full update for all columns (except for those marked `updatable = false`,
+ORM can simply generate full update for all columns (except for those marked `updatable = false`,
 of course). This by itself is probably not such a big deal, but if nothing else, it makes SQL
 debug output less useful to check what really changed.
 
