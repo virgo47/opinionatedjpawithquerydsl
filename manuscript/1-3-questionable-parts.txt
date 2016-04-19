@@ -56,20 +56,25 @@ entities in `JOIN`s. We will expand on this in a [dedicated chapter](#ch-to-one-
 
 ## Generated updates
 
-TODO: rework this, EclipseLink is actually pretty good with updates (but it may depend on weaving
-mode), examine Hibernate too + compare it with merge scenarios where situation is different altogether
-
 Programmer using JPA should see the *object* side of the ORM mapping which typically means that
 an object is also the granularity on which ORM works. If you change a single attribute on an object
 ORM can simply generate full update for all columns (except for those marked `updatable = false`,
-of course). This by itself is probably not such a big deal, but if nothing else, it makes SQL
-debug output less useful to check what really changed.
+of course). This by itself is probably not such a big deal performance-wise, but if nothing else
+it makes SQL debug output less useful to check what really changed.
 
 I'd not even expect ORM to eliminate the column from update when it's equal, I'd rather expect
 them to include it only when it was set. But we are already in the domain of ORM auto-magic (again)
 as they somehow have to know what has changed. Our entities are typically enhanced somehow, either
 during the build of a project, or during class-loading. It would probably be more complex to store
 touched columns instead of marking the whole entity as "dirty".
+
+To be concrete, EclipseLink out of the box updates only modified attributes/columns, while
+Hibernate updates all of them except for ID which is part of the `WHERE` clause. We may even argue
+what is better and when. If you load an object in some state, change a single column and then
+commit the transaction, do we really want to follow the changes per attribute or do we expect the
+whole object to be "transferred" into the database as-is at the moment of the commit? If we don't
+squeeze performance and our transactions are short-lived (and they better are for most common
+applications) there is virtually no difference from the consistency point either.
 
 All in all, this is just a minor annoyance when you're used to log generated queries, typically
 during development, and you simply cannot see what changed among dozens of columns. For this --
