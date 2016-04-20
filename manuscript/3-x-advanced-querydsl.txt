@@ -86,8 +86,9 @@ safety, but I never encountered this as a real problem. Version 3 worked perfect
 version 4 is rather annoying with that parametrized constructor without giving me, the programmer,
 any additional benefit. (I don't claim to know all about these API/DSL changes, though.)
 
-As the fluency goes most programmers in our team agreed to like final `list(expressions...)` call
-so much more as the last call clearly says what gets returned. With SQL-like approach you do this
-first, then add various `JOIN`s -- but this all fights typical Java-like programming mindset. For
-me personally version 3 hit the sweet spot perfectly, not fighting Java syntax (I feel a bit of a
-struggle between Querydsl 4 and Java) and giving me very SQL-like style of queries.
+As the fluency goes most programmers in our team agreed to prefer finish with the
+`list(expressions...)` call as the last call clearly says what gets returned. With SQL-like
+approach you do this first, then add various `JOIN`s -- but this all fights typical Java-like
+programming mindset. For me personally version 3 hit the sweet spot perfectly, not fighting
+Java syntax (I feel a bit of a struggle between Querydsl 4 and Java) and giving me very
+SQL-like style of queries.
