@@ -22,8 +22,8 @@ the same with Hibernate, it would work. You simply cannot assume that the ID is 
 ## Lazy on basic and *to-one* fields {#lazy-problems}
 
 This problem is the reason for this book, without it, I'd probably not go beyond couple of blog
-posts. While you can map these fields as lazy, the behaviour is actually not covered properly in
-the JPA specification ([[JPspec](#bib-jpspec)]). Its section 2.2, page 25, states:
+posts. While you can map these fields as lazy, the behaviour is actually not guaranteed according
+to the JPA specification ([[JPspec](#bib-jpspec)]). Its section 2.2, page 25, states:
 
 Q> If property access is used and lazy fetching is specified, portable applications should not
 Q> directly access the entity state underlying the property methods of managed instances until
@@ -51,7 +51,8 @@ solutions nor ways how to do it explicitly in a way programmer can control.
 
 Removing *to-one* mappings and replace them with raw foreign key values is currently not possible
 with pure JPA even though *JPA 2.1* brought `ON` clause for JPQL but it does not allow root
-entities in `JOIN`s. We will expand on this in a [dedicated chapter](#ch-to-one-troubles).
+entities in `JOIN`s. We will expand on this in the chapter
+[Troubles with *to-one* relationships](#ch-to-one-troubles).
 
 
 ## Generated updates
@@ -69,12 +70,15 @@ during the build of a project, or during class-loading. It would probably be mor
 touched columns instead of marking the whole entity as "dirty".
 
 To be concrete, EclipseLink out of the box updates only modified attributes/columns, while
-Hibernate updates all of them except for ID which is part of the `WHERE` clause. We may even argue
-what is better and when. If you load an object in some state, change a single column and then
-commit the transaction, do we really want to follow the changes per attribute or do we expect the
-whole object to be "transferred" into the database as-is at the moment of the commit? If we don't
-squeeze performance and our transactions are short-lived (and they better are for most common
-applications) there is virtually no difference from the consistency point either.
+Hibernate updates all of them except for ID which is part of the `WHERE` clause.[^el-hib-upd]
+We may even argue what is better and when. If you load an object in some state, change a single
+column and then commit the transaction, do we really want to follow the changes per attribute or do
+we expect the whole object to be "transferred" into the database as-is at the moment of the commit?
+If we don't squeeze performance and our transactions are short-lived (and they better are for most
+common applications) there is virtually no difference from the consistency point either.
+
+[^el-hib-upd]: Run the code from GitHub example and see the console output:
+  https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/basic/src/test/java/tests/PartialUpdateDemo.java
 
 All in all, this is just a minor annoyance when you're used to log generated queries, typically
 during development, and you simply cannot see what changed among dozens of columns. For this --
@@ -130,14 +134,14 @@ System.out.println("after refresh: dog.name = " +
   dog.getName()); // Dex
 ~~~
 
-The same problem applies to JPQL queries that happen after the changes to the entities within a transaction
-on the current persistence context. Here the behaviour is controlled by entity manager's flush mode
-and it defaults to `FlushModeType.AUTO`.[^flushmode] Flush mode `AUTO` enforces the persistence
-context to flush all updates into the database before executing the query. But with flush mode
-`COMMIT` you'd get to inconsistencies just like in the scenario with bulk update. Obviously,
-flushing the changes is a reasonable option -- you'd flush it sooner or later anyway. Bulk update
-scenario, on the other hand, requires us to refresh attached entities which is much more disruptive
-and also costly.
+The same problem applies to JPQL queries which happen after the changes to the entities within
+a transaction on the current persistence context. Here the behaviour is controlled by entity
+manager's flush mode and it defaults to `FlushModeType.AUTO`.[^flushmode] Flush mode `AUTO`
+enforces the persistence context to flush all updates into the database before executing the query.
+But with flush mode `COMMIT` you'd get to inconsistencies just like in the scenario with bulk
+update. Obviously, flushing the changes is a reasonable option -- you'd flush it sooner or later
+anyway. Bulk update scenario, on the other hand, requires us to refresh attached entities which
+is much more disruptive and also costly.
 
 [^flushmode]: See [[JPspec](#bib-jpspec)], section 3.10.8.
 
