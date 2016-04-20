@@ -77,8 +77,8 @@ we expect the whole object to be "transferred" into the database as-is at the mo
 If we don't squeeze performance and our transactions are short-lived (and they better are for most
 common applications) there is virtually no difference from the consistency point either.
 
-[^el-hib-upd]: Run the code from GitHub example and see the console output:
-  https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/basic/src/test/java/tests/PartialUpdateDemo.java
+[^el-hib-upd]: Run the code from [this GitHub example](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/basic/src/test/java/tests/PartialUpdateDemo.java)
+    and see the console output:
 
 All in all, this is just a minor annoyance when you're used to log generated queries, typically
 during development, and you simply cannot see what changed among dozens of columns. For this --

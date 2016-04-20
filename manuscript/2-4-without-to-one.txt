@@ -92,8 +92,8 @@ breedEnNames = new JPAQuery<Breed>(em)
 ~~~
 
 And, voila, the result is `[1, WLF, wolf], [2, COL, null]` -- with collie as well, although
-without the name localized to English. Now we could add `.where(qbr.name.isNull())` to filter
-these cases and report them, for instance.
+without the name localized to English. Now we could add another condition to filter these cases
+and report them -- `.where(qbr.name.isNull())` would do the trick, this time as a `WHERE` clause.
 
 But this is the essence of `ON`. It's a special `WHERE` that works very closely with related
 `JOIN` and while the difference is virtually none for inner joins, it is essential for those outer
