@@ -1,30 +1,31 @@
 # The Missing Parts {#ch-missing-parts}
 
-In this part we'll briefly compare the JPA with ORM capabilities and go through things that are
-missing in *Java Persistence Query Language* (JPQL) when compared with SQL. Otherwise it's
-difficult to say what is missing when we don't compare JPA to anything else.
+In this part we'll briefly compare the JPA standard with capabilities offered by various ORM
+providers and go through the things missing in the *Java Persistence Query Language* (JPQL) when
+compared with SQL. Otherwise it's difficult to say what is missing when we don't compare JPA to
+anything else.
 
 
 ## Compared to ORM providers {#missing-from-orm}
 
 Couple of years back this section would be a long one -- but the JPA narrowed the gap with 2.0
 and virtually closed it with 2.1. There are still things that may be missing when you compare it
-with ORM. The list of various ORM features not included in the JPA is probably long. However, the
-right question is how much a feature is really missed, how often we use it and how serious impact
-this omission has.
+with ORM providers. The list of various ORM features not included in the JPA is probably long.
+However, the right question is how much a feature is really missed, how often we use it and how
+serious impact this omission has.
 
 In most cases you can get out of the comfortable "standard" zone and use capabilities of a
 particular ORM without affecting parts that can be pure JPA. Maybe you add some provider-specific
 annotations in your mapping -- so be it, let's be pragmatic.
 
 One particular feature I once missed a lot is something that allows me to go through a result
-set just like in JDBC, but using entities. These don't have to be put into persistence context
-I can process them as they come. On the contrary, they must not be put there, because they just
+set just like in JDBC, but using entities. These don't have to be put into the persistence context
+as I can process them as they come. Actually -- they *must not* be put there, because they just
 bloat the heap without any real use. It's like streaming the result set. This may be extremely
 handy when you produce some very long exports that are streamed straight to the client browser
-or a file. Hibernate seems to offer `ScrollableResults` although I used JDBC with Spring
-`JdbcTemplate` instead and solved the problem without JPA altogether -- obviously, I had to do
-the mapping myself, while Hibernate can do it for you. Even so, as mentioned in this
+or a file. Hibernate offers `ScrollableResults`, I personally used JDBC with Spring `JdbcTemplate`
+instead and solved the problem without JPA altogether -- obviously, I had to do the mapping myself,
+while Hibernate can do it for you. Even so, as mentioned in this
 [stackoverflow answer](http://stackoverflow.com/q/2826319/658826) this may still cause
 `OutOfMemoryError` or similar memory related issue, this time not on JPA/ORM level, but because
 of silly JDBC driver (or even because of database limitations, but that's rare).
@@ -33,6 +34,13 @@ Another area that is not covered by JPA that much is caching. JPA is rather vagu
 structure of caches, although it does specify some configuration options and annotations. But the
 ORM implementations can still differ significantly. We tackle this topic both in [questionable
 parts](#cache-vs-queries) and about [tuning ORM down](#caching-considerations).
+
+Finally, with the introduction of `ON` clause we could get much more low-level with our queries
+when it suits us. `ON` is intended for additional `JOIN` conditions but we would have some new
+ways how to approach the relations which can be bothersome from time to time. We could use `ON`
+to explicitly add our primary `JOIN` condition -- but all this is for naught because *JPA 2.1*
+does not allow to use root entity in the `JOIN` clause. More about this topic and how to do it
+with EclipseLink in the chapter [Removing *to-one* altogether](#ch-without-to-one).
 
 
 ## Comparing JPQL to SQL {#missing-from-sql}
