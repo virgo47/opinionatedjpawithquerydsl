@@ -1,0 +1,20 @@
+-# Final thoughts {#part-final-thoughts}
+
+So here we are after the ride through highs and lows of JPA with some bits of common sense advices.
+Story wasn't that good, probably, because -- at least for me -- it culminated quite soon around
+the troubles with *to-one* relationships, not to mention that my proposed solution is not pure JPA.
+
+Would I use JPA or ORM again? Voluntarily? Yes -- especially for simple cases. This is a paradox
+-- and a problem too. Firstly, ORM ideas were developed mostly to help us with rich domain models.
+Using it for simple systems and domains you pay the cost of a technology intended for complex
+domains. But from my experience ORM gets unwieldy for larger domains, especially if you don't use
+domain-driven design (which I admit never saw in proper practice). But even DDD proponent, Eric
+Evans, lately admitted that proper DDD may be easier with systems where context boundaries are not
+only logical, but also physical -- like microservices. I agree, because implicit is never as solid
+as explicit, as I often stressed in this book. (We may as well agree that many implicit and
+automagic solutions make our live actually easier. But this must be supported by knowledge. When
+people maintaining the system change and new ones don't understand those implicit parts all the
+benefits are gone.)
+
+Will I use ORM on bigger systems? Probably, as I don't design every system I work on. Would I try
+something else if I could? Definitely. TODO

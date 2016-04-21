@@ -1,7 +1,7 @@
 -# Bibliography
 
 {#bib-ddd}
-[DDD] Evans Eric. *Domain-Driven Design*, Addison-Wesley Professional, 2003.
+[DDD] Eric Evans. *Domain-Driven Design*, Addison-Wesley Professional, 2003.
 
 %% TODO: double check what we use from here:
 {#bib-hpjp}
