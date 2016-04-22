@@ -188,7 +188,53 @@ with an optimized query -- especially if you don't expect that data in the cache
 to use the cache at all, etc. Very explicit, but does exactly what it says. This does not require
 us to put any infrastructure code into the entity as we fill the attribute from the outside in a
 code that loads the whole object graph.
-* We can load it lazily when and if needed. TODO
+* We can load it lazily when and if needed. But we have to make explicit what JPA does under the
+surface and what we don't see on the entity -- or we can develop our solution, but I'm not sure
+it's worth it for this problem.
+
+The first solution is obvious, so let's see what we can do about the other one. Let's start with
+adding the method returning our entity -- in our case we have a `Dog` with `breedId` foreign key
+mapped as a raw value of type `Integer`. To load the actual entity we may try something like:
+
+{title="Getter loading entity by id", lang=java}
+~~~
+public Breed getBreed() {
+  return DaoUtils.load(Breed.class, breedId);
+}
+~~~
+
+Ok, we cheated a bit, I admit -- we moved the problem to that `DaoUtils`, but for a good reason.
+We will need this mechanism on multiple places so we want it centralized. That `load` method then
+looks like this:
+
+{title="Loading the entity", lang=java}
+~~~
+public static <T> T load(Class<T> entityClass, Serializable entityId) {
+  EntityManager em = ...; // get it somehow (depends on the project)
+  return em.find(entityClass, entityId);
+}
+~~~
+
+Ouch -- two examples, cheating on both occasions. But here I cannot tell you how to obtain that
+entity manager. The method can reach to a Spring singleton component that makes itself accessible
+by static field, for instance. It isn't nice, but it works. The point is that entity is not
+a managed component so we cannot use injection as usually. Static access seems ugly, but it also
+frees the entity from a reference to some infrastructural component and leaves it only with
+dependency to some utility class.
+
+It is important to be familiar with the implementation of an inject `EntityManager` -- in case of
+Spring their shared entity manager helps us to get to the right entity manager even if we get to
+the component via static path. I would probably have to consult Java EE component model to be sure
+it is possible and if it is reliable across application servers.
+
+Other option how to smuggle in the entity manager utilizes a `ThreadLocal` variable, but this means
+someone has to populate it and this means life-cycle and that means some additional troubles.
+
+In any case, it is possible to add getter for a relationship on the entity, but it calls for some
+rough solutions -- so if you can keep such an access somewhere else (data access object, for
+instance) do it that way. If you decide to load the relationship and you hold only the entity,
+maybe you can introduce DAO to that code, or maybe you have logic too high already (like on the
+presentation layer maybe?) and it should go lower where the DAO is available.
 
 
 ## Loosing information without mapping annotations

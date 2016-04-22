@@ -4,9 +4,9 @@
 [DDD] Eric Evans. *Domain-Driven Design*, Addison-Wesley Professional, 2003.
 
 %% TODO: double check what we use from here:
-{#bib-hpjp}
-[HPJP] Vlad Mihalcea. *High Performance Java Persistence*, Leanpub, 2016 (in-progress).
-https://leanpub.com/high-performance-java-persistence
+%%{#bib-hpjp}
+%%[HPJP] Vlad Mihalcea. *High Performance Java Persistence*, Leanpub, 2016 (in-progress).
+%%https://leanpub.com/high-performance-java-persistence
 
 {#bib-jpspec}
 [JPspec] Java Persistence 2.1 Expert Group. *JSR 338: JavaTM Persistence API, Version 2.1*, Oracle,

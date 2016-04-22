@@ -1,5 +1,7 @@
 package modeltoone;
 
+import support.DaoUtils;
+
 import javax.persistence.*;
 
 @Entity
@@ -35,6 +37,10 @@ public class Dog {
 
   public void setBreedId(Integer breedId) {
     this.breedId = breedId;
+  }
+
+  public Breed getBreed() {
+    return DaoUtils.load(Breed.class, breedId);
   }
 
   @Override
