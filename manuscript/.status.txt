@@ -14,9 +14,9 @@ To actually finish something, I want to do this in the 1st edition:
 * Opinionated JPA
     * ORM tuned down (80%) REVISE COMPLETELY
     * No further steps without Querydsl (40%)
-    * Troubles with *to-one* relationships (40%)
+    * Troubles with *to-one* relationships (60%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
-    * Removing `@ManyToOne` altogether (not JPA compliant) (20%)
+    * Removing `@ManyToOne` altogether (not JPA compliant) (40%)
     * Modularity, if you must
         * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
     * Transaction boundary and lazy load (be explicit, I cannot stress it enough)

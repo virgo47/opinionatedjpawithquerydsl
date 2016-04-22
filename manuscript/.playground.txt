@@ -1,7 +1,3 @@
-{backmatter}
-
--# Playground, testing...
-
 ## Other topics
 
 filter/paging framework
