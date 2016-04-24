@@ -16,6 +16,7 @@
           </value>
         </option>
         <option name="RIGHT_MARGIN" value="100" />
+        <option name="JD_DO_NOT_WRAP_ONE_LINE_COMMENTS" value="true" />
         <SqlCodeStyleSettings>
           <option name="ALIGN_AS_IN_SELECT_STATEMENT" value="false" />
           <option name="ALIGN_TYPE_IN_CREATE_STATEMENT" value="false" />
