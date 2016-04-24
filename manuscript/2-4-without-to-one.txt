@@ -228,7 +228,7 @@ the component via static path. I would probably have to consult Java EE componen
 it is possible and if it is reliable across application servers.
 
 Other option how to smuggle in the entity manager utilizes a `ThreadLocal` variable, but this means
-someone has to populate it and this means life-cycle and that means some additional troubles.
+someone has to populate it which means life-cycle -- and that means additional troubles.
 
 In any case, it is possible to add getter for a relationship on the entity, but it calls for some
 rough solutions -- so if you can keep such an access somewhere else (data access object, for
@@ -239,10 +239,26 @@ presentation layer maybe?) and it should go lower where the DAO is available.
 
 ## Loosing information without mapping annotations
 
-TODO custom @References annotation
+When we map foreign key instead of the relationship we often loose important piece of information
+-- that is what type it leads to. Sometimes it is clear, e.g. with `Integer breedId` you can easily
+guess it leads to `Breed`. But there is no type declaration anywhere around to click on when using
+IDE. Even worse, the foreign key often describes the role instead of the type -- which I personally
+prefer especially when there are multiple relationships of the same type. So instead of terrible
+`client1Id` and `client2Id` you have `ownerId` and `counterpartyId`. The names are descriptive, but
+the type information is gone altogether.
 
-http://stackoverflow.com/questions/18746259/lazy-loading-does-not-works-for-manytoone-in-eclipselink
-http://stackoverflow.com/questions/9400930/using-ecliplselink-jpa-how-can-i-disable-all-the-relationship-lookups-when-persi
+For this -- and also for means to automatically check validity of these IDs for newly stored or
+updated entities -- we developed custom `@References` annotation. With it the mapping for a foreign
+key may look like this:
 
-options for avoiding eager fetch:
-- state all the columns except for relations (tedious)
+{title="Using `@References` annotation", lang=java}
+~~~
+@References(type = Breed.class, required = true)
+private Integer breedId;
+~~~
+
+TODO
+
+## Wrapping it up
+
+%% TODO the same provided by JPA would be much easier

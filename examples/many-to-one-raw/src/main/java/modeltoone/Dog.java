@@ -1,8 +1,12 @@
 package modeltoone;
 
 import support.DaoUtils;
+import support.References;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Dog {
@@ -13,6 +17,7 @@ public class Dog {
 
   private String name;
 
+  @References(type = Breed.class, required = true)
   private Integer breedId;
 
   public Integer getId() {
