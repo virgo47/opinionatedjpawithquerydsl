@@ -53,6 +53,9 @@
           </indentOptions>
         </codeStyleSettings>
         <codeStyleSettings language="JAVA">
+          <option name="BRACE_STYLE" value="5" />
+          <option name="CLASS_BRACE_STYLE" value="5" />
+          <option name="METHOD_BRACE_STYLE" value="5" />
           <option name="METHOD_ANNOTATION_WRAP" value="0" />
           <option name="FIELD_ANNOTATION_WRAP" value="0" />
           <indentOptions>
