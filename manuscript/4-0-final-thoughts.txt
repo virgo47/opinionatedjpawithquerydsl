@@ -16,5 +16,14 @@ automagic solutions make our live actually easier. But this must be supported by
 people maintaining the system change and new ones don't understand those implicit parts all the
 benefits are gone.)
 
+Do I prefer JPA or concrete ORM provider? For many years the answer was pretty clear - I always
+strove to stay within JPA realm. Accidentally, though, I went down the path with EclipseLink
+and its capability to `JOIN` with entity roots -- which I believe would be an incredible addition
+for the *JPA 2.2*. The more I work with JPA the less I believe in easy transition from one provider
+to another -- except for simple cases. The more complex queries the more I'd try to find some
+alternative. Maybe the first step would be staying with ORM and utilizing the full power of a
+single provider -- whatever the provider is. That means checking the bugs on their issue tracking
+system when you encounter one, reporting new ones and so on.
+
 Will I use ORM on bigger systems? Probably, as I don't design every system I work on. Would I try
 something else if I could? Definitely. TODO
