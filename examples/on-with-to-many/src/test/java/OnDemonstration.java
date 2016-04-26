@@ -30,7 +30,7 @@ public class OnDemonstration {
         .join(QBreed.breed.names, qbn)
         .where(qbn.language.eq("en"))
         .fetch();
-      System.out.println("INNER JOIN: breedEnNames = " + breedEnNames);
+      System.out.println("\nINNER JOIN and WHERE: breedEnNames = " + breedEnNames);
 
       breedEnNames = new JPAQuery<Breed>(em)
         .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
@@ -38,14 +38,14 @@ public class OnDemonstration {
         .leftJoin(QBreed.breed.names, qbn)
         .where(qbn.language.eq("en"))
         .fetch();
-      System.out.println("LEFT JOIN, no ON: breedEnNames = " + breedEnNames);
+      System.out.println("\nLEFT JOIN, WHERE instead of ON: breedEnNames = " + breedEnNames);
 
       breedEnNames = new JPAQuery<Breed>(em)
         .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
         .from(QBreed.breed)
         .leftJoin(QBreed.breed.names, qbn).on(qbn.language.eq("en"))
         .fetch();
-      System.out.println("LEFT JOIN with ON: breedEnNames = " + breedEnNames);
+      System.out.println("\nLEFT JOIN with ON: breedEnNames = " + breedEnNames);
 
     } finally {
       emf.close();
