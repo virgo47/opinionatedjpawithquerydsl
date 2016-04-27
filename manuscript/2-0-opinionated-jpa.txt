@@ -1,9 +1,9 @@
 -# Opinionated JPA {#part-opinionated-jpa}
 
 To use ORM/JPA really well you need to know a lot about it, about the provider, its settings,
-about caching mechanisms and so on. And you should not be oblivious to SQL either. I never worked
-on a system where ORM/JPA was used to its full extent and everybody was really happy with the
-result. The system got slower, [DBAs](https://en.wikipedia.org/wiki/Database_administrator)
+about caching mechanisms and so on. And you should not be oblivious to SQL either. I've never
+worked on a system where ORM/JPA was used to its full extent and everybody was really happy with
+the result. The system got slower, [DBAs](https://en.wikipedia.org/wiki/Database_administrator)
 asked why we produce crappy SQLs and so on. We fought with ORM drawbacks before we could benefit
 from the features. It all comes down to inherent complexity of ORM. Any pro can instantly blame
 us for "just not knowing"... but I think the problem goes deeper.
@@ -19,17 +19,17 @@ I always welcome to learn more about JPA. Not because it's my favourite technolo
 happened to spend so much time with it. When we started one recent project we discussed what to
 use, I was quite fresh to the team and somehow got convinced to use JPA although I would rather
 risk Querydsl over SQL directly. But I didn't mind that much, JPA was quite well known to me.
-Little I knew how many surprises it still got for me! The biggest of them all was probably the
-reason why I started to complain about the JPA on [my blog](https://virgo47.wordpress.com/tag/jpa/)
+Little I knew how many surprises it would still have for me! The biggest of them all was probably
+the reason why I started to complain about the JPA on [my blog](https://virgo47.wordpress.com/tag/jpa/)
 and, eventually, I decided to put my twisted ideas how to utilize JPA into this book.
 
 Generally I don't like ideas like "let's just use subset of this". I don't believe that hiring
 dumb Java programmers and forbidding them to use latest Java 8 features is the solution. I rarely
-saw such a "subset" programmer to write clean code (or even to try to) -- or they were bright
-enough to dislike such an arrangement (and probably left soon). But the JPA is not a programming
+saw such a "subset" programmer to write clean code -- or they were bright enough to dislike such
+an arrangement and typically left soon for something better. But the JPA is not a programming
 language, you're working with an API and you may choose the patterns you want to use and others
 you don't. This time I decided "let's use SQL more" and "let's not load graph of objects (even
 if cached) when I just want to update this single one". And that's how it all started -- the more
 I know about JPA the less of it I use. But it still has goodies I don't want to let go.
 
-So the question is: How can we tune the JPA down without crippling it -- or ourselves?
+So the question is: Can we tune the JPA down without crippling it -- or ourselves?
