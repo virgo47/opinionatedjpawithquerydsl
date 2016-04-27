@@ -14,6 +14,7 @@ import javax.persistence.Persistence;
 
 public class ReferencesTest {
 
+  private static final int NONEXISTENT_BREED_ID = -1;
   private EntityManagerFactory emf;
   private Dog lessie;
 
@@ -57,7 +58,7 @@ public class ReferencesTest {
   public void referencesCheckerThrowsExceptionForNonexistentId() {
     EntityManager em = emf.createEntityManager();
     try {
-      lessie.setBreedId(-1);
+      lessie.setBreedId(NONEXISTENT_BREED_ID);
       Assertions.assertThatThrownBy(() -> new ReferenceChecker(em).checkReferences(lessie))
         .hasMessage("Reference not found for class modeltoone.Breed and id=-1");
     } finally {
