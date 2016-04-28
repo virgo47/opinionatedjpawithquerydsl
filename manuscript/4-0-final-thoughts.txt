@@ -1,5 +1,7 @@
 -# Final thoughts {#part-final-thoughts}
 
+%% TODO how many bugs were solved during the book? How many serious flaws are years old?
+
 So here we are after the ride through highs and lows of JPA with some bits of common sense advices.
 Story wasn't that good, probably, because -- at least for me -- it culminated quite soon around
 the troubles with *to-one* relationships, not to mention that my proposed solution is not pure JPA.

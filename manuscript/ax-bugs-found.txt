@@ -7,9 +7,11 @@ new bugs. If you have good test coverage, you may be able to make a qualified de
 you'll find the bugs later and randomly (or your users will).
 
 Some bugs are closed already, I added them to show it makes sense to report them. Other bugs,
-on the other hand, give you feeling it doesn't make sense to report anything -- they are open
+on the other hand, give you the feeling it doesn't make sense to report anything -- they are open
 for years and nothing is happening. ORM and JPA are not different from any other projects and
-with open source implementation you'll get some transparency at least.
+with open source implementation you'll get some transparency at least. Not all bugs are reported
+by me originally, but if I participated, commented and created a test case they are included. In
+any case these are all bugs that were encountered on a single Java project.
 
 * [JPA 2.1 FUNCTION not supported?](https://hibernate.atlassian.net/browse/HHH-10569) (Hibernate)
 I reported this bug after trying this *JPA 2.1* feature successfully on EclipseLink. Hibernate
@@ -56,5 +58,12 @@ original id (and in DB it was still an ID). This collection did not delete the e
 association table (not mapped as an entity). This actually did not relate to the number of columns,
 merely to the fact that they were not `@Id` columns anymore. JPA specification does not mention
 any exception like this.
+* [ON for LEFT JOIN across association tables not generated in SQL](https://bugs.eclipse.org/bugs/show_bug.cgi?id=422510)
+(EclipseLink) When using additional ON conditions for LEFT JOIN these don't get generated into
+SQL if the LEFT JOIN follows `@ManyToMany` or `@OneToMany` with association table. Works fine
+if the collection is mapped by a single FK on the entity contained in the collection. Workaround
+is to explicitly map the association table or using different way to get to the result -- possibly
+more queries, because LEFT JOIN is difficult to rewrite without losing some results. Should work
+according to specification and works fine with Hibernate.
 
 %% JPA spec change to add support for root entities in JOINs: https://java.net/jira/browse/JPA_SPEC-128

@@ -175,7 +175,7 @@ attribute, but without redesigning JPA we cannot benefit it in our queries anywa
 tackle the problem of missing metadata on the plain FK-typed attribute later in this chapter.
 
 
-## Loading of the relation on the entity
+## Loading the relation from the entity
 
 Queries are typically executed in the context out of the object itself -- in a repository or DAO,
 you name it. There is no problem to get hold of `EntityManager` at these places. But if you want
@@ -257,7 +257,25 @@ key may look like this:
 private Integer breedId;
 ~~~
 
-TODO
+I believe the documentation factor is the most important one here, but we can also check the
+references on an entity like this:
+
+{title="Using `ReferenceChecker`", lang=java}
+~~~
+new ReferenceChecker(em).checkReferences(lessie);
+~~~
+
+This either does nothing when everything is OK, or it fails with some exception of your choice
+depending on how you implement it. Our version is similar to [this example](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-raw/src/main/java/support/ReferenceChecker.java)
+on GitHub. If you go through the code you notice that it can do more than just checking -- it can
+also push the real entities to some transient fields, for instance. Such a mechanism can be
+easily incorporated into validation framework you use if you wish to.
+
+
+## JPA dual mapping
+
+%% TODO + check spec if it is JPA compliant
+
 
 ## Wrapping it up
 

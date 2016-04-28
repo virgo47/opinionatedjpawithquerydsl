@@ -15,7 +15,7 @@ public class Person implements Serializable {
 
   private String name;
 
-  @ManyToMany
+  @OneToMany
   @JoinTable(name = "Person_Dog",
     joinColumns = @JoinColumn(name = "puid", referencedColumnName = "uniqId"),
     inverseJoinColumns = @JoinColumn(name = "dog_id", referencedColumnName = "id"))
