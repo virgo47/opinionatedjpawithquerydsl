@@ -14,12 +14,18 @@ import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.io.IOException;
 import java.util.List;
 
 public class DogQueryDemo {
 
-  public static void main(String[] args) {
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("demo-el");
+  public static void main(String[] args) throws IOException {
+    run("demo-el");
+    run("demo-hib");
+  }
+
+  private static void run(String persistenceUnit) {
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
     try {
       EntityManager em = emf.createEntityManager();
       prepareData(em);
