@@ -13,8 +13,8 @@ import javax.persistence.Persistence;
 public class SingleEntityReadSelectedColumns {
 
   public static void main(String[] args) {
-    run("demo-el");
-    run("demo-hib");
+    run("demo-el"); // EclipseLink joins and reads breed.id
+    run("demo-hib"); // Hibernate takes breed_id directly from a Dog without any join, smart!
   }
 
   private static void run(String persistenceUnitName) {
@@ -26,7 +26,7 @@ public class SingleEntityReadSelectedColumns {
 
       System.out.println("\nfind");
       Tuple tuple = new JPAQuery<QDog>(em)
-        .select(QDog.dog.id, QDog.dog.name)
+        .select(QDog.dog.id, QDog.dog.name, QDog.dog.breed.id)
         .from(QDog.dog)
         .where(QDog.dog.id.eq(1))
         .fetchOne();
