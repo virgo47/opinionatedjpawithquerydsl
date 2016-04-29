@@ -1,7 +1,5 @@
 -# Final thoughts {#part-final-thoughts}
 
-%% TODO how many bugs were solved during the book? How many serious flaws are years old?
-
 So here we are after the ride through highs and lows of JPA with some bits of common sense advices.
 Story wasn't that good, probably, because -- at least for me -- it culminated quite soon around
 the troubles with *to-one* relationships, not to mention that my proposed solution is not pure JPA.
@@ -10,13 +8,19 @@ Would I use JPA or ORM again? Voluntarily? Yes -- especially for simple cases. T
 -- and a problem too. Firstly, ORM ideas were developed mostly to help us with rich domain models.
 Using it for simple systems and domains you pay the cost of a technology intended for complex
 domains. But from my experience ORM gets unwieldy for larger domains, especially if you don't use
-domain-driven design (which I admit never saw in proper practice). But even DDD proponent, Eric
+domain-driven design (which I admit never saw in proper practice). Even *the* DDD proponent, Eric
 Evans, lately admitted that proper DDD may be easier with systems where context boundaries are not
 only logical, but also physical -- like microservices. I agree, because implicit is never as solid
 as explicit, as I often stressed in this book. (We may as well agree that many implicit and
-automagic solutions make our live actually easier. But this must be supported by knowledge. When
+automagic solutions make our live actually easier. But they must be supported by knowledge. When
 people maintaining the system change and new ones don't understand those implicit parts all the
 benefits are gone.)
+
+If we take the ORM shortcut for simple case it may still happen that the simple problem gets more
+complex, application grows a lot and we will suddenly have to live with a lot of ORM investment
+with a very difficult retreat path (business will not be able to pay for it, for sure). So if I
+know that I would rather use some other solution instead, I'd think couple of times about the
+possibility of this small project/product becoming big.
 
 Do I prefer JPA or concrete ORM provider? For many years the answer was pretty clear - I always
 strove to stay within JPA realm. Accidentally, though, I went down the path with EclipseLink
@@ -27,5 +31,54 @@ alternative. Maybe the first step would be staying with ORM and utilizing the fu
 single provider -- whatever the provider is. That means checking the bugs on their issue tracking
 system when you encounter one, reporting new ones and so on.
 
-Will I use ORM on bigger systems? Probably, as I don't design every system I work on. Would I try
-something else if I could? Definitely. TODO
+On the other hand, sticking with EclipseLink for a while -- and diving deep -- leaves you enough
+time to encounter bugs, some of them quite painful. I decided to collect all the bugs we found
+(not necessarily being the first ones to report it) and you can check them in the appendix
+[Bugs discovered while writing this book](#app-bugs). Would I find more Hibernate bugs had I worked
+with it? I'm pretty sure I would as the few Hibernate bugs found there were found during our
+attempt to switch JPA providers quite early on the project (before we left the JPA path with root
+entities after `JOIN`s) or during experiments with JPA 2.1 features for the sake of this book.
+That cannot be compared to what EclipseLink went through on our project.
+
+What bothers me are some very serious bugs that are completely unattended by project maintainers,
+often not even answered. You create a test case for concurrency problem with `CASE` (read "don't
+use CASE at all if the query may be executed in parallel"), issue tracker tells you it sent emails
+to half a dozen people -- and no response at all. To be honest I lost my faith in EclipseLink
+quality quite a lot -- we're simply stuck with it and we are afraid to switch to Hibernate because
+of all the possible bugs we don't know about. Not to mention we would have to rollback our nasty
+*to-one* tricks that are not JPA compliant. Or maybe we can try some other JPA provider -- like
+DataNucleus that also [allows JOIN to another root entity](https://datanucleus.wordpress.com/2016/04/08/dn-v5-jpql-from-join-to-another-root-entity/).
+Or wait for the next JPA spec version hoping it will get there and then we may try Hibernate after
+all, but that seems like a long stretch, right?
+
+D> I actually tried [DataNucleus](http://www.datanucleus.org/) briefly with demos for this
+D> book and it didn't grow on me at all. Any relevant page (like Maven dependency example or
+D> `persistence.xml` example) can be found easily via Google, but their "Getting started" will not
+D> send you to these. Also, DataNucleus requires class enhancement and there is no chance to try
+D> all ORMs side by side just by choosing the persistence unit name from the `persistence.xml`
+D> containing all three setups -- which is possible with EclipseLink and Hibernate. I dug deeper,
+D> but found some strange error during runtime complaining about column that wasn't there, but it
+D> was. I admit that mapping of `Person.dogs` collection in the basic example project is tricky,
+D> because it recreates one problem from our project caused by legacy reason, but valid, I believe.
+D> DataNucleus is more than just a *JPA 2.1* provider, but in my case this caused complexity that
+D> didn't help, of course. It is still the most invasive from all three mentioned ORMs. This does
+D> not mean it must be any bad, I just didn't want to disrupt or make separate examples just
+D> because of it.
+
+So, will I use ORM on bigger systems again? Probably -- as I don't design every system I work on.
+Would I try something else if I could? Definitely. I have much more faith in [Querydsl](http://www.querydsl.com/)
+itself, for instance. You can use it over SQL directly, bypassing the JPA altogether. Main Querydsl
+contributor, Timo Westkämper, answers virtually any question anywhere (groups, issues,
+StackOverflow)... the only risk here is it seems to be predominantly
+[one-man show](https://github.com/querydsl/querydsl/graphs/contributors) even though it is backed
+by a company. You can also check [JOOQ](http://www.jooq.org), though here you can't avoid
+commercial licences if you want to use it with commercial databases. Both these projects -- and
+their popularity -- show that the JPA is far from being the last word in Java persistence landscape
+and also not the only way how to do it.
+
+%%Finally, about this book. It was much bigger story for me in the end, especially as I discovered
+%%I'd been working outside of JPA realm for more than a year. That obviously totally ruined all
+%%my plans, my wannabe climax was suddenly dull and I wasn't sure whether to go on at all. But
+%%I also learnt a lot about the JPA (and I really had thought before I'm quite solid already!)
+%%and about the two most popular providers. I hope it was helpful also for you, even though I might
+%%have raised more questions than provided answers. At least I tried to keep it all quite short.
