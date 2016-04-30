@@ -13,7 +13,7 @@ import java.util.List;
 public class LeftJoinWithAliasAndOnDemo {
 
   public static void main(String[] args) {
-    run("demo-el"); // EclipseLink drops part of the ON condition for many-to-many
+    run("demo-el"); // EclipseLink drops part of the ON condition for many-to-many (BUG)
     // select person from Person person   left join person.dogs as dog on dog.name = ?1
     // SELECT t1.ID, t1.NAME, t1.UNIQID
     // FROM {oj PERSON t1 LEFT OUTER JOIN (Person_Dog t2 JOIN DOG t0 ON (t0.ID = t2.dog_id))
@@ -38,16 +38,17 @@ public class LeftJoinWithAliasAndOnDemo {
       DogQueryDemo.prepareData(em);
       emf.getCache().evictAll();
 
-//      List<Person> owners = em.createQuery(
-//        "select p from Person p left join p.dogs d on d.name=:name", Person.class)
-//        .setParameter("name", "Rex")
-//        .getResultList();
-
       List<Person> owners = new JPAQuery<Person>(em)
         .select(QPerson.person)
         .from(QPerson.person)
         .leftJoin(QPerson.person.dogs, QDog.dog).on(QDog.dog.name.eq("Rex"))
         .fetch();
+
+      // The same with JPQL
+//      List<Person> owners = em.createQuery(
+//        "select p from Person p left join p.dogs d on d.name=:name", Person.class)
+//        .setParameter("name", "Rex")
+//        .getResultList();
 
       System.out.println("\nresults: " + owners);
     } finally {
