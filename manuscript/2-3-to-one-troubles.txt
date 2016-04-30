@@ -279,9 +279,71 @@ The cost may be alleviated by a cache somewhat, but you just trade CPU/network c
 
 While we cannot control `em.find(...)` much, we can try to select only the columns we are
 interested in using a query. Let's try it:
-%% TODO example SingleEntityReadSelectedColumns
 
-%% TODO mention automation/generation possibility, but it's still annoying
+{title="Selecting specific columns", lang=java}
+~~~
+Tuple tuple = new JPAQuery<QDog>(em)
+  .select(QDog.dog.id, QDog.dog.name, QDog.dog.breed.id)
+  .from(QDog.dog)
+  .where(QDog.dog.id.eq(1))
+  .fetchOne();
+~~~
+
+[Our demo code](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-eager/src/test/java/tests/SingleEntityReadSelectedColumns.java)
+returns Querydsl `Tuple` but it can also return a DTO using the constructor expression. We're
+selecting a single entity, but it works the same way for lists as well. I included an expression
+returning value of the column `breed_id`, we have to use an association path -- and that raises
+questions. Let's see what SQL is generated for this query.
+
+{title="EclipseLink query for a Dog with breed_id", lang=text}
+~~~
+SELECT t0.ID, t0.NAME, t1.ID FROM DOG t0, BREED t1
+  WHERE ((t0.ID = ?) AND (t1.ID = t0.BREED_ID))
+~~~
+
+EclipseLink does exactly what the JPQL says -- but is this the best way?
+
+{title="Hibernate query for a Dog with breed_id", lang=text}
+~~~
+select dog0_.id as col_0_0_, dog0_.name as col_1_0_, dog0_.breed_id as col_2_0_
+from Dog dog0_ where dog0_.id=?
+~~~
+
+Now this is cool -- and exactly what I expect from a smart ORM. Of course the `breed_id` is
+directly on the `Dog` table, there is absolutely no need to join `Breed` just for its ID.
+
+This seems usable and it definitely does not trigger any cascading eager fetch, unless we include
+entity expression in the `select`, e.g. `QDog.dog.breed` could ruin the party as it loads the whole
+content of the `Breed` entity and if it contains any *to-one* it may get loose. The downside of
+this approach is obvious -- we have to name all the attributes (columns) we need and it may get
+tedious if we have wide tables.
+
+I really did not enjoy doing it for 60+ columns and that's when you start thinking about code
+generation or other kind of framework. If you don't have to, you don't want to complicate your code
+with such ideas, so if you are sure you can rely on your ORM with lazy load even for *to-one* then
+do that. If you can't you have to decide when to use the ORM as-is, probably relying on the
+second-level cache to offset the performance hit caused by triggered loads, and when to explicitly
+cherry-pick columns you want to work with.
+
+Mentioning cache, we also have to realize that listing columns will not use an entity cache, but it
+may use query cache. We're getting closer to traditional SQL, just with JPQL shape. If persistence
+context contains unflushed changes and flush mode is set to `COMMIT` query will not see any changes
+either. Typically though, flash mode `AUTO` is used which flushes pending changes before executing
+queries.
+
+Finally, there is one more bothersome aspect of this solution. In a typical CRUD scenario you get
+a new version of an entity from presentation layer and you want to save the changes to the
+database. There are two basic ways how to do it:
+
+* You may merge the whole entity using JPA. This is simple from programmer's perspective but it
+means that presentation layer may change any and all attributes (columns). This is usable only for
+the most primitive use cases.
+* You can load the old version of the entity by its ID -- and here you don't want to bother with
+a select specifying all the columns. You may select only the columns you need to execute various
+checks or you need to preserve their value (in this case these are probably not even part of a DTO
+coming from the presentation layer) -- this sounds reasonable. After that you may merge the entity
+using JPA just as in the first case, but it is always more involved than using `em.find` to get the
+old state of that entity.
 
 
 ## What to do?
@@ -297,4 +359,5 @@ of a single entity and bearable but still inconvenient for selecting of lists fo
 In the next chapter I'm going to present an alternative using EclipseLink that is not JPA
 compliant, but tries to do without *to-one* relations altogether. If you insist on pure JPA you
 may just skip the following chapter.
+
 %% TODO: and continue with <link>

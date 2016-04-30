@@ -14,7 +14,7 @@ To actually finish something, I want to do this in the 1st edition:
 * Opinionated JPA
     * ORM tuned down (80%) REVISE COMPLETELY
     * No further steps without Querydsl (40%)
-    * Troubles with *to-one* relationships (60%)
+    * Troubles with *to-one* relationships (80%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
     * Removing `@ManyToOne` altogether (not JPA compliant) (40%)
     * Modularity, if you must
@@ -22,20 +22,25 @@ To actually finish something, I want to do this in the 1st edition:
     * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
         * https://dzone.com/articles/opensessioninview-antipattern (OSIV anti-pattern)
 * Common Problems
+
 %%    * Object identity, easy problem, recommended always the same way
 %%        * Composite `@Id` or `@IdClass`?
 %%        * Equals object or id? TODO - does it matter? tests with popular ORMs
 %%    * *Many-to-many* relations mapping consequences, what SQL it generates, explicit/implicit mapping
+
     * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
     do it when you need to fetch from *to-many* as well (famous N+1 select problem)
         * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
+
 %%    * Injecting EMF for better control (integration/standalone scenarios, not typical for webapps/simple services)
 %%        * Always try to keep create/close in one try/finally block
 %%        * Multiple transactions ("system/infrastructure" around business)
 %%    * Embeddable limitations (0%)
+
     * Advanced Querydsl (15%)
 * Appendices
     * H2 Database (50%)
+
 %%    * Groovy scrips for database initialization
     * Bugs I experienced myself (80%)
     * How to report JPA provider bugs? (be active, report, vote, creating test cases, ...)
