@@ -36,14 +36,15 @@ To actually finish something, I want to do this in the 1st edition:
 %%        * Always try to keep create/close in one try/finally block
 %%        * Multiple transactions ("system/infrastructure" around business)
 %%    * Embeddable limitations (0%)
+%% cascade: https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types/
 
     * Advanced Querydsl (15%)
 * Appendices
     * H2 Database (50%)
-
-%%    * Groovy scrips for database initialization
     * Bugs I experienced myself (80%)
     * How to report JPA provider bugs? (be active, report, vote, creating test cases, ...)
+
+%%    * Groovy scrips for database initialization
 
 Other ideas, maybe for next editions:
 
