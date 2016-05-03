@@ -11,6 +11,7 @@
 2-2-querydsl.txt
 2-3-to-one-troubles.txt
 2-4-without-to-one.txt
+2-5-modularity.txt
 
 3-0-common-problems.txt
 3-1-avoid-n+1-select.txt

@@ -274,7 +274,8 @@ easily incorporated into validation framework you use if you wish to.
 
 ## JPA dual mapping
 
-%% TODO + check spec if it is JPA compliant
+%% TODO + check spec if it is JPA compliant (cannot find, but doesn't seem to be forbidden)
+%% One case is using @MapsId as described in JPspec 2.4.1 and examples therein, also see 11.1.39
 
 
 ## Wrapping it up

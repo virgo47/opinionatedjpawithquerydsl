@@ -358,6 +358,4 @@ of a single entity and bearable but still inconvenient for selecting of lists fo
 
 In the next chapter I'm going to present an alternative using EclipseLink that is not JPA
 compliant, but tries to do without *to-one* relations altogether. If you insist on pure JPA you
-may just skip the following chapter.
-
-%% TODO: and continue with <link>
+may just skip the following chapter and continue with the one on [Modularity](#ch-modularity).
