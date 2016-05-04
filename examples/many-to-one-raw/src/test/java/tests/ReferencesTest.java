@@ -16,7 +16,7 @@ public class ReferencesTest {
 
   private static final int NONEXISTENT_BREED_ID = -1;
   private EntityManagerFactory emf;
-  private Dog lessie;
+  private Dog lassie;
 
   @BeforeMethod
   public void prepareData() {
@@ -29,9 +29,9 @@ public class ReferencesTest {
     em.persist(collie);
     em.flush(); // needed to really get ID
 
-    lessie = new Dog();
-    lessie.setBreedId(collie.getId());
-    em.persist(lessie);
+    lassie = new Dog();
+    lassie.setBreedId(collie.getId());
+    em.persist(lassie);
 
     em.getTransaction().commit();
     em.close();
@@ -48,7 +48,7 @@ public class ReferencesTest {
   public void referencesCheckerFindsExistingId() {
     EntityManager em = emf.createEntityManager();
     try {
-      new ReferenceChecker(em).checkReferences(lessie);
+      new ReferenceChecker(em).checkReferences(lassie);
     } finally {
       em.close();
     }
@@ -58,8 +58,8 @@ public class ReferencesTest {
   public void referencesCheckerThrowsExceptionForNonexistentId() {
     EntityManager em = emf.createEntityManager();
     try {
-      lessie.setBreedId(NONEXISTENT_BREED_ID);
-      Assertions.assertThatThrownBy(() -> new ReferenceChecker(em).checkReferences(lessie))
+      lassie.setBreedId(NONEXISTENT_BREED_ID);
+      Assertions.assertThatThrownBy(() -> new ReferenceChecker(em).checkReferences(lassie))
         .hasMessage("Reference not found for class modeltoone.Breed and id=-1");
     } finally {
       em.close();

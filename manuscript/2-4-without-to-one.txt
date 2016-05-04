@@ -262,7 +262,7 @@ references on an entity like this:
 
 {title="Using `ReferenceChecker`", lang=java}
 ~~~
-new ReferenceChecker(em).checkReferences(lessie);
+new ReferenceChecker(em).checkReferences(lassie);
 ~~~
 
 This either does nothing when everything is OK, or it fails with some exception of your choice

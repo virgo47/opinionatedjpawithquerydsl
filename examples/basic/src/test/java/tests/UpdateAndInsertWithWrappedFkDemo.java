@@ -16,17 +16,17 @@ public class UpdateAndInsertWithWrappedFkDemo {
 //    run("demo-hib");
   }
 
-  public static void run(String unitName) {
+  private static void run(String unitName) {
     EntityManagerFactory emf = Persistence.createEntityManagerFactory(unitName);
     try {
       EntityManager em = emf.createEntityManager();
       DogQueryDemo.prepareData(em);
 
       em.getTransaction().begin();
-      Dog lessie = findDogByName(em, "Lassie");
+      Dog lassie = findDogByName(em, "Lassie");
       System.out.println("\nHere the breed is already in session\n");
 
-      Breed collie = lessie.getBreed();
+      Breed collie = lassie.getBreed();
       System.out.println("collie = " + collie);
 
       Dog rex = findDogByName(em, "Rex");
