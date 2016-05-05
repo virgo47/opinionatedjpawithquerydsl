@@ -15,6 +15,7 @@
 
 3-0-common-problems.txt
 3-1-avoid-n+1-select.txt
+3-2-enum-mapping.txt
 3-x-advanced-querydsl.txt
 
 4-0-final-thoughts.txt

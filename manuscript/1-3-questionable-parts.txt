@@ -185,7 +185,7 @@ the cache in some "dehydrated" form.[^ecacheorm]
 We will discuss caching again when we talk about [tuning it down](#caching-considerations).
 
 
-## You can't escape SQL and relation model
+## You can't escape SQL and relation model {#cant-escape-sql}
 
 Somewhere under cover there is SQL lurking and we better know how it works. We will tackle this
 topic with more passion in the second part of the book, but for now we will just demonstrate that
@@ -203,7 +203,8 @@ query for the first two owners ordered by name -- pagination without order doesn
 you'll get Alan and Charlie. However, imagine you want to display names of their dogs in each row.
 If you join dogs too, you'll just get Alan twice, courtesy of his many dogs. You may select without
 the join and then select dogs for each row, which is our infamous N+1 select problem. This may not
-be a big deal for a page of 2, but for 30 or 100 you can see the difference.
+be a big deal for a page of 2, but for 30 or 100 you can see the difference. We will talk about
+this particular problem later [in the chapter about N+1](#to-many-paginating).
 
 These are the effects of the underlying relational model and you can simply escape them. It's not
 difficult to deal with them if you accept the relational world underneath. If you fight it, it

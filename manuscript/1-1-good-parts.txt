@@ -80,7 +80,7 @@ annotation. I feel no need to use `java.sql` package anymore.
 
 Also enums are much easier, although this applies only for simple cases, not to mention that for
 evolving enums `@Enumerated(EnumType.ORDINAL)` is not an option (it should not be an option at all,
-actually).
+actually). More in the chapter [Mapping Java `enum`](#ch-enum-mapping).
 
 The bottom line is that mapping from SQL types to Java field types is much more natural with JPA
 than with JDBC. And we haven't even mentioned two big guns JPA offers -- custom type converters
