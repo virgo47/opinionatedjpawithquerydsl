@@ -222,7 +222,7 @@ a managed component so we cannot use injection as usually. Static access seems u
 frees the entity from a reference to some infrastructural component and leaves it only with
 dependency to some utility class.
 
-It is important to be familiar with the implementation of an inject `EntityManager` -- in case of
+It is important to be familiar with the implementation of an injected `EntityManager` -- in case of
 Spring their shared entity manager helps us to get to the right entity manager even if we get to
 the component via static path. I would probably have to consult Java EE component model to be sure
 it is possible and if it is reliable across application servers.
@@ -232,9 +232,16 @@ someone has to populate it which means life-cycle -- and that means additional t
 
 In any case, it is possible to add getter for a relationship on the entity, but it calls for some
 rough solutions -- so if you can keep such an access somewhere else (data access object, for
-instance) do it that way. If you decide to load the relationship and you hold only the entity,
-maybe you can introduce DAO to that code, or maybe you have logic too high already (like on the
-presentation layer maybe?) and it should go lower where the DAO is available.
+instance) do it that way. Otherwise we're getting dangerously close to [*Active record*
+pattern](https://en.wikipedia.org/wiki/Active_record_pattern) which by itself is legitimate, but
+doesn't fit JPA. True -- JPA provider can cheat somehow undercover, but we rather should not.
+
+If you decide to load the relationship in some arbitrary code and you have only access to the
+entity, perhaps you can introduce DAO to that code. If you feel you're making this decision too
+high in the layer model (like on the presentation layer maybe?), perhaps it should be pushed lower
+where the DAO is available. I'm not totally against static backdoor from the non-managed code to
+the managed component, but at least we should be aware of the cost and compare it with the cost
+of not doing it.
 
 
 ## Loosing information without mapping annotations
@@ -274,7 +281,85 @@ easily incorporated into validation framework you use if you wish to.
 
 ## JPA dual mapping
 
-%% TODO + check spec if it is JPA compliant (cannot find, but doesn't seem to be forbidden)
+When I say dual mapping I mean mapping of the relation both as an object and foreign key value.
+It looks like this:
+
+{title="Dual relation mapping", lang=java}
+~~~
+@Entity
+public class Dog {
+...
+  @ManyToOne
+  @JoinColumn(name = "breed_id", updatable = false, insertable = false)
+  private Breed breed;
+
+  @Column(name = "breed_id")
+  private Integer breedId;
+~~~
+
+I can't find example of this anywhere in the [[JPspec](#bib-jpspec)], neither can I find anything
+that would forbid it (although I'm not really sure) -- but it works in both major JPA providers.
+The key is marking one of these attributes as readonly, that's what `updatable/insertable=false`
+does. I prefer this version as now I don't need any `Breed` object for update when I have its ID
+already. Getters are returning values for respective fields, setters are designed in such a way
+that the persisted field (here foreign key value) is always updated:
+
+{title="Accessors for dual mapping", lang=java}
+~~~
+public Breed getBreed() {
+  return breed;
+}
+
+public void setBreed(Breed breed) {
+  this.breed = breed;
+  breedId = breed.getId();
+}
+
+public Integer getBreedId() {
+  return breedId;
+}
+
+public void setBreedId(Integer breedId) {
+  this.breedId = breedId;
+}
+~~~
+
+In this case it means merely setting the `breedId` field when `breed` is updated. We don't care
+about `breed` in the other setter. Programmer has to know that foreign key value is primary
+breed attribute here and act accordingly. For instance, this setup is not transparent when
+persisting new entities. If we persist a fresh breed there is no guarantee its ID is already
+available as autoincrement fields are filled in after the actual `INSERT` is flushed to the
+database. With EclipseLink we have to force it if we need the ID -- calling `setBreed(newBreed)`
+would otherwise set dog's FK to the breed to `null`. Hibernate is rather eager with `INSERT`s which
+is convenient for this scenario.
+
+Reverse case -- with `breed` as the persisted field and `breedId` as the readonly one -- is less
+useful and I cannot find any reasons to use it instead of the traditional JPA relationship mapping.
+You can get foreign key value anytime calling `breed.getId()`.
+
+In any case, there are no "savings" during the load phase, but we can store new entities with
+raw foreign key values if we have those (and for whatever reason don't have the entities loaded).
+In the previous chapter we mentioned the possibility of using entities as wrappers for the foreign
+key, but we also showed that it doesn't play well with `cascade = PERSIST`.
+
+If we go back to dreaming -- imagine we could request `em.find` for a dog by ID with a hint *not
+to load readonly mappings* (or otherwise designated). This would save us the hassle during the
+loading phase as well and made the whole read-update scenario (part of typical CRUD) based on
+foreign key values with the opportunity to load the relationships -- if we wished so. Any of this
+could be specified on the entity level based on typical patterns of usage. *Imagine all the people
+fetching like they want-oh-oh...*
+
+Dual mapping like this has one big advantage compared to the pure foreign key mapping -- with
+the `breed` mapping we can construct JPA compliant JPQL queries without waiting for the next
+version of JPA -- if they bring the option of joining root entities at all, that is. But currently
+dual mapping also means that we can only avoid the fetch cascade if we:
+
+* rely on `LAZY` hint -- not guaranteed by JPA, but if provided by a provider, you can consider
+it solved;
+* or query the entity with all the columns named explicitly (e.g. include `breedId`, skip `breed`)
+-- this, however, cripples the caching (if you use it) *and* is annoying to code.
+
+
 %% One case is using @MapsId as described in JPspec 2.4.1 and examples therein, also see 11.1.39
 
 

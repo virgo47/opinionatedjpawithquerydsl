@@ -233,7 +233,7 @@ have the actual entities wrapped in a collection that works as an intermediary. 
 perform any bytecode voodoo on the entity class.
 
 
-### Lazy to-one not guaranteed
+### Lazy to-one not guaranteed {#lazy-not-guaranteed}
 
 With to-one situation changes dramatically as you have no intermediary. It would be interesting
 if JPA at least offered some wrapper to enforce lazy behavior when you really need it regardless
