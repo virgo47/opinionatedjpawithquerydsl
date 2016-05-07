@@ -359,8 +359,19 @@ it solved;
 * or query the entity with all the columns named explicitly (e.g. include `breedId`, skip `breed`)
 -- this, however, cripples the caching (if you use it) *and* is annoying to code.
 
-
-%% One case is using @MapsId as described in JPspec 2.4.1 and examples therein, also see 11.1.39
+I> There actually is something similar to this "dual mapping" mentioned in the
+I> [[JPspec](#bib-jpspec)]. It relates to mapping of relations that are part of the primary key
+I> and involves `@MapsId`. The specification describes this in the section *2.4.1* and examples
+I> therein, also see *11.1.39*. For instance, instead of combined `@Id` and `@OneToOne` mapping
+I> when primary key is also a foreign key to some master entity you may want to have `@Id` as a
+I> value and separate `@OneToOne` mapping. In such a case you override `@JoinColumn` (not `@Column`
+I> for `@Id`) and you add `@MapsId` that tells JPA that this mapping and `@Id` mapping play
+I> together. `@MapsId` can relate to one column or more columns when the referenced entity uses
+I> composite primary key and can be useful for `@OneToOne` or `@ManyToOne`.
+I>
+I> However, you don't need this annotation if you use `@IdClass` instead of `@EmbeddedId`. That's
+I> actually why I never saw this annotation before I started working on this book -- we prefer
+I> `@IdClass` annotations.
 
 
 ## Wrapping it up
