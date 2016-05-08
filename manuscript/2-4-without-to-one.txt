@@ -376,4 +376,31 @@ I> `@IdClass` annotations.
 
 ## Wrapping it up
 
-%% TODO the same provided by JPA would be much easier
+I presented a solution to our *to-one* problems -- to use raw foreign key values. This bends the
+JPA rules a bit and builds on the availability of the `ON` clause introduced in *JPA 2.1*. However,
+JPA specification currently does not allow us to use root entity paths with `JOIN`s -- which is
+required for queries. Only association paths are allowed now. This feature may come in later
+versions and it is already supported by EclipseLink and DataNucleus, but not by Hibernate, for
+instance.
+
+Mapping raw foreign key value may lead to some logical information loss, which can be easily
+mended by custom annotation. I'd like to see standard JPA annotation for this, otherwise schema
+generation would not be fully functional.
+
+Alternative solution might be dual mapping -- mapping both the foreign key value and the relation
+as object. When mapping more attributes for a single column we have to designate other mappings
+as read-only. If we could explicitly ask JPA to fetch the object -- or ask it not to fetch -- we
+would have much better control over the fetching cascade going wild.
+
+Another solution is to use a single mapping like today and having hint for JPA to fetch only the ID
+portion of the related object. This may not work well with `cascade=PERSIST` when persisting new
+entities pointing to existing ones, although the specification allows it to work (but also allows
+to throw exception thanks to magical usage of "may" in the specification text). This solution
+preserves current query mechanics, and actually is least intrusive of them all.
+
+Finally, the JPA specification could mandate `LAZY` -- this is something where Hibernate seems
+quite reliable out of the box without any configuration hassle. On the other hand, I saw many
+questions asking how to make this relation lazy in Hibernate, so it probably is not universally
+true. Promoting `LAZY` from a hint to a guaranteed thing would require JPA providers to use some
+bytecode magic (which is not clean from Java language perspective), but it would also end a lot of
+debates how to do it right.
