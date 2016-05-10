@@ -39,8 +39,9 @@ Finally, with the introduction of `ON` clause we could get much more low-level w
 when it suits us. `ON` is intended for additional `JOIN` conditions but we would have some new
 ways how to approach the relations which can be bothersome from time to time. We could use `ON`
 to explicitly add our primary `JOIN` condition -- but all this is for naught because *JPA 2.1*
-does not allow to use root entity in the `JOIN` clause. More about this topic and how to do it
-with EclipseLink in the chapter [Removing *to-one* altogether](#ch-without-to-one).
+does not allow to use root entity (representing the table itself) in the `JOIN` clause. More about
+this topic and how to do it with EclipseLink in the chapter
+[Removing *to-one* altogether](#ch-without-to-one).
 
 
 ## Comparing JPQL to SQL {#missing-from-sql}

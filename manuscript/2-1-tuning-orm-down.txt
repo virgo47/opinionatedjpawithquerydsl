@@ -4,11 +4,19 @@ Full-blown object-relational mapping maps database foreign keys as relations bet
 Instead of `Integer breedId` you have `Breed breed` where mapping information provides all the
 necessary low-level information about the foreign key. This mapping information can be stored
 elsewhere (typically XML mapping file) or as annotations directly on the entity (probably more
-popular nowadays). Relations can be mapped in any direction (even in reverse), for one or both
-directions (then you choose which one is the owner's side, which is kinda more "in control" of
-the relationship) and in any cardinality (with annotations `@OneOnOne`, `@OneToMany`, `@ManyToOne`
-and `@ManyToMany`). Mapping foreign keys as relations is probably the most pronounced feature of
-ORM. And I'm going to make a case against some of it.
+popular nowadays). Relations can be mapped in any direction, even in reverse, for one or both
+directions -- then you choose which one is the owner's side, which is kinda more "in control" of
+the relationship -- and in any cardinality with annotations `@OneOnOne`, `@OneToMany`, `@ManyToOne`
+and `@ManyToMany`. Mapping foreign keys as relations is probably the most pronounced feature of
+ORM -- and originally I wanted to make a case against it in this very book.
+
+In an ironic twist I discovered that the way we bent *JPA 2.1* works only on its reference
+implementation, that is EclipseLink, this all more than a year too late. I was considering to
+stop any further work on the book after loosing this most important showcase point. After all
+I decided to go on with a weaker version after all. We will describe the troubles with *to-one*
+relations, their possible solutions -- including the one that is not JPA-compliant -- and there
+are also other helpful tips, many Querydsl examples throughout and two dedicated chapters. All in
+all it should be enough goodies to justify this effort.
 
 Most of the points I'm going to explain somehow revolve around two rules:
 
@@ -24,8 +32,12 @@ a provider, but it's not guaranteed. That's nothing for me. Let's face it -- any
 is eager, unless you add some complexity to your system to make it lazy. It's not lazy because you
 annotate it so, deal with it.
 
-%% TODO: Hibernate to-one is nicely lazy
-%% TODO: this does not mean we don't annotate collections as lazy
+As a kind of shortcut I have to mention that Hibernate 5.x supports `LAZY` *to-one* relationships
+as you'd expect, more about it later in part on how [lazy is (not) guaranteed](#lazy-not-guaranteed).
+When talking about often vain `LAZY` on *to-one*, let me be clear that it is still preferred
+fetching for collections -- and quite reliable for them as well.
+
+%% TODO: point at discussion about contrast between LAZY fetch and explicit fetching in queries
 
 
 ## Price for relations
@@ -272,14 +284,12 @@ in chapter [Questionable parts](#ch-questionable-parts).
 
 Using less of ORM and relying less on complex auto-magic features is a way I propose. It builds
 on the premise that we should use ORM where it helps us, avoid it where it does not and know the
-consequences of both cases and their interactions. It may happen that using both ways adds
+consequences of both styles and their interactions. It may happen that using both ways adds
 complexity too, but from my experience it is not the case and not inherent problem. JPA has much
-better mapping of values from DB to objects compared to the JDBC, so even if you used your entites
+better mapping of values from DB to objects compared to the JDBC, so even if you used your entities
 as dummy DTOs it is still worth it. It abstracts concrete SQL flavour away which has its benefits
 -- and unless this is a real issue for more than couple of queries you can resolve the rest with
 either native SQL support in the JPA, or use JDBC based solution.
-
-%% TODO especially this part builds on old facts that solution is JPA compliant
 
 Coming to relations, there may be many of them where *to-one* does not pose a problem. In that
 case make your life easier and use mapping to objects. If cascade loading of *to-one* causes
@@ -288,22 +298,22 @@ for non-critical cases and work around it for the critical ones with queries -- 
 in the chapter [Troubles with *to-one* relationships](#ch-to-one-troubles).
 
 If your ORM allows it, you may go even lower on the abstraction scale and map raw foreign key
-values instead of related objects. While the mapping part is possible with the JPA, it is not
-realistic as JPA does not allow you to join on such relationships. EclipseLink offers the last
+values instead of related objects. While the mapping part is possible with the JPA standard, it is
+not enough as JPA does not allow you to join on such relationships. EclipseLink offers the last
 missing ingredient and this solution is described in the chapter
-[Removing *to-one* altogether](#ch-without-to-one). This all renders ORM as a bit lower-level tool
-than intended, but still extremely useful. It still allows you to generate schema from objects if
-you have control over your RDBMS (sometimes you don't) or even just document your database with
-class diagram of entities[^cdd].
+[Removing *to-one* altogether](#ch-without-to-one).
+
+This all renders ORM as a bit lower-level tool than intended, but still extremely useful. It still
+allows you to generate schema from objects if you have control over your RDBMS (sometimes you
+don't) or even just document your database with class diagram of entities[^cdd]. We still have to
+keep unit-of-work and caching in check, but both are very useful if used well. I definitely don't
+avoid using `EntityManager`, how could I? Caching is a different beast though, and deserves its
+own section.
 
 [^cdd]: While class diagram does not say exactly the same like E-R diagram I used it successfully
     to communicate design of tables to my DBA who had absolutely no problem to understand it, even
     for cases where many-to-many associative table was implied by a named line. E-R diagram was
     much easier to generate ex-post for documentation purposes.
-
-We still have to keep unit-of-work and caching in check, but both are very useful if used well.
-I definitely don't avoid using `EntityManager`, how could I? Caching is a different beast though,
-and deserves its own section.
 
 
 ## Caching considerations {#caching-considerations}
