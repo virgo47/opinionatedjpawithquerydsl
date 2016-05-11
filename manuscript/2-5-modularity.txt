@@ -1,1 +1,26 @@
 # Modularity, if you must {#ch-modularity}
+
+https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
+
+TODO: can we even do it with pure Java EE? How to merge persistence.xml from all JARs?
+
+## Splitting JPA persistence unit
+
+TODO: this does not work if in superclass in different module (at least not with EclipseLink's
+static weaving, check different scenarios):
+
+~~
+@Id
+@Column(name = "id")
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Integer id;
+~~
+
+Thrown exception:
+
+~~
+org.eclipse.persistence.exceptions.ValidationException:
+Exception Description: Null or zero primary key encountered in UnitOfWork clone
+  [entity.toString result here], primary key [null]. Set descriptor's IdValidation or the
+  "eclipselink.id-validation" property.
+~~
