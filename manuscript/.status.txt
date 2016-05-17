@@ -16,7 +16,7 @@ To actually finish something, I want to do this in the 1st edition:
     * No further steps without Querydsl (40%)
     * Troubles with *to-one* relationships (80%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
-    * Removing `@ManyToOne` altogether (not JPA compliant) (40%)
+    * Removing `@ManyToOne` altogether (not JPA compliant) (100%) NEEDS REVIEW
     * Modularity, if you must
         * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
     * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
@@ -26,6 +26,18 @@ To actually finish something, I want to do this in the 1st edition:
 %%    * Object identity, easy problem, recommended always the same way
 %%        * Composite `@Id` or `@IdClass`?
 %%        * Equals object or id in queries? TODO - does it matter? tests with popular ORMs
+%%        * equals/hashCode best practices, why isAssignableFrom? can it collide in hierarchies? (should not)
+%%	@Override
+%%	public final int hashCode() {
+%%		return Objects.hashCode(getId());
+%%	}
+%%
+%%	@Override
+%%	public final boolean equals(Object obj) {
+%%		return this == obj
+%%			|| obj != null && getClass().isAssignableFrom(obj.getClass())
+%%			&& Objects.equals(getId(), ((BaseObject<?>) obj).getId());
+%%	}
 %%    * *Many-to-many* relations mapping consequences, what SQL it generates, explicit/implicit mapping
 %% also eclipselink bug with left-join + dropped ON: https://bugs.eclipse.org/bugs/show_bug.cgi?id=422510
 
