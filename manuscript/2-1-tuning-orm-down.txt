@@ -35,9 +35,11 @@ annotate it so, deal with it.
 As a kind of shortcut I have to mention that Hibernate 5.x supports `LAZY` *to-one* relationships
 as you'd expect, more about it later in part on how [lazy is (not) guaranteed](#lazy-not-guaranteed).
 When talking about often vain `LAZY` on *to-one*, let me be clear that it is still preferred
-fetching for collections -- and quite reliable for them as well.
-
-%% TODO: point at discussion about contrast between LAZY fetch and explicit fetching in queries
+fetching for collections -- and quite reliable for them as well. This does not mean you should
+rely on these lazy *to-many* relations when you want to fetch them for multiple entities at once.
+For instance if you want to display page with messages with attachments (possibly multiple on each
+line) you should not wait for lazy fetch - more about this in the chapter [Avoid N+1
+select](#ch-avoid-n-plus-1).
 
 
 ## Price for relations
