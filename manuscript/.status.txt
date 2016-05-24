@@ -40,6 +40,9 @@ To actually finish something, I want to do this in the 1st edition:
 %%	}
 %%    * *Many-to-many* relations mapping consequences, what SQL it generates, explicit/implicit mapping
 %% also eclipselink bug with left-join + dropped ON: https://bugs.eclipse.org/bugs/show_bug.cgi?id=422510
+%% Also on cascade: https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types/
+%% (describes cascading in general for various *To*, including dangerous REMOVE on @ManyToMany that
+%% often does not do what we want (actually does more and removes not only link, but also target).
 
     * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
     do it when you need to fetch from *to-many* as well (famous N+1 select problem)
