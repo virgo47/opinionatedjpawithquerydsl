@@ -24,3 +24,66 @@ Exception Description: Null or zero primary key encountered in UnitOfWork clone
   [entity.toString result here], primary key [null]. Set descriptor's IdValidation or the
   "eclipselink.id-validation" property.
 ~~
+
+## Cutting cyclic dependencies
+
+Imagine you have two modules -- `users` and `permissions` -- where `permissions` built upon the
+`users` module. Module `users` contains `User` and `Role` entity while `permission` module contains
+`Permissions` and `RolePermissions` association that is mapped explicitly because it contains some
+additional information. See the following picture:
+
+TODO picture
+
+Obviously, `Role` cannot depend on `RolePermissions` because that would cross module boundaries
+in a wrong direction. When the `Role` is deleted we also want to remove all related
+`RolePermissions` (but not `Permissions`, of course). Imagine we have `RoleDao` and
+`RolePermissionDao` and both these are derived from some [layer supertype](http://martinfowler.com/eaaCatalog/layerSupertype.html)
+named `BaseDao`. This handy class implements all common functionality, including `delete(...)`
+method that in the process calls common `preDelete(entity)` method. For convenience this is
+already pre-implemented, but does nothing.
+
+Now our `RoleDao` cannot contain this implementation:
+~~
+@Override
+protected void preDelete(Role entity) {
+  QRolePermission rp = QRolePermission.rolePermission;
+  execute(deleteFrom(rp)
+    .where(rp.roleId.eq(entity.getId())));
+}
+~~
+
+It's not possible because `QRolePermission` (just like `RolePermission`) is not available in the
+`users` module.
+
+Sure, we can argue whether we have the entities split into modules properly -- for instance, is
+`Role` really a concept belonging to `User` without considering permissions? However after moving
+`Role` to the `permissions` module, we would have problem with `@ManyToMany` relation named `roles`
+on the `User` class -- which is the owning side of the relationship in our case. Again, we can
+argue that we want to remove the relationship also when we delete the `Role`, but however you do it
+one side of the relationship will be "blind" (going against the module dependency) and that causes
+problems.
+
+TODO picture for this too?
+
+Notice though that database relational design limitations dictating where to put the foreign key
+are actually quite useful to decide which way the dependency goes. In case of `User` and `Role`
+we may split them between various modules and then the module knowing about `UserRole` (or
+`RoleUser`) table is the one that depends on the other one. We don't choose randomly, of course.
+I don't see logic of roles being separate concept -- often we talk about "user roles" after all,
+but not about "roled users" although this line of thinking is often deceiving.
+
+TODO picture for both ways how to split modules above these the tables?
+
+Long story short, we decided where the boundary is and we have our `RolePermissions` in the
+downstream module pointing to `Role` entity in the upstream one. We wanted to map it explicitly
+anyway, good for us because you'd probably have to give up `@ManyToMany` using association table
+that is not mapped to entity if the relation crosses modules for reasons mentioned above.
+
+The last problem is how to guarantee that deleting a `Role` deletes also its `RolePermission`s.
+We can get away applying [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern) that
+allows to register an arbitrary callback with DAO. This way `RolePermissionDao` can register code
+(pretty much the one in the previous `preDelete` listing) with `RoleDao` that doesn't know what
+the code does, but calls it anyway. This pattern will be implemented by `BaseDao` to make it
+generally available.
+
+TODO example?
