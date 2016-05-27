@@ -16,6 +16,7 @@ public class Dog {
   @Column(nullable = false)
   public LocalDate birthdate;
 
+  @Column
   public LocalDate died;
 
   @Override public boolean equals(Object o) {

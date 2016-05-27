@@ -1,9 +1,8 @@
 package tests;
 
-import com.querydsl.core.types.dsl.DateExpression;
+import com.querydsl.core.types.dsl.Param;
 import com.querydsl.jpa.impl.JPAQuery;
 import modeladv.Dog;
-import modeladv.QDog;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -12,7 +11,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class UsingDateFunctions {
+import static modeladv.QDog.dog;
+
+public class DateCoalesceParameterNotConverted {
 
   public static void main(String[] args) throws IOException {
     run("demo-el");
@@ -25,21 +26,33 @@ public class UsingDateFunctions {
       EntityManager em = emf.createEntityManager();
       prepareData(em);
 
-      QDog d = QDog.dog;
-      List<Dog> liveDogs = new JPAQuery<Dog>(em)
-        .select(d)
-        .from(d)
-        // client-side option
-//        .where(d.birthdate.before(LocalDate.now()))
-//        .where(d.died.after(LocalDate.now()))
 
-        // using function on the database side
-        .where(d.birthdate.before(DateExpression.currentDate(LocalDate.class))
-          .and(d.died.after((DateExpression.currentDate(LocalDate.class)))
-            .or(d.died.isNull())))
-        .fetch();
+      // On h2 fails whenever dog with null died is encountered
+      // On JTDS fails before executing
+      try {
+        em.createQuery(
+          "select d from Dog d where coalesce(d.died, :date) > d.birthdate", Dog.class)
+          .setParameter("date", LocalDate.now())
+          .getResultList();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
 
-      System.out.println("\nLIVE DOGS = " + liveDogs);
+      // the same problem
+      try {
+        Param<LocalDate> SOME_DATE = new Param<>(LocalDate.class);
+        List<Dog> funnyDogs = new JPAQuery<Dog>(em)
+          .select(dog)
+          .from(dog)
+          .where(dog.died.coalesce(SOME_DATE).asDate().after(dog.birthdate))
+
+//         IllegalArgumentException: You have attempted to set a value of type class java.sql.Date for parameter 1...
+//        .set(SOME_DATE, new Date(System.currentTimeMillis()))
+          .set(SOME_DATE, LocalDate.now()) // can be any date, cannot replace it with DateExpression.currentDate()
+          .fetch();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     } finally {
       emf.close();
     }
@@ -47,6 +60,8 @@ public class UsingDateFunctions {
 
   private static void prepareData(EntityManager em) {
     em.getTransaction().begin();
+
+    em.createQuery("delete from Dog").executeUpdate();
 
     Dog lassie = new Dog();
     lassie.name = "Lassie";
