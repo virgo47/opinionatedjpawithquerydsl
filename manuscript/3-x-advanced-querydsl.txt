@@ -44,10 +44,29 @@ dynamically later.
 %% TODO: revisit clone and other methods in multi-threaded environments, with 3.x we must use
 %% synchronized for these cases
 
+
+## Working with dates and `java.time` API
+
+TODO
+
+This is how to convert return of the `DateTimeExpression` function to specific date/time type:
+```
+Tuple notificationWithState = queryFrom($)
+  .innerJoin(n).on(n.id.eq($.notificationId))
+  .where($.mailStatus.eq(GuiUserNotificationSendStatus.TO_SEND)
+    .and(n.validFrom.lt(DateTimeExpression.currentTimestamp(LocalDateTime.class))))
+  .orderBy($.id.desc())
+  .singleResult($, n);
+```
+
+How to coerce with `java.util` types? How to mix `LocalDate` and `LocalDateTime`?
+
+
+
 ## Note about Querydsl 3 versus 4
 
 I've used major versions 2 and 3 in my projects and started to use version 4 only when I started
-writing this book. After initial investigation I realized that I'll hardly switch from version 3
+to write this book. After initial investigation I realized that I'll hardly switch from version 3
 to version 4 in any reasonably sized project easily. Other thing is whether I even want. I don't
 want to let version 4 down, it does a lot to get the DSL closer to SQL semantics -- but that's
 the question: Is it really necessary?
@@ -73,7 +92,7 @@ List<Dog> dogs = new JPAQuery(em)
   .list(QDog.dog);
 ~~~
 
-Personally I like the latter better even though the first one is more SQL-like notation. Version 3
+Personally I like the latter more even though the first one is more SQL-like notation. Version 3
 is one line shorter -- that purely technical `fetch()` call is pure noise. Further that `fetch()`
 was used in version 3 to declare fetching of the joined entity, in version 4 you have to use
 `fetchAll()` for that. This means that `fetch*()` methods are not part of one family -- that's
@@ -92,3 +111,30 @@ approach you do this first, then add various `JOIN`s -- but this all fights typi
 programming mindset. For me personally version 3 hit the sweet spot perfectly, not fighting
 Java syntax (I feel a bit of a struggle between Querydsl 4 and Java) and giving me very
 SQL-like style of queries.
+
+We can also question what changes more. Sometimes we change the list of expressions, which means
+we have to construct the whole query again and the most moving part -- the list of resulting
+expressions -- go somewhere in the middle (actually right at the start!). I cannot have my query
+template with `FROM` and `JOIN`s ready anymore. All I had to do before was to clone it (so we don't
+change the template), add where parts based on some filter and declare what expressions we want
+as results, based on well-known available aliases, columns, etc.
+
+Sure you have to have those aliases thought through before anyway, so it's not such a big deal to
+create all the queries dynamically and add `JOIN`s after you "use them" in the `SELECT` part,
+because the aliases are the common ground and probably available as some constants. But there is
+another good scenario for pre-created template query -- you can use it as... well, we said it
+already, as a template. This way you can ask its metadata and do some preparation based on this.
+We use this for our filter framework where the guys from UI know exactly what kind of aliases we
+offer, because we crate a `Map<String, SimpleExpression<?>>` to get to the paths representing the
+alias by its name very quickly. We can still do this with Querydsl 4. We create one query selecting
+the entity used in the `FROM` clause (makes sense) and extract the map of aliases on this one,
+discarding this "probe query" afterwards. Not a big deal, but still supports the idea that after
+the `WHERE` clause it is the `SELECT` part that is most flexible and using it right at the start
+of the "sentence" may sound natural, but not programmatically right.
+
+D> The same applies for SQL itself. In its time it was probably great, but imagine nowadays IDEs
+D> that can help you with the `SELECT` part of the query. What will you do? You'll write `SELECT *`
+D> and finish the rest (froms, joins, wheres) and return to that `*` expecting that IDE will give
+D> you hints based on actual tables/aliases used. This "backward-ish" flow opens space for that
+D> question: Is the original order of clauses really the best one? I believe Querydsl 3 was ahead
+D> and shouldn't go back to SQL.
