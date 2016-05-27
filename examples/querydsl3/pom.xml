@@ -13,6 +13,7 @@
     <hibernate.version>5.1.0.Final</hibernate.version>
     <eclipselink.version>2.6.2</eclipselink.version>
     <querydsl.version>3.7.2</querydsl.version>
+    <h2.version>1.4.190</h2.version>
   </properties>
 
   <dependencies>
@@ -55,7 +56,7 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>1.4.190</version>
+      <version>${h2.version}</version>
     </dependency>
   </dependencies>
 
