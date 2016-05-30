@@ -1,6 +1,7 @@
 package tests;
 
 import com.querydsl.core.types.dsl.DateExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import modeladv.Dog;
 import modeladv.QDog;
 
