@@ -313,7 +313,7 @@ W> the cache is distributed it may still trigger network roundtrips. These may o
 W> quicker than the database access, depending on how much you can get by id; to re-hydrate a
 W> cached entity should be faster than to fetch it from the database. I hope you can see a lot of
 W> trade-offs you *should* think about when you choose any more sophisticated path -- this includes
-W> parts that seem easy at their beginning only because they are covered with a veil of auto-magic
+W> paths that seem easy at their beginning only because they are covered with a veil of auto-magic
 W> solutions. We will get to this when we talk about [Vietnam of Computer Science](#vietnam).
 
 Persistence context (unit of work) has a lot to do when the transaction is committed. It needs to
