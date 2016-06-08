@@ -6,7 +6,7 @@ Where am I with the book and what are my plans? (All is subject to change, of co
 
 To actually finish something, I want to do this in the 1st edition:
 
-* Preface (90%) - to explain why this book even exists and some background
+* Preface (100%) - to explain why this book even exists and some background
 * JPA Good Times, Bad Times
     * Good Parts (100%) NEEDS REVIEW
     * Missing Parts (100%) NEEDS REVIEW

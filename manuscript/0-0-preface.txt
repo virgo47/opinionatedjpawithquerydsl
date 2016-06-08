@@ -36,7 +36,7 @@ sense (like "avoid N+1 select"), others are strictly JPA related (like how to ac
 Some are probably complete answers, recipes even, others are open topics that only raise further
 questions. Some are definitely a bit unorthodox from a typical JPA perspective.
 
-Last, but not least, we use Querydsl throughout the book -- and this library is still not covered
+Last, but not least, I'll use Querydsl throughout the book -- and this library is still not covered
 in books as much as it deserves, I believe.
 
 
@@ -51,12 +51,12 @@ This is not a book about architecture, at least not primarily, although patterns
 JPA are somewhere in the area. I take kind of "Fowlerish" liberty of mixing design and architecture
 and blur the line between them. I admit I have not yet worked on such a project where thinking
 architecturally big would pay off. Instead I have seen architecture on other projects where the
-effort was wasted for various reasons. Some of them you may guess if you're interested in an agile
-or lean software development. That said, I'll talk about some design considerations, for instance
-about the contract between presentation and session layer. I'll talk about infamous *open session
-in view* pattern as well.
+effort was wasted for various reasons. Some of them are easy to guess if you're interested in an
+agile or lean software development. That said, I'll talk about some design considerations,
+for instance about the contract between presentation and session layer. I'll talk about infamous
+*open session in view* pattern as well.
 
-This book also does not cover:
+This book does not cover any of these topics:
 
 * JPA support for native SQL -- I don't use it massively and I have nothing much to say about it.
 * Calling stored procedures -- it works as expected.
@@ -108,9 +108,9 @@ most important ones (from my perspective anyway) in chapter [Tuning ORM down](#c
 
 Martin Fowler wrote his *Patterns of Enterprise Application Architecture* [[PoEAA](#bib-poeaa)]
 in 2002 trying to capture various patterns that were reoccurring in enterprise applications,
-written not only in Java. Many patterns in the book cover data access layer and many of those
-are clearly ORM related -- starting with *Data Mapper* going through *Unit of Work* or *Lazy Load*
-to many more related to concrete mapping problems.
+not necessarily written in Java. Many patterns in the book cover data access layer and many of
+those are clearly ORM related -- starting with *Data Mapper* going through *Unit of Work*
+or *Lazy Load* to many more related to concrete mapping problems.
 
 Reading the material so old also gives you the idea how well the patterns stand the test of time.
 In 2002 Java was 7 years old, now it's over 20. There were no annotations and dependency injection
@@ -118,7 +118,12 @@ was known in theory, but there was no wide-spread container supporting it (mind 
 released in 2004). Years later we still used various `SessionHelper` static classes to work with
 Hibernate `Session` in thread-local manner, often forgetting to close session because we were not
 able to clearly put open and close to a single method with try/finally block. That was before we
-read books like *Clean Code*... probably because it was before they were written.
+read books like *Clean Code*... probably because it was before they were written.[^prpr]
+
+[^prpr]: However, *Pragmatic Programmer* () already was out there. After many years of being
+aware this book exists I've decided to buy it and read it. It is beyond any recommendation and
+tip 25 *How to Balance Resources* is tackling exactly this. Personally I'd say this book is more
+essential than *Clean Code* is, but both should be read in any case.
 
 Closing his chapter *Mapping to Relation Databases* Martin Fowler wrote:
 
@@ -128,21 +133,19 @@ G> that there’s been a lot written on the subject. The surprise is that there 
 G> single coherent, complete, and up-to-date book, which is why I’ve devoted so
 G> much of this one to this tricky yet interesting subject.
 
-Today we have more books about ORM, even if you narrow it to Java world. Irony of my book
-is that I actually step back from many ORM concepts and go back to SQL roots to a degree.
-That does not change the fact that Fowler's work organizing and describing all these (still
-applicable) patterns is remarkable.
+Today we have more books about ORM, even if you narrow it to Java world. My attempt tries to step
+away from many ORM concepts and go back to SQL roots to a degree. That does not change the fact
+that Fowler's work organizing and describing all these (still applicable) patterns is remarkable.
 
 
 ## Structure of the book
 
-I aim for something not very long for the first edition, but I want to split it into couple of
-parts anyway.
+I aim for something not very long for the first edition (and maybe last), but I want to split it
+into couple of parts anyway.
 
 In the [first part](#part-jpa-good-bad) of the book we'll quickly go through JPA highs and lows
-(all highly subjective, you know the disclaimer drill) without digging deep. If you're familiar
-with JPA you may skip it if you're just skimming this book to see whether it's even worth reading.
-This part is just a really short background for any further arguments.
+(all highly subjective, you know the disclaimer drill) without digging deep. This part is just
+a short background for any further arguments.
 
 That's what the [second part](#part-opinionated-jpa) of the book is for. First I'll make my case
 for the whole opinionated part of the book. Then we'll meet Querydsl before diving into other
@@ -161,8 +164,28 @@ throughout the book (e.g. H2 database) and other additional material.
 Book is written on GitHub and all the code is in the
 [GitHub repo](https://github.com/virgo47/opinionatedjpawithquerydsl) for the book.
 
-TODO: How to clone/export, build and run.
-`mvn test-compile exec:java -Dexec.mainClass="any.demo.MainClass"`
+You may download the whole repository or browse it online, the most important snippets of code
+are presented in the book. Because I present various JPA models and setups examples are split
+into many small projects, each with its own Maven `pom.xml`. Entity classes and other "production"
+code is in the `src/main/java` (or `resources`) while demo code is in the `src/test/java`. If you
+want to run it in IDE, I recommend those that can create multiple run configurations and are able
+to run normal classes (with `main`) from test sources as well -- I suspect some prominent IDEs
+don't support this. But you can always run the demo code using Maven like this (from the project
+directory, e.g. `examples/querydsl-basic`:
+```
+mvn test-compile exec:java -Dexec.mainClass="tests.DogQueryDemo"
+```
+
+There is also neat way how to download subtree of a GitHub project using -- surprisingly -- SVN
+export. This makes running any example on the command line a breeze:
+```
+svn export https://github.com/virgo47/opinionatedjpawithquerydsl/trunk/examples/querydsl-basic
+cd querydsl-basic
+mvn test-compile exec:java -Dexec.mainClass="tests.DogQueryDemo"
+```
+
+Example classes mentioned in the book also link directly to the sources on GitHub (unless you
+print the e-book, of course).
 
 
 ## My writing background
@@ -177,7 +200,7 @@ read than manuals or Javadoc... but you can guess I haven't finished it up. With
 On the bright side -- I've written more than a few posts on
 [my blog](http://virgo47.wordpress.com/),
 mostly on technical topics, couple of them about JPA. Actually, this book is based on these
-frustrated experiences. I always felt like a writer -- originally just to share although not
+frustrated experiences. I always felt like a writer -- originally just to share, although not
 everything is worth sharing, I know. Later I realized that writing helps me to clarify a lot of
 concepts to myself. For the same reasons (sharing and learning) I gave courses and talks. Preparing
 those is also kind of writing. So I hope both me and this book are not lost causes.
