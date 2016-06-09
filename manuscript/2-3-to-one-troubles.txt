@@ -19,7 +19,7 @@ where each `Breed` points to its parent via attribute called `derivedFrom`.
 
 ![Class diagram of our entity model](images/many-to-one-example.png)
 
-Our entities are quite plain - `Dog` looks like this:
+Our entities are quite plain -- `Dog` looks like this:
 
 {lang="java", crop-end-line=15}
 <<[Dog.java](../examples/many-to-one-eager/src/main/java/modeltoone/Dog.java)

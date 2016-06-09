@@ -22,7 +22,7 @@ with a very difficult retreat path (business will not be able to pay for it, for
 know that I would rather use some other solution instead, I'd think couple of times about the
 possibility of this small project/product becoming big.
 
-Do I prefer JPA or concrete ORM provider? For many years the answer was pretty clear - I always
+Do I prefer JPA or concrete ORM provider? For many years the answer was pretty clear -- I always
 strove to stay within JPA realm. Accidentally, though, I went down the path with EclipseLink
 and its capability to `JOIN` with entity roots -- which I believe would be an incredible addition
 for the *JPA 2.2*. The more I work with JPA the less I believe in easy transition from one provider

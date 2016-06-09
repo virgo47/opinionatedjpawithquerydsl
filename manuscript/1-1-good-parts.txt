@@ -42,7 +42,7 @@ That way JPA does not restrain you.
 
 ## Database independence
 
-Let's face it - it's not possible to easily switch from one database to another when you have
+Let's face it -- it's not possible to easily switch from one database to another when you have
 invested in one -- especially if you use stored procedures or anything else beyond simple plain
 SQL. But JPA is not the problem here, on the contrary. It will require much less (if any) changes
 and the application will work on.

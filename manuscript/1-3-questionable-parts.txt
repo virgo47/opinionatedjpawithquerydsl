@@ -1,6 +1,6 @@
 # Questionable parts {#ch-questionable-parts}
 
-The JPA, as any ORM, is not without its drawbacks. Firstly, it is complex, much deeper than
+The JPA, as any ORM, is not without its drawbacks. Firstly, it is complex -- much deeper than
 developers realize when they approach it. Secondly, it is not a perfect abstraction. The more you
 want to play it that way (as a perfect abstraction) the worse it probably gets in marginal cases.
 And the margin is not very thin. You may solve 80% cases easily, but there are still 20% of hard
@@ -419,7 +419,7 @@ access is not an important part of that project (who are we kidding, right?). Yo
 history of Vietnam war, but definitely give the technical part a dive it deserves.
 
 ORM wasn't that young anymore in 2006 and various experiences had shown that it easily brought more
-problems than benefits - especially if approached with partial knowledge, typically based on
+problems than benefits -- especially if approached with partial knowledge, typically based on
 an assumption that "our developers don't need to know SQL". When kind of non-programming architect
 recommends this for a project and they are long gone when the trouble appears it's really easy to
 recommend it again. It was so easy to generate entities from our [DDL](https://en.wikipedia.org/wiki/Data_definition_language),
