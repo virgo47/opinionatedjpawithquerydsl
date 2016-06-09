@@ -2,13 +2,13 @@
 
 The JPA, as any ORM, is not without its drawbacks. Firstly, it is complex -- much deeper than
 developers realize when they approach it. Secondly, it is not a perfect abstraction. The more you
-want to play it that way (as a perfect abstraction) the worse it probably gets in marginal cases.
-And the margin is not very thin. You may solve 80% cases easily, but there are still 20% of hard
+want to play it as a perfect abstraction, the worse it probably gets in marginal cases.
+And the margin is not that thin. You may solve 80% cases easily, but there are still 20% of hard
 cases where you go around your ORM, write native SQL, etc. If you try to avoid it you'll probably
 suffer more than if you accepted it.
 
 You can't just stay on the JPA level, even for cases where ORM works well for you. There are
-these details you should know about a provider you use. For instance, let's say you have an entity
+some details you should know about the provider you use. For instance, let's say you have an entity
 with auto-generated identifier based on IDENTITY (or AUTO_INCREMENT) column. You call `persist`
 on it and later you want to use its ID somewhere. And it doesn't work, because you're using
 EclipseLink and you didn't call `flush` to actually execute that INSERT. Without it the provider
@@ -16,29 +16,31 @@ cannot know what value for ID it should use. Maybe your usage of ID value was no
 *ORM way*, maybe you should have use the whole entity somewhere, but the point is that if you do
 the same with Hibernate, it would work. You simply cannot assume that the ID is set.[^demoid]
 
-[^demoid]: You can see this demonstrated in `examples/basic` if you run:
+[^demoid]: You can see this demonstrated in `examples/querydsl-basic` if you run:
     `mvn test-compile exec:java -Dexec.mainClass="tests.GeneratedIdSettingDemo"`
+
 
 ## Lazy on basic and *to-one* fields {#lazy-problems}
 
-This problem is the reason for this book, without it, I'd probably not go beyond couple of blog
-posts. While you can map these fields as lazy, the behaviour is actually not guaranteed according
+While you can map these fields as lazy, the behaviour is actually not guaranteed according
 to the JPA specification ([[JPspec](#bib-jpspec)]). Its section 2.2, page 25, states:
 
-Q> If property access is used and lazy fetching is specified, portable applications should not
-Q> directly access the entity state underlying the property methods of managed instances until
-Q> after it has been fetched by the persistence provider.
+{icon=quote-right}
+G> If property access is used and lazy fetching is specified, portable applications should not
+G> directly access the entity state underlying the property methods of managed instances until
+G> after it has been fetched by the persistence provider.
 
 And the attached footnote adds:
 
-Q> Lazy fetching is a hint to the persistence provider and can be specified by means of the
-Q> `Basic`, `OneToOne`, `OneToMany`, `ManyToOne`, `ManyToMany`, and `ElementCollection` annotations
-Q> and their XML equivalents.
+{icon=quote-right}
+G> Lazy fetching is a hint to the persistence provider and can be specified by means of the
+G> `Basic`, `OneToOne`, `OneToMany`, `ManyToOne`, `ManyToMany`, and `ElementCollection` annotations
+G> and their XML equivalents.
 
 While ORMs generally have no problem to make collections lazy (e.g. both *to-many* annotations),
 for *to-one* mappings this gets more complicated. [[PoEAA](#bib-poeaa)] offers couple of solutions
 for *lazy load* pattern: *lazy initialization*, *virtual proxy*, *value holder*, and *ghost*. Not
-all are usable for *to-one* mapping.
+all are usable for *to-one* mappings.
 
 The essential trouble is that such a field contains an entity directly. There is no indirection
 like a collection, that can provide lazy implementation, in case of *to-many* mappings. JPA does
@@ -47,7 +49,7 @@ interface to implement, or bytecode manipulation on the target class, *ghost* wo
 require bytecode manipulation on the target class, and *lazy initialization* would require
 bytecode manipulation, or at least some special implementation, on the source class. JPA design
 neither offers any reasonable way how to introduce this indirection without advanced auto-magic
-solutions nor ways how to do it explicitly in a way programmer can control.
+solutions nor ways how to do it explicitly in a way a programmer can control.
 
 Removing *to-one* mappings and replace them with raw foreign key values is currently not possible
 with pure JPA even though *JPA 2.1* brought `ON` clause for JPQL but it does not allow root
