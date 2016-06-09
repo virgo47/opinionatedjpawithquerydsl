@@ -24,18 +24,17 @@ G> romantic fondness for the objects and methods that are unique to the Hibernat
 Standard is not always necessarily good, but in case of JPA it is well established and respected.
 Now you can choose between multiple *JPA 2.1* implementations or just deploy to any *Java EE 7*
 application server. I'd not bet on the promise that you can easily swap one provider (or application
-server) for the other -- my experiences are terrible in this aspect -- but there is common set
-of annotations for mapping your entities, the same set of most important classes like
-`EntityManager`.
+server) for the other -- my experiences are terrible in this aspect -- but there is a common set
+of annotations for mapping your entities and the same core classes like `EntityManager`.
 
 But standards also have their drawbacks, most typically that they are some common subset of the
 features offered in that area. JPA's success is probably based on the fact that it emerged as
-a rock-solid subset of the features offered by major players in Java ORM world. But starting this
-way it must have trailed behind them. *JPA 1* did not offer any criteria API, can you imagine that?
-Now *JPA 2.1* is somewhere else. The features cover nearly anything you need for typical
+a rock-solid subset of the features offered by major players in the Java ORM world. But starting
+this way it must have trailed behind them. *JPA 1* did not offer any criteria API, can you imagine
+that? Now *JPA 2.1* is somewhere else. The features cover nearly anything you need for typical
 applications talking to relational databases.
 
-And even if something is missing, you may combine it with proprietary annotations of a particular
+Even if something is missing you may combine it with proprietary annotations of a particular
 ORM provider -- but only to a necessary degree. And perhaps you can switch those to JPA in its next
 version. In any case, JPA providers allow you to spice up JPA soup with their specifics easily.
 That way JPA does not restrain you.
@@ -48,7 +47,7 @@ invested in one -- especially if you use stored procedures or anything else beyo
 SQL. But JPA is not the problem here, on the contrary. It will require much less (if any) changes
 and the application will work on.
 
-Also, if you just start another project and go for different database your application programmers
+Also, if you start another project and go for different database your application programmers
 using JPA probably don't have to learn anything new. This cuts both ways though. I've heard that
 "you don't have to learn SQL" is considered benefit of the JPA, but every time programmers didn't
 understand SQL they didn't produce good results.
@@ -62,8 +61,8 @@ JPA can persist anything that is so called *persistable type*. These are:
 * mapped superclasses (`@MappedSuperclass`) -- used when you map class hierarchies;
 * embeddable classes (`@Embeddable`) -- used to group multiple columns into a value object;
 
-These were all types on class level, more or less matching whole database tables or at least group
-of columns. Now we will move to field level:
+These were all types on the class level, more or less matching whole database tables or at least
+groups of columns. Now we will move to the field level:
 
 * simple Java types (optionally annotated with `@Basic`) like primitive types, their wrappers,
 `String`, `BigInteger` and `BigDecimal`;
@@ -105,10 +104,10 @@ is extremely handy for `java.time` types from *Java 8*, because *JPA 2.1* does n
 
 ### Large objects
 
-Compared with JDBC, the JPA makes working with large objects (like SQL `CLOB` and `BLOB` types) a breeze.
-Just annotate the field with `@Lob` and use proper type, that is `byte[]` for *BLOBs* and `String`
-for CLOBs. You may also use `Byte[]` (can't imagine why) or `Serializable` for *BLOBs* and `char[]`
-or `Character[]` for *CLOBs*.
+Compared with JDBC, the JPA makes working with large objects (like SQL `CLOB` and `BLOB` types)
+a breeze. Just annotate the field with `@Lob` and use proper type, that is `byte[]` for *BLOBs*
+and `String` for CLOBs. You may also use `Byte[]` (why would you do that?) or `Serializable`
+for *BLOBs* and `char[]` or `Character[]` for *CLOBs*.
 
 In theory you may annotate the `@Lob` field as `@Basic(fetch=FetchType.LAZY)` however this is
 a mere hint to the JPA provider and you can bet it will not be heard out. More about lazy on
@@ -121,7 +120,7 @@ over LOB content using 4 KB buffer you will appreciate straightforward JPA mappi
 ## Flexible mapping
 
 It better be flexible because it is the most important reason for the whole ORM concept.
-Field-to-column mapping can specified as annotations on the fields or on the getters -- or
+Field-to-column mapping can be specified as annotations on the fields or on the getters -- or
 in XML files. Annotation placement implies access strategy, but it can be overridden using
 `@Access` on the class. In the book I'll use field access mostly, but property access can be
 handy when you want to do something in get/setters. For instance, before *JPA 2.1* we did simple
@@ -151,11 +150,8 @@ it is very natural to use it. Funny enough, it's not injected with standard `@In
 
 To explain the pattern simply: Whatever you read or delete through it or whatever new you persist
 with it will be "flushed" at the end of a transaction and relevant SQL queries will get executed.
-If the mapping is good enough then the right order of insert/delete is determined. But sometimes
-it needs explicit help from the programmer -- which is allowed.
-
-You get all the goodies you need from `EntityManager` and while there is some ideal way how to use
-it, it is flexible enough and can be "bent". You can flush things earlier if you need to force some
+You get all of this from `EntityManager` and while there is some ideal way how to use it,
+it is flexible enough and can be "bent". You can flush things earlier if you need to force some
 order of SQL statements, etc.
 
 Because *unit of work* remembers all the work related to it sometimes it is called "session cache"
@@ -170,7 +166,7 @@ implemented -- all written back in 2002, and most of it still valid!
 
 ## Declarative transactions
 
-JPA has basic transactional support, but when it comes to declarative transactions they are part of
+JPA has basic transaction support, but when it comes to declarative transactions they are part of
 Java Transaction API (JTA). JPA and JTA are seamlessly integrated from programmer's point of view
 that we simply take `@Transactional` support for granted.
 
@@ -185,15 +181,15 @@ distributed transaction if necessary.
 We will not cover transaction management, there are better resources and plenty of blogs. I can
 recommend [[ProJPA2](#bib-projpa2)] which covers both `@Transactional` and `@TransactionalAttribute`
 annotations, and much more. A bit of a warning for Spring users. You can use their `@Transactional`
-annotation, this way you can even mark transaction as read-only which has its benefits, but you
-cannot mix both `@Transactional` annotations at will as [they work differently](http://stackoverflow.com/q/26387399/658826).
+annotation, this way you can even mark transaction as read-only when needed, but you cannot mix
+both `@Transactional` annotations at will as [they work differently](http://stackoverflow.com/q/26387399/658826).
 It is advisable to use only Spring's annotation in Spring environment.
 
 
 ## Other JPA 2.1 goodies
 
-We talked about custom converters already, but *JPA 2.1* brought much more, but we will cover only
-the most interesting very quickly.
+We talked about custom converters already, but *JPA 2.1* brought much more. Let's cover the most
+interesting points quickly:
 
 * As 2.0 brought Criteria, 2.1 extended their usage for updates/deletes as well
 (although I'd use Querydsl for all these cases).
@@ -201,12 +197,11 @@ the most interesting very quickly.
 * You can map results into constructors and create custom DTO objects for specific queries
 (again, Querydsl has it too and it works for older JPAs).
 * Feature called *entity graph* allows you to define what relations to load in specific situations.
-This does not solve the problem why I'm writing this book, it only allows you to fetch relations
-marked as lazy when you know up-front you will need them, but doesn't make to-one lazy.
+This allows you to fetch relations marked as lazy when you know up-front you will need them.
 * There's also an option to call any custom FUNCTION from JPQL. This means also native functions
 of a particular database if needed. While you limit yourself to that vendor (or you need to
 rewrite it) it allows you to perform duties beyond and above JPA's built-in functions.
-* *JPA 2.1* also specifies properties that allows you to generate database schema or run SQL scripts,
+* *JPA 2.1* also specifies properties that allow you to generate database schema or run SQL scripts,
 which unifies this configuration for various JPA providers.
 
 For the whole list see either [this part](https://en.wikibooks.org/wiki/Java_Persistence/What_is_new_in_JPA_2.1%3F)

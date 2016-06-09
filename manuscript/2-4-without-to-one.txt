@@ -29,8 +29,8 @@ addition of the `ON` keyword in *JPA 2.1*.
 
 ## Why do we need `ON` anyway?
 
-`ON` was dearly missing for other practical reasons. While this does not relate to to-one mapping,
-let's see an example:
+`ON` was dearly missing for other practical reasons. While this does not relate to *to-one*
+mapping, let's see an example:
 
 ![Class diagram of our entity model for 'ON' demo](images/on-clause-example.png)
 
@@ -102,7 +102,7 @@ ones.
 D> When you used `LEFT JOIN` in JPQL you actually implied SQL `ON` clause undercover with JPA before
 D> version 2.1 as well. When you LEFT JOIN `breed.names` to `breed`, JPA determines the content
 D> for underlying SQL `ON` clause from the mapping -- naturally it is that the primary key from one
-D> table equals the foreign key of the other. This works fine if you follow to-one relations and
+D> table equals the foreign key of the other. This works fine if you follow *to-one* relations and
 D> join optional relations to existing rows.
 D>
 D> The situations changes dramatically if you follow to-many relations and want to select a
@@ -111,9 +111,9 @@ D> you in the dark with previous JPA versions. That's why the addition of `ON` i
 D> these cases.
 
 
-## Dropping to-one annotations
+## Dropping *to-one* annotations
 
-Having accepted that we're out of pure JPA land it is otherwise easy to get rid of to-one
+Having accepted that we're out of pure JPA land it is otherwise easy to get rid of *to-one*
 relationships. Instead of:
 
 {title="To-one as we know it", lang=java}

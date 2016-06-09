@@ -2,8 +2,7 @@
 
 In this part we'll briefly compare the JPA standard with capabilities offered by various ORM
 providers and go through the things missing in the *Java Persistence Query Language* (JPQL) when
-compared with SQL. Otherwise it's difficult to say what is missing when we don't compare JPA to
-anything else.
+compared with SQL.
 
 
 ## Compared to ORM providers {#missing-from-orm}
@@ -46,11 +45,11 @@ this topic and how to do it with EclipseLink in the chapter
 
 ## Comparing JPQL to SQL {#missing-from-sql}
 
-Comparing two query languages makes more sense. JPQL gets more and more powerful with every new
+JPQL gets more and more powerful with every new
 specification version, but obviously it cannot match SQL with proprietary features. Being "object
 query language" it does have its expressiveness on its own though -- for instance you may simply
 say "delete all the dogs where breed name is <this and this>" without explicitly using joins
-(although this relies on to-one mapping we will try to get rid of). When object relations are
+(although this relies on *to-one* mapping we will try to get rid of). When object relations are
 mapped properly, joins are implied using the mapping and JPA provider will take care of generating
 the proper SQL for us. You may also ask for dog owners with their dogs and ORM can load it in a
 single query and provide it to you as list of owners, each with their list of dogs -- this is the
@@ -62,13 +61,13 @@ always able to choose the right entity to start with and then using left outer j
 may hit you sometimes. There is also no full outer join, but this relates to the fact you're
 working with objects, not with rows -- although technically you may work with tuples (and with
 relations in RDBMS meaning). This dumbs down the JPA capabilities a bit, but in many cases it may
-be a good way and actually simplify things, provided you understand SQL world -- which you should.
+be a good way and actually simplify things, provided you understand SQL -- which you should.
 
 When compared to SQL, probably the most striking JPQL limitations are related to subqueries. Some
 scenarios can be replaced by JOINs, but some can't. For instance, you cannot put subqueries into
 a SELECT clause -- this would allow for aggregated results per row. You cannot put them into a FROM
-clause (use the select result as any other table, or more generally, any
-[relation](https://en.wikipedia.org/wiki/Relation_%28database%29)) (in database sense). This would
+clause and use the select result as any other table -- or, in relational database sense, as a
+[relation](https://en.wikipedia.org/wiki/Relation_%28database%29)). This would
 allow you, among other things, to count rows for results that current JPA does not support.[^cntemb]
 
 [^cntemb]: My favourite is [JPspec](#bib-jpspec), section 4.8.5, mentioning that *"use of DISTINCT
@@ -79,7 +78,7 @@ allow you, among other things, to count rows for results that current JPA does n
 JPA offers a palette of favourite functions, but of course it does not provide all possible
 functions. Before *JPA 2.1* you'd have to use ORM provider custom functionality to overcome this, or
 fallback to native SQL. Just because you are consciously sacrificing database portability it does
-not mean you don't want to use JPQL. Now it provides you with `FUNCTION` construct where the name
+not mean you don't want to use JPQL. It provides you with `FUNCTION` construct where the name
 of the called function is the first argument with other arguments following behind. Easy to use
 and very flexible -- this effectively closes the gap for functions you can use.
 
@@ -91,13 +90,14 @@ is simply to search for "not supported" string. Some of these are related to emb
 pretty natural (e.g. *"applying setMaxResults or setFirstResult to a query involving fetch joins
 over collections is undefined"*).[^paging]
 
-[^paging]: For paginating with fetch across to-many relations see the discussion in chapter
-[Avoid N+1 select](#ch-avoid-n-plus-1), concretely [this section](#to-many-paginating).
+[^paging]: For paginating with fetch across to-many relations see the chapter
+    [Avoid N+1 select](#ch-avoid-n-plus-1), concretely [this section](#to-many-paginating).
 
-What I dearly miss in JPA is better control over fetching of to-one relations. Current solution
-is trying to be transparent in terms of object-relational mapping, but it may kill your performance
-or requires caching, potentially a lot of it. While to-many relations can be loaded lazily with
-special collection implementation enabling it, to-one cannot work like this without bytecode
-modification. I believe though, that developers should be allowed to decide that this and this
-to-one relation will not be loaded and only detached entities with IDs will be provided. But let's
-wait with this discussion for the [opinionated part](#part-opinionated-jpa).
+What I dearly miss in JPA is better control over fetching of *to-one* relations. Current solution
+is trying to be transparent both in terms of object-relational mapping and Java language features,
+but it may kill your performance or require caching, potentially a lot of it. While to-many
+relations can be loaded lazily with special collection implementation enabling it, *to-one*
+cannot work like this without bytecode modification. I believe though, that developers should
+be allowed to decide that this and this *to-one* relation will not be loaded and only detached
+entities with IDs will be provided. But let's wait with this discussion for the
+[opinionated part](#part-opinionated-jpa).

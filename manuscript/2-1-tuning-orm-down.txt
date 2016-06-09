@@ -77,7 +77,7 @@ relation... actually, you can, but while you are able to load such related objec
 
 If you use EclipseLink you can do it, but that means you can't switch to other JPA 2.1 providers
 reliably, not to mention that dropping the mapping is by no means a minor detour from standard
-path. However the problems with to-one ultimately led me to these extreme measures and I got rid
+path. However the problems with *to-one* ultimately led me to these extreme measures and I got rid
 of *to-one* mappings and never looked back. Because I based my work on reference implementation of
 JPA 2.1 (EclipseLink) it took me more than a year to discover I diverged from the standard -- and
 even that only because I started to do testing with both major JPA providers in course of writing
@@ -177,7 +177,7 @@ cache as well). This does not mean that is a good idea. If you start tuning it b
 a walk that may be not that easy.
 
 Still, entity cache returning you entities by ID really quickly, is a great idea in ORM world,
-because it makes the problem of eager-loads of to-one relationships much smaller. It doesn't fix
+because it makes the problem of eager-loads of *to-one* relationships much smaller. It doesn't fix
 it though as all those entities are part of your current persistence context whether you want them
 or not. We already mentioned that units of work bigger than necessary are not for free.
 

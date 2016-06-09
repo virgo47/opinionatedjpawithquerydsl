@@ -6,7 +6,7 @@ an entity with such a relationship when we are not interested in this relation.
 
 ## Simple example of `@ManyToOne`
 
-We will continue experimenting on dogs in the demonstration of to-one mapping. The code is
+We will continue experimenting on dogs in the demonstration of *to-one* mapping. The code is
 available in a GitHub sub-project [many-to-one-eager](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/examples/many-to-one-eager).
 This particular demo project is also referenced in appendix [Project example](#app-project-example)
 where particulars of build files and `persistence.xml` are described. We will skip these but
@@ -98,7 +98,7 @@ Two selects that load a dog and all three breeds -- not that bad. If you know tr
 tree, there would be no more select. On the other hand, if you cared about the actual breed of this
 dog and not about what this breed is derived from we fetched those unnecessarily. There is no way
 to tell the JPA that dummy breed with shepherd's ID would do on the collie entity and that you
-don't want this to-one relationship fetching to propagate any further.
+don't want this *to-one* relationship fetching to propagate any further.
 
 Let's look at EclipseLink now:
 
@@ -233,22 +233,22 @@ have the actual entities wrapped in a collection that works as an intermediary. 
 perform any bytecode voodoo on the entity class.
 
 
-### Lazy to-one not guaranteed {#lazy-not-guaranteed}
+### Lazy *to-one* not guaranteed {#lazy-not-guaranteed}
 
-With to-one situation changes dramatically as you have no intermediary. It would be interesting
+With *to-one* situation changes dramatically as you have no intermediary. It would be interesting
 if JPA at least offered some wrapper to enforce lazy behavior when you really need it regardless
 of the JPA provider, but that would give away you're using some ORM (like you don't know) and
 even more voices would talk about that "leaking abstraction".
 
 While my tests with Hibernate looked great, the results are not portable across JPA providers as
 we saw. Also, I'd not bet that you'll get the same results because there's still a lot of questions
-how to make Hibernate lazy for to-one relationships, many of them quite new.
+how to make Hibernate lazy for *to-one* relationships, many of them quite new.
 
-D> Are there any other options how JPA could have give us lazy and transparent to-one relations?
+D> Are there any other options how JPA could have give us lazy and transparent *to-one* relations?
 D> Not without bytecode manipulation, really. It could have supported explicit non-fetching of such
 D> a relation though. Imagine a scenario where you know for sure you want to just modify attributes
 D> of the entity, but not any related entity. You'd load it by ID with explicit instruction *not to
-D> load* any related to-one entries. With some kind of metadata you'd even be able to specify
+D> load* any related *to-one* entries. With some kind of metadata you'd even be able to specify
 D> relations one by one.
 D>
 D> How to represent these unloaded relations? There are various options, but some are plain bad.
@@ -269,7 +269,7 @@ D> `PersistenceException` may be thrown". X here is our ghost representing the r
 D> `cascade=PERSIST` (or `ALL`) causes persist on the root entity to recursively persist the ghost.
 D> Damn "may" in specification, although strictly speaking Hibernate behavior seems logical.
 
-So the whole trouble with to-one is that you rely on out-of-language features (bytecode
+So the whole trouble with *to-one* is that you rely on out-of-language features (bytecode
 manipulation) for `LAZY` support or suffer potentially very costly cascade of relation loading.
 The cost may be alleviated by a cache somewhat, but you just trade CPU/network cost for memory
 -- even if you don't need most of the loaded data at all (maybe ever).
