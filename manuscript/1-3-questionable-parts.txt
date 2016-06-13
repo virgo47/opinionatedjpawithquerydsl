@@ -59,11 +59,11 @@ entities in `JOIN`s. We will expand on this in the chapter
 
 ## Generated updates
 
-Programmer using JPA should see the *object* side of the ORM mapping which typically means that
-an object is also the granularity on which ORM works. If you change a single attribute on an object
+Programmer using JPA should see the *object* side of the ORM mapping. This means that an object
+is also the level of granularity on which ORM works. If you change a single attribute on an object
 ORM can simply generate full update for all columns (except for those marked `updatable = false`,
 of course). This by itself is probably not such a big deal performance-wise, but if nothing else
-it makes SQL debug output less useful to check what really changed.
+it makes SQL debug output less useful for checking what really changed.
 
 I'd not even expect ORM to eliminate the column from update when it's equal, I'd rather expect
 them to include it only when it was set. But we are already in the domain of ORM auto-magic (again)
@@ -95,23 +95,23 @@ JPA without direct SQL-like capabilities (that is JPQL) would be very limited. S
 projects you can happily sail through with queries based on criteria API only, but those are the
 easy ones. I remember a project, it was an important budgeting system with hierarchical
 organizational structure with thousands of organizations. There were budget items and limits for
-them with multiple categories, each of them being a hierarchy too. When we needed to recalculate
-some items for some category specification (possibly with wildcards) we loaded these items and
-then perform these things in memory.
+them with multiple categories, each of them being hierarchical too. When we needed to recalculate
+some items for some category (possibly using wildcards) we loaded these items and then perform
+the tasks in memory.
 
 Sometimes it must have been done, rules were simply too complicated for an update. But sometimes
 it didn't have to be this way. When the user approved the budget for an organization (and all its
 sub-units) we merely needed to set a flag on all these items. That's what you can do with a bulk
-update. `UPDATE` and `DELETE` clauses were in the JPA specification since day 0, with the latest
+update. `UPDATE` and `DELETE` clauses were in the JPA specification since day zero, with the latest
 *JPA 2.1* you can do this not only in JPQL, but also in Criteria API.[^capiq]
 
 [^capiq]: We will, however, prefer more expressive Querydsl that generates JPQL.
 
-When you can formulate simple bulk update, you know what to set and `WHERE` to set it, you can
+When you can formulate simple bulk update (you know what to set and `WHERE` to set it) you can
 gain massive performance boost. Instead of iterating and generating N updates you just send a
 single SQL to the database and that way you can go down from a cycle taking minutes to an operation
 taking seconds. But there is one big "but" related to the persistence context (entity manager).
-If you have the entities going to be affected by the bulk update in your persistence context, they
+If you have the entities to be affected by the bulk update in your persistence context, they
 will not be touched at all. Bulk updates go around entity manager's "cache" for unit of work, which
 means you should not mix bulk updates with modification of entities attached to the persistence
 context, unless these are completely separate entities. In general, I try to avoid any complex
@@ -173,7 +173,7 @@ Bulk update and deletes using JPQL go around either of these caches and the safe
 avoid inconsistent data is to evict all entities of the modified type from the caches. This is
 often performed by the ORM provider automatically (again, check documentation and settings).
 
-If you only work with whole entities the whole time *and* nothing else accesses the database you
+If you only work with whole entities all the time *and* nothing else accesses the database you
 can be pretty sure you always get the right result from the entity cache. You may wonder how this
 cache behaves in concurrent environment (like any EE/Spring application inherently is). If you
 imagine it as a `Map`, even with synchronized access, you may feel the horror of getting the same
@@ -190,8 +190,8 @@ We will discuss caching again when we talk about [tuning it down](#caching-consi
 ## You can't escape SQL and relation model {#cant-escape-sql}
 
 Somewhere under cover there is SQL lurking and we better know how it works. We will tackle this
-topic with more passion in the second part of the book, but for now we will just demonstrate that
-not knowing simply cannot work. Imagine we want a list of all dog owners, and because there is many
+topic with more passion in the second part of the book -- for now we will just demonstrate that
+not knowing does not work. Imagine we want a list of all dog owners, and because there is many
 of them we want to paginate it. This is 101 of any enterprise application. In JPA we can use
 methods `setFirstResult` and `setMaxResults` on `Query` object which corresponds to SQL `OFFSET`
 and `LIMIT` clauses.[^pagstand]
@@ -208,7 +208,7 @@ the join and then select dogs for each row, which is our infamous N+1 select pro
 be a big deal for a page of 2, but for 30 or 100 you can see the difference. We will talk about
 this particular problem later [in the chapter about N+1](#to-many-paginating).
 
-These are the effects of the underlying relational model and you can simply escape them. It's not
+These are the effects of the underlying relational model and you cannot escape them. It's not
 difficult to deal with them if you accept the relational world underneath. If you fight it, it
 fights back.
 
@@ -223,7 +223,7 @@ performance of your queries -- after all typical query is executed where you cal
 are some twists.
 
 First, it can be cached in a query cache -- which may be good if it provides correct results -- but
-it also significantly distorts any performance measuring. JPA layer itself takes some time. Query
+it also significantly distorts any performance measurement. JPA layer itself takes some time. Query
 has to be parsed (add Querydsl serialization to it when used) and entities created and registered
 with the persistence context, so they are *managed* as expected. This distorts the result for the
 worse, not to mention that for big results it may trigger some additional GC that plain JDBC would
@@ -233,10 +233,10 @@ Best bet is to monitor performance of the SQL on the server itself. Most decent 
 some capabilities in this aspect. You can also use JDBC proxy driver that wraps the real one and
 performs some logging on the way. Maybe your ORM provides this to a degree, at least in the logs
 if nowhere else. This may not be easy to process, but it's still better than no visibility at all.
-More sophisticated system may provide nice measuring, but can also add performance penalty -- which
-perhaps doesn't affect the monitoring too much, but it can still affect the overall application
-performance. Monitoring overhead is, of course, not related to JPA, we would get to it using just
-plain JDBC as well.
+More sophisticated system may provide nice measurement, but can also add performance penalty --
+which perhaps doesn't affect the measured results too much, but it can still affect the overall
+application performance. Of course, monitoring overhead is not related only to JPA, we would get
+it using just plain JDBC as well.
 
 I will not cover monitoring topics in the book -- they are natural problems with any framework,
 although we can argue that access to RDBMS is kinda critical. Unit of work pattern causes real DB
@@ -246,17 +246,19 @@ which the pattern was designed in the first place, we may need to revisit what w
 database if we encounter performance issues. This may also affect our domain. Maybe there are
 clean answers for this, but I don't know them. I typically rather tune down how I use the JPA.
 
-All in all, the fact that JPA adds complexity is very natural aspect of any layer that sits on top
-of another layer. This is probably one of the least questionable parts of JPA. You either want it
-and accept its "additional layer-ness" or choose not to use it.
+All in all, the fact that JPA hides some complexity and adds another set of it is a natural aspect
+of any layer you add to your application -- especially the technological one. This is probably one
+of the least questionable parts of JPA. You either want it and accept its "additional layer-ness"
+or choose not to use it. Know that when you discover any problem you will likely have to
+deal with the complexity of the whole stack.
 
 
 ## Big unit of work
 
-I believe that *unit of work* pattern is really neat, especially when you have support from tools
-like ORM. Even if we don't mix bulk updates and complex persistence contexts, we can still run into
-troubles when the context is simply too big. This may easily happen with complicated business
-scenarios and it may cause no problem. Often, though, users may see the problem. Request takes too
+I believe that *unit of work* pattern is really neat, especially when you have support from ORM
+tools. But there are legitimate cases when we can run into troubles because the context is simply
+too big. This may easily happen with complicated business scenarios and it may cause no problem.
+Often, though, users may see the problem. Request takes too
 long or nightly scheduled task is still running late in the morning. Code looks good, it's ORM-ish
 as it can be -- it's just slow.
 
@@ -274,10 +276,10 @@ D> just like other QLs are parts of concrete ORM solutions, then it arguably *is
 D> abstraction. Let's examine various options in the following example.
 
 Let's say we have some test cases creating some dog and breed objects. In ideal case we would
-delete all of them between tests, but as it happens, we are working on database that contains
+delete all of them between tests, but as it happens, we are working on the database that contains
 some fixed set of dogs and breeds as well (don't ask). So we mark our test breeds with 'TEST'
 description. Dog creation is part of tested code, but we know they will be of our testing breeds.
-To delete all the testing dogs we may then write:
+To delete all the dogs created during the test we may then write:
 
 ~~~
 delete from Dog d where d.breed.description = 'TEST'
@@ -327,11 +329,15 @@ you have to do, but when it's big because we didn't harness bulk updates/deletes
 wasteful. Often it also takes a lot of code when a simple JPQL says the same. I don't accept an
 answer that reading JPQL or SQL is hard. If we use RDBMS we *must* know it reasonably well.
 
-Sometimes bulk update is not a feasible option, but you still just want to loop through some
-result, modify the entity, flush it (or batch the update if possible) but you don't want it
-managed. This relates to the missing "cursor-like result set streaming" mentioned in the section
-covering [missing features](#missing-from-orm) some ORM providers do have. You just want to do
-something on the entity as you loop through the results
+Sometimes bulk update is not a feasible option, but you still want to loop through some
+result, modify each entity without interacting with others and flush it (or batch the update if
+possible). This sounds similar to the missing "cursor-like result set streaming" mentioned
+in the section covering [missing features](#missing-from-orm) some ORM providers do have --
+although that case covers read-only scenarios without any interaction with persistence context.
+If you want to do something on each single entity as you loop through the results and you hit
+a performance problems (mostly related to memory) you may try to load smaller chunks of the data
+and after processing each chunk you flush the persistence context and also clear it with
+`EntityManager.clear()`.
 
 D> ### Do I need transactions for reading?
 D>
@@ -339,8 +345,8 @@ D> This is a tricky one. Maybe not, but I encountered strange things happening w
 D> loaded stale data. This happened when we used Spring and its `@Transactional` annotation.
 D> Without it I didn't see the changes from previously finished transactions. There was no race
 D> condition involved, it was all nice slow clicking in a CRUD-like web application. Adding
-D> `@Transactional` to the service reading data "magically" fixed it. I'm sorry I didn't have time
-D> to dig deeper than, but I remember it vividly. So just know, it may happen.
+D> `@Transactional` to the service that reads the data "magically" fixed it. I'm sorry I didn't
+D> have time to dig deeper than, but I remember it vividly. So just know, it may happen.
 D>
 D> But if you make read-only scenario transactional you add all the burden we've just described
 D> before. Spring offers attribute on the annotation to mark the transaction as read-only. This
@@ -363,7 +369,7 @@ D> Understanding transaction pitfalls](http://www.ibm.com/developerworks/java/li
 ## JPA alternatives?
 
 When JPA suddenly stands in your way instead of helping you, you can still fallback gracefully
-to JDBC level. Personally I don't mix this within a single scenario, but you can. For that you
+to JDBC level. Personally I don't mix these within a single scenario, but you can. For that you
 have to know what provider you use, unwrap its concrete implementation of `EntityManager` and ask
 it for a `java.sql.Connection` in non-portable manner. When I don't mix scenarios, I simply ask
 Spring (or possibly other container) to inject underlying `javax.sql.DataSource` and then I can
@@ -382,13 +388,13 @@ ORM to access RDBMS (although it supports also No-SQL solutions). Knowing Groovy
 some fun into the mix, but it still is ORM.
 
 I often use core Groovy [support for relation databases](http://www.groovy-lang.org/databases.html)
-and I really like it. It is no ORM, but it makes working with database very easy compared to
+and I really like it. It is no ORM, but it makes working with database really easy compared to
 JDBC. I readily use it to automate data population as it is much more expressive than SQL
 statements -- you mostly just use syntax based on Groovy Maps. With little support code you create
 helper insert/update methods that can provide reasonable defaults for columns you don't want to
-specify every time or insert whole aggregates (master-slave table structures). It's very easy to
-use returned auto-increment primary keys (as named variables, of course) where you need to use
-them as foreign keys and it's also very easy to create repetitive data in a loop.
+specify every time or insert whole aggregates (master-slave table structures). It's convenient to
+assign returned auto-increment primary keys into Groovy variables and use them as foreign keys
+where needed. It's also very easy to create repetitive data in a loop.
 
 I use this basic database support in Groovy even on projects where I already have entities in JPA,
 but for whatever reason I don't want to use them. You actually don't need to map anything into
