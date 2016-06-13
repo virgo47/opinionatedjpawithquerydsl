@@ -144,8 +144,8 @@ I aim for something not very long for the first edition (and maybe last), but I 
 into couple of parts anyway.
 
 In the [first part](#part-jpa-good-bad) of the book we'll quickly go through JPA highs and lows
-(all highly subjective, you know the disclaimer drill) without digging deep. This part is just
-a short background for any further arguments.
+(all highly subjective, you know the disclaimer drill) without digging too deep. This part is just
+a background for any further arguments.
 
 That's what the [second part](#part-opinionated-jpa) of the book is for. First I'll make my case
 for the whole opinionated part of the book. Then we'll meet Querydsl before diving into other
