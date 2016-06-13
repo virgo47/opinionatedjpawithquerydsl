@@ -1,7 +1,7 @@
 # Love and hate for ORM {#ch-love-hate}
 
 As I said already, ORM is typically seen as a good fit with domain-driven design (DDD). But
-ORM happened to become extremely popular and people thought it will solve all of their database
+ORM happened to become extremely popular and people thought it will solve all their database
 access problems without the need to learn SQL. This way obviously failed and hurt ORM back a lot,
 too. I say it again, ORM is very difficult, even using well documented ORM (like the JPA standard)
 is hard -- there's simply too much in it. We're dealing with complex problem, with a mismatch --
@@ -20,9 +20,10 @@ history of Vietnam war, but definitely give the technical part a dive it deserve
 
 ORM wasn't that young anymore in 2006 and various experiences had shown that it easily brought more
 problems than benefits -- especially if approached with partial knowledge, typically based on
-an assumption that "our developers don't need to know SQL". When kind of non-programming architect
-recommends this for a project and they are long gone when the trouble appears it's really easy to
-recommend it again. It was so easy to generate entities from our [DDL](https://en.wikipedia.org/wiki/Data_definition_language),
+an assumption that "our developers don't need to know SQL". When some kind of non-programming
+architect recommends this for a project and they are long gone when the first troubles appear it's
+really easy to recommend it again. It was so easy to generate entities from our
+[DDL](https://en.wikipedia.org/wiki/Data_definition_language),
 wasn't it? Hopefully managers are too high to be an audience for JPA/ORM recommendations,
 but technical guys can hurt themselves well enough. The JPA, for instance, is still shiny, it's a
 standard after all -- and yeah, it is kinda Java EE-ish, but this is the good new EE, right?
