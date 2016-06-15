@@ -88,7 +88,7 @@ about. Other points are much less radical compared to this one. Long before I le
 explicit and less lazy is definitely better and we will talk about it in other sections.
 
 
-## How does this affect my domain model?
+## How does this affect my domain model? {#how-ddd}
 
 I stated that this book will not be about architecture, but this is the part where we have to
 tackle it a bit. If we talk about [domain model](https://en.wikipedia.org/wiki/Domain_model), we
@@ -147,53 +147,6 @@ for the complex cases. However, many other smart and experienced people dislike 
 "pure haters" does not bring much to a discussion, but some cases are well-argued, offering options
 and you can sense the deep understanding of the topic.
 
-
-## Caching considerations {#caching-considerations}
-
-[[JPspec](#bib-jpspec)] doesn't say much about caching. It says how to configure it -- starting
-with `shared-cache-mode` in your `persistence.xml`. But I'd probably study caching documentation
-of a particular provider, because if you don't care at all, you don't even know whether and how
-you use the cache.
-
-Without choosing `shared-cache-mode` it is up to the JPA provider and its defaults. This may render
-any use of `@Cacheable` annotations useless. Currently, Hibernate typically doesn't cache by
-default, while EclipseLink caches everything by default. Being oblivious to the cache (not related
-to *cache-oblivious algorithms* at all) is rather dangerous, especially if your application is
-not the only one running against the same database. In that case setting `shared-cache-mode`
-explicitly to `NONE` is by far the best start. You may revisit your decisions later, but at least
-you know what is happening.
-
-T> ### Database caches too
-T>
-T> Caching happens also directly on the database level. You still incur a network round-trip but it
-T> does not necessarily load data from a disk (that would be really slow) and you don't have this
-T> entity-query duality -- although we don't know how complex the database cache is. In any case,
-T> it is used whether we use second-level cache or not and, luckily, it is mostly totally
-T> transparent for a programmer or user.
-
-Probably the most important question to answer is: Is your application the sole user of a particular
-database? If yes, you may safely use the cache without much thinking (or defaults, which may be no
-cache as well). This does not mean that is a good idea. If you start tuning it be prepared for
-a walk that may be not that easy.
-
-Still, entity cache returning you entities by ID really quickly, is a great idea in ORM world,
-because it makes the problem of eager-loads of *to-one* relationships much smaller. It doesn't fix
-it though as all those entities are part of your current persistence context whether you want them
-or not. We already mentioned that units of work bigger than necessary are not for free.
-
-T> ### When JPA is not the only one caching
-T>
-T> TODO:
-T> anti-patterns: caching returned JPA entities with JSR-107/Spring (first time they are managed, next time they are not)
-
-* explicit application caching
-* entity cache memory considerations
-
-
-D> ### Let database to cache it all?
-D>
-D> TODO: As said DB has its caches too. If we distribute and pay the price for remote access
-D> maybe we can drop JPA caches altogether?
 
 ## When to tune down and when not?
 

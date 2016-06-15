@@ -86,7 +86,7 @@ All in all, this is just a minor annoyance when you're used to log generated que
 during development, and you simply cannot see what changed among dozens of columns. For this --
 and for the cases when you want to change many entities at once in the same way -- you can use
 `UPDATE` clause, also known as *bulk update*. But these tend to interfere with caches and with
-persistence context. Let's talk about that next.
+persistence context. We will talk about that in the next chapter.
 
 
 ## Unit of work vs queries
@@ -146,45 +146,6 @@ anyway. Bulk update scenario, on the other hand, requires us to refresh attached
 is much more disruptive and also costly.
 
 [^flushmode]: See [[JPspec](#bib-jpspec)], section 3.10.8.
-
-
-## Second-level cache vs queries {#cache-vs-queries}
-
-While persistence context (`EntityManager` or session) is sometimes considered a cache too, it
-is merely a part of the unit-of-work pattern. The real cache sits underneath and is shared on the
-level of the `EntityManagerFactory` -- or even between more of them across various JVMs in case
-of distributed caches. This is called the *second-level cache*.[^slc] It is used to enhance
-performance, typically by avoiding round-trips to the database. But caching has consequences.
-
-[^slc]: Second-level cache is most popular term, used also in [[JPspec](#bib-jpspec)]. It appears
-    in [[PJPA2](#bib-projpa2)] too, but *in-memory cache* is used more often there.
-
-Caching should be transparent, but just turning it on is a kind of *premature optimization* which
--- in virtually all cases -- ends up being wrong. Any auto-magic can only go so far, and any
-caching leads to potential inconsistencies. I believe most JPA users don't understand how the cache
-is structured (I'm talking from my own experience too, after all). This depends on a concrete ORM,
-but typically there is an *entity cache* and a *query cache*.
-
-Entity cache helps with performance of `EntityManager.find`, or generally with loading by entity's
-`@Id` attribute. But this will not help you if you accidentally obfuscate what you want with a
-query, that would otherwise return the same. The provider has no way to know what entity (with what
-ID) will be loaded just looking at arbitrary where conditions. This is what query cache is for.
-Bulk update and deletes using JPQL go around either of these caches and the safest way how to
-avoid inconsistent data is to evict all entities of the modified type from the caches. This is
-often performed by the ORM provider automatically (again, check documentation and settings).
-
-If you only work with whole entities all the time *and* nothing else accesses the database you
-can be pretty sure you always get the right result from the entity cache. You may wonder how this
-cache behaves in concurrent environment (like any EE/Spring application inherently is). If you
-imagine it as a `Map`, even with synchronized access, you may feel the horror of getting the same
-entity instance (`Dog` with the same ID) for two concurrent persistence contexts (like concurrent
-HTTP requests) that subsequently modify various fields on the shared instance. Luckily, ORMs
-provide each thread with its own copy of the entity. Internally they typically keep entities in
-the cache in some "dehydrated" form.[^ecacheorm]
-
-[^ecacheorm]: Tested with Hibernate and EclipseLink.
-
-We will discuss caching again when we talk about [tuning it down](#caching-considerations).
 
 
 ## You can't escape SQL and relation model {#cant-escape-sql}

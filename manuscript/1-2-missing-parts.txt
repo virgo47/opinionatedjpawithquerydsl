@@ -31,8 +31,8 @@ of silly JDBC driver (or even because of database limitations, but that's rare).
 
 Another area that is not covered by JPA that much is caching. JPA is rather vague about the
 structure of caches, although it does specify some configuration options and annotations. But the
-ORM implementations can still differ significantly. We tackle this topic both in [questionable
-parts](#cache-vs-queries) and about [tuning ORM down](#caching-considerations).
+ORM implementations can still differ significantly. We tackle this topic in a [separate
+chapter](#caching).
 
 Finally, with the introduction of `ON` clause we could get much more low-level with our queries
 when it suits us. `ON` is intended for additional `JOIN` conditions but we would have some new

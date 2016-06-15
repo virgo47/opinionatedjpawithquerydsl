@@ -130,11 +130,8 @@ conversions there, field was already converted and we used additional get/setter
 Mentioning `@Transient` -- sometimes you want additional fields in your JPA entities and this
 clearly tells JPA not to touch them. There are arguments how much or little should be in JPA
 entity, I personally prefer rather less than more -- this on the other hand is criticized
-as [anemic domain model](http://www.martinfowler.com/bliki/AnemicDomainModel.html), but the
-question is whether JPA entities really are "domain model" and not just part of the "data mapper"
-layer. With all the annotation mapping it actually serves its purpose already (is it its single
-responsibility? I guess so), which then leads other people to an argument for XML mapping that
-just makes it all more foggy. In any case, this topic is not covered in this book.
+as [anemic domain model](http://www.martinfowler.com/bliki/AnemicDomainModel.html) -- and we will
+return to this topic shortly [later](#how-ddd).
 
 
 ## Unit of work

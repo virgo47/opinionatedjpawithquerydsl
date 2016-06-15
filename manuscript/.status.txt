@@ -8,9 +8,11 @@ To actually finish something, I want to do this in the 1st edition:
 
 * Preface (100%) - to explain why this book even exists and some background
 * JPA Good Times, Bad Times
-    * Good Parts (100%) NEEDS REVIEW
-    * Missing Parts (100%) NEEDS REVIEW
-    * Questionable Parts (100%) NEEDS REVIEW
+    * Good Parts (100%) FINAL
+    * Missing Parts (100%) FINAL
+    * Questionable Parts (100%) FINAL
+    * Caching Considerations (50%)
+    * Love and Hate for ORM (100%) FINAL
 * Opinionated JPA
     * ORM tuned down (80%) REVISE COMPLETELY
     * No further steps without Querydsl (40%)

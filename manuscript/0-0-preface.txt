@@ -61,7 +61,7 @@ This book does not cover any of these topics:
 * JPA support for native SQL -- I don't use it massively and I have nothing much to say about it.
 * Calling stored procedures -- it works as expected.
 * Criteria API -- because I prefer Querydsl instead.
-* Locking, concurrency, validation, caching, transactions and other features not affected by
+* Locking, concurrency, validation, transactions and other features not affected by
 the *opinionated* approach.
 
 We may mention some of them here and there, but there will be little focus on these. Most of them
@@ -144,16 +144,16 @@ I aim for something not very long for the first edition (and maybe last), but I 
 into couple of parts anyway.
 
 In the [first part](#part-jpa-good-bad) of the book we'll quickly go through JPA highs and lows
-(all highly subjective, you know the disclaimer drill) without digging too deep. This part is just
-a background for any further arguments.
+(all highly subjective, you know the disclaimer drill) with a bit of historical context as well.
+This part should prepare a backdrop for any further arguments.
 
-That's what the [second part](#part-opinionated-jpa) of the book is for. First I'll make my case
-for the whole opinionated part of the book. Then we'll meet Querydsl before diving into other
-problems, because I'm not willing to go on without it. And in the rest of this part we'll see how
-to work around the features marked as questionable.
+In the [second part](#part-opinionated-jpa) of the book we will get opinionated. After an
+introduction for my case we will make a detour to meet Querydsl, because I'm not willing to
+go on without it. Afterwards we'll see how to work around the features marked as questionable
+(where possible).
 
-[Third part](#part-common-problems) talks about common problems you encounter when working with
-the JPA (like paginating and N+1 select) and offers solutions for them.
+[Third part](#part-common-problems) talks about more common problems you encounter when working
+with the JPA (like paginating and N+1 select) and offers solutions for them.
 
 Finally, [appendices](#appendices) will provide short references for related technologies I used
 throughout the book (e.g. H2 database) and other additional material.
