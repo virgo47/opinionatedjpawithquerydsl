@@ -1,6 +1,6 @@
 # Good Parts {#ch-good-parts}
 
-First we will look at all the goodies JPA offers to us. Why did I start to prefer JPA over
+First we will look at all the good things JPA offers to us. Why did I start to prefer JPA over
 a particular provider? Mind that this part is just an extended enumeration of various features,
 not a tutorial material.
 
@@ -49,7 +49,7 @@ and the application will work on.
 
 Also, if you start another project and go for different database your application programmers
 using JPA probably don't have to learn anything new. This cuts both ways though. I've heard that
-"you don't have to learn SQL" is considered benefit of the JPA, but every time programmers didn't
+"you don't have to learn SQL" is considered a benefit of the JPA, but every time programmers didn't
 understand SQL they didn't produce good results.
 
 

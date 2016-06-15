@@ -33,8 +33,8 @@ a particular database? If yes, you may safely use the cache without much thinkin
 which may be no cache as well). This does not mean that is a good idea. If you start tuning it
 be prepared for a walk that may be not that easy.
 
-Still, entity cache returning you entities by ID really quickly, is a great idea in ORM world,
-because it makes the problem of eager-loads of *to-one* relationships much smaller. It doesn't fix
+Still, entity cache returning you entities by ID really quickly is a good idea because
+it makes the problem of eager-loads of *to-one* relationships less serious. It doesn't fix
 it though as all those entities are part of your current persistence context whether you want them
 or not. We already mentioned that units of work bigger than necessary are not for free.
 

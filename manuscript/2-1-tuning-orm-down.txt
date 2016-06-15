@@ -5,18 +5,17 @@ Instead of `Integer breedId` you have `Breed breed` where mapping information pr
 necessary low-level information about the foreign key. This mapping information can be stored
 elsewhere (typically XML mapping file) or as annotations directly on the entity (probably more
 popular nowadays). Relations can be mapped in any direction, even in reverse, for one or both
-directions -- then you choose which one is the owner's side, which is kinda more "in control" of
-the relationship -- and in any cardinality with annotations `@OneOnOne`, `@OneToMany`, `@ManyToOne`
-and `@ManyToMany`. Mapping foreign keys as relations is probably the most pronounced feature of
-ORM -- and originally I wanted to make a case against it in this very book.
+directions and in any cardinality with annotations `@OneOnOne`, `@OneToMany`, `@ManyToOne`
+and `@ManyToMany`. If you map both directions you choose the owner's side, which is kinda more
+"in control" of the relationship. Mapping foreign keys as relations is probably the most
+pronounced feature of ORM -- and originally I wanted to make a case against it in this very book.
 
 In an ironic twist I discovered that the way we bent *JPA 2.1* works only on its reference
 implementation, that is EclipseLink, this all more than a year too late. I was considering to
 stop any further work on the book after loosing this most important showcase point. After all
 I decided to go on with a weaker version after all. We will describe the troubles with *to-one*
 relations, their possible solutions -- including the one that is not JPA-compliant -- and there
-are also other helpful tips, many Querydsl examples throughout and two dedicated chapters. All in
-all it should be enough goodies to justify this effort.
+are also other helpful tips, many Querydsl examples throughout and two Querydsl dedicated chapters.
 
 Most of the points I'm going to explain somehow revolve around two rules:
 
@@ -37,9 +36,9 @@ as you'd expect, more about it later in part on how [lazy is (not) guaranteed](#
 When talking about often vain `LAZY` on *to-one*, let me be clear that it is still preferred
 fetching for collections -- and quite reliable for them as well. This does not mean you should
 rely on these lazy *to-many* relations when you want to fetch them for multiple entities at once.
-For instance if you want to display page with messages with attachments (possibly multiple on each
-line) you should not wait for lazy fetch -- more about this in the chapter [Avoid N+1
-select](#ch-avoid-n-plus-1).
+For instance if you want to display a page with the list of messages with attachments, possibly
+multiple of them for each message, you should not wait for lazy fetch. More about this in the
+chapter [Avoid N+1 select](#ch-avoid-n-plus-1).
 
 
 ## Price for relations
@@ -80,11 +79,10 @@ reliably, not to mention that dropping the mapping is by no means a minor detour
 path. However the problems with *to-one* ultimately led me to these extreme measures and I got rid
 of *to-one* mappings and never looked back. Because I based my work on reference implementation of
 JPA 2.1 (EclipseLink) it took me more than a year to discover I diverged from the standard -- and
-even that only because I started to do testing with both major JPA providers in course of writing
-this book.
+even then only because I started to write tests for this book with both major JPA providers.
 
-More about this in the chapter [Troubles with *to-one* relationships](#ch-to-one-troubles) is
-about. Other points are much less radical compared to this one. Long before I learnt that being
+More about this in the chapter [Troubles with *to-one* relationships](#ch-to-one-troubles).
+Other points are much less radical compared to this one. Long before I learnt that being
 explicit and less lazy is definitely better and we will talk about it in other sections.
 
 

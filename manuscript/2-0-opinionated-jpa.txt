@@ -30,6 +30,6 @@ an arrangement and typically left soon for something better. But the JPA is not 
 language, you're working with an API and you may choose the patterns you want to use and others
 you don't. This time I decided "let's use SQL more" and "let's not load graph of objects (even
 if cached) when I just want to update this single one". And that's how it all started -- the more
-I know about JPA the less of it I use. But it still has goodies I don't want to let go.
+I know about JPA the less of it I use. But it still has benefits I don't want to let go.
 
 So the question is: Can we tune the JPA down without crippling it -- or ourselves?
