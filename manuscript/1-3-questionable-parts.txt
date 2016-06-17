@@ -290,16 +290,6 @@ you have to do, but when it's big because we didn't harness bulk updates/deletes
 wasteful. Often it also takes a lot of code when a simple JPQL says the same. I don't accept an
 answer that reading JPQL or SQL is hard. If we use RDBMS we *must* know it reasonably well.
 
-Sometimes bulk update is not a feasible option, but you still want to loop through some
-result, modify each entity without interacting with others and flush it (or batch the update if
-possible). This sounds similar to the missing "cursor-like result set streaming" mentioned
-in the section covering [missing features](#missing-from-orm) some ORM providers do have --
-although that case covers read-only scenarios without any interaction with persistence context.
-If you want to do something on each single entity as you loop through the results and you hit
-a performance problems (mostly related to memory) you may try to load smaller chunks of the data
-and after processing each chunk you flush the persistence context and also clear it with
-`EntityManager.clear()`.
-
 D> ### Do I need transactions for reading?
 D>
 D> This is a tricky one. Maybe not, but I encountered strange things happening when use cases
@@ -325,6 +315,25 @@ D> I don't know how to mark transaction as read-only with JTA `@Transactional` a
 D>
 D> I highly recommend reading older but still very relevant article [Transaction strategies:
 D> Understanding transaction pitfalls](http://www.ibm.com/developerworks/java/library/j-ts1/)
+
+Sometimes bulk update is not a feasible option, but you still want to loop through some
+result, modify each entity without interacting with others and flush it (or batch the update if
+possible). This sounds similar to the missing "cursor-like result set streaming" mentioned
+in the section covering [missing features](#missing-from-orm) some ORM providers do have --
+although that case covers read-only scenarios without any interaction with persistence context.
+If you want to do something on each single entity as you loop through the results and you hit
+a performance problems (mostly related to memory) you may try to load smaller chunks of the data
+and after processing each chunk you flush the persistence context and also clear it with
+`EntityManager.clear()`.
+
+D> ### Flush and clear?!
+D>
+D> It is generally not recommended to call `flush()` or `clear()` explicitly as it does not follow
+D> *unit of work* pattern and often also hurts the performance. You may read about this (and other)
+D> anti-pattern in [this article](http://www.developerfusion.com/article/84945/flush-and-clear-or-mapping-antipatterns/)
+D> (section *Anti-pattern: Flush and Clear*). But even that section mentions flush/clear as
+D> useful when processing a big batch. Maybe JPA should have some cleaner abstraction for this,
+D> but these are not typical scenarios and flush/clear is there when we need it.
 
 
 ## JPA alternatives?
