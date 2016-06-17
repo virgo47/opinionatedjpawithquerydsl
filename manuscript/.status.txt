@@ -11,7 +11,7 @@ To actually finish something, I want to do this in the 1st edition:
     * Good Parts (100%) FINAL
     * Missing Parts (100%) FINAL
     * Questionable Parts (100%) FINAL
-    * Caching Considerations (50%)
+    * Caching Considerations (75%)
     * Love and Hate for ORM (100%) FINAL
 * Opinionated JPA
     * ORM tuned down (90%) - finish When to tune down and when not?
@@ -23,6 +23,7 @@ To actually finish something, I want to do this in the 1st edition:
         * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
     * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
         * https://dzone.com/articles/opensessioninview-antipattern (OSIV anti-pattern)
+        * https://vladmihalcea.com/2016/05/30/the-open-session-in-view-anti-pattern
 * Common Problems
 
 %%    * Object identity, easy problem, recommended always the same way
@@ -56,7 +57,6 @@ To actually finish something, I want to do this in the 1st edition:
 %%        * Always try to keep create/close in one try/finally block
 %%        * Multiple transactions ("system/infrastructure" around business)
 %%    * Embeddable limitations (0%)
-%% cascade: https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types/
 
     * Advanced Querydsl (15%)
 * Appendices
@@ -77,10 +77,3 @@ this part for every project I've made.
 `JPASQLQuery`? How does it use JPA mapping?
 
 Mention Make the Magic go away: https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html
-
-Investigate more about Entity Graphs:
-http://www.thoughts-on-java.org/jpa-21-entity-graph-part-1-named-entity/
-http://www.thoughts-on-java.org/jpa-21-entity-graph-part-2-define/
-Also projpa2, p.321
-
-However, I doubt this tackles the problem of inherently eager *to-one* mappings.

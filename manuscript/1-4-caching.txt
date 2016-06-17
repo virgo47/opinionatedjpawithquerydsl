@@ -1,7 +1,7 @@
 # Caching considerations {#ch-caching}
 
-I didn't want to discuss caching too much, yet I would spread couple of sections about it
-throughout the text. I decided to concentrate them in this and be (mostly) done with it for
+I didn't want to discuss caching too much, but later I did spread couple of sections about it
+throughout the text. Later I decided to concentrate them here and be (mostly) done with it for
 the sake of this book.
 
 
@@ -27,6 +27,13 @@ T> does not necessarily load data from a disk (that would be really slow) and yo
 T> entity-query duality -- although we don't know how complex the database cache is. In any case,
 T> it is used whether we use second-level cache or not and, luckily, it is mostly totally
 T> transparent for a programmer or user.
+T>
+T> If you don't want to dig deep you may disable ORM caches knowing that something still probably
+T> caches for you. Often you can see that the first request for a page of something is slow
+T> but the second requests is much faster -- even if both go to the database. Sure you don't go
+T> as fast as you can, but you avoided a lot of problems, like stale data on the screen when you
+T> change them in the database directly or distributed caches when you scale your application
+T> while still using a single database server (until sufficient).
 
 Probably the most important question to answer is: Is your application the sole user of
 a particular database? If yes, you may safely use the cache without much thinking (or defaults,
@@ -40,17 +47,17 @@ or not. We already mentioned that units of work bigger than necessary are not fo
 
 T> ### When JPA is not the only one caching
 T>
-T> TODO:
-T> anti-patterns: caching returned JPA entities with JSR-107/Spring (first time they are managed, next time they are not)
-
-* explicit application caching
-* entity cache memory considerations
-
-
-D> ### Let database to cache it all?
-D>
-D> TODO: As said DB has its caches too. If we distribute and pay the price for remote access
-D> maybe we can drop JPA caches altogether?
+T> Imagine you're caching returned JPA entities with JSR-107, e.g. using Spring implementation of
+T> the JSR. It can be some data access method that returns single entity for a filter -- filter
+T> is the key to the cache. There is one serious problem with this approach. Let's ignore that
+T> we may have many keys that return the same entity, but in the cache these may be stored as
+T> many instances (I'm not sure, but I doubt that identity is considered to de-duplicate values).
+T> The real problem is that when the cache misses it reaches for JPA to get the entity, stores
+T> it and gives it to you -- attached. But when the cache hits it returns detached entity. This
+T> is highly non-deterministic situation that may lead to exceptions in better case or to
+T> unexpected changes of entities in worse one, depending on the code that uses such a method.
+T>
+T> All in all -- don't cache managed stuff with technology that doesn't understand it.
 
 
 ## Second-level cache vs queries {#cache-vs-queries}
@@ -90,3 +97,31 @@ the cache in some "dehydrated" form.[^ecacheorm]
 [^ecacheorm]: Tested with Hibernate and EclipseLink.
 
 
+## Explicit application-level cache
+
+TODO
+* explicit application caching
+* entity cache memory considerations
+
+
+## Conclusion
+
+You should be very aware of your cache setup. You should be very clear how you want to do it.
+In the code it may look automagical, but it must be explicit somewhere -- your strategy must be
+well known to all the people who may encounter it in any way (even without knowing).
+
+You always trade something for something -- with caching it's typically memory for speed. Memory
+can slow you down too, but in general we have plenty of it nowadays. If you distribute you enter
+different world altogether and I'd think twice before going there. You must feel the need for it
+and you must measure what you got (because you'll definitely get complexity).
+
+Don't mix freely caching on multiple levels. Database cache is mostly transparent to us, but
+when you mix two declarative caches you often make matters worse. Especially when you cache
+entities with technology that is not aware of their lifecycle within the persistence context.
+
+Finally, depending on what your keys for caching are you may waste a lot of memory. Entity ID
+(like in second level cache) is natural and good key. But if you key on many various selectors that
+may return the same entities (single or even whole collections) you may store many instances for
+the same entity in the cache. That wastes memory. Knowing more about the logic between the keys
+and values you may get better results with your implementation of some explicit cache on
+an application level. It may require more effort but the pay-off may be significant.
