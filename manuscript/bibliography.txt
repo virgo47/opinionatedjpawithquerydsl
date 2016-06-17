@@ -1,4 +1,6 @@
--# Bibliography
+-# Resources
+
+## Books
 
 {#bib-ddd}
 [DDD] Eric Evans. *Domain-Driven Design*, Addison-Wesley Professional, 2003.
@@ -21,3 +23,30 @@
 {#bib-sdata}
 [SData] Mark Pollack, Oliver Gierke, Thomas Risberg, Jon Brisbin, and Michael Hunger.
 *Spring Data*, O’Reilly Media, Inc., 2012.
+
+
+## Online articles, blogs
+
+* http://blogs.tedneward.com/post/the-vietnam-of-computer-science
+* http://www.developerfusion.com/article/84945/flush-and-clear-or-mapping-antipatterns/
+* https://dzone.com/articles/opensessioninview-antipattern (OSIV anti-pattern)
+* https://vladmihalcea.com/2016/05/30/the-open-session-in-view-anti-pattern
+* https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types
+* https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html
+* http://www.martinfowler.com/bliki/AnemicDomainModel.html
+* http://www.thoughts-on-java.org/jpa-21-overview
+* [Transaction strategies: Understanding transaction pitfalls](http://www.ibm.com/developerworks/java/library/j-ts1/)
+* http://martinfowler.com/bliki/OrmHate.html
+* http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern
+* http://docs.spring.io/spring/docs/current/spring-framework-reference/html/jdbc.html#jdbc-JdbcTemplate
+* [My own JPA related blog posts](https://virgo47.wordpress.com/tag/jpa)
+
+
+## Other online resources
+
+* http://www.querydsl.com/
+* http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html
+* http://www.groovy-lang.org/databases.html
+* [DataNucleus](http://www.datanucleus.org/)
+* http://www.jooq.org
+* [H2 database](http://h2database.com)
