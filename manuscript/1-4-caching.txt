@@ -4,6 +4,16 @@ I didn't want to discuss caching too much, but later I did spread couple of sect
 throughout the text. Later I decided to concentrate them here and be (mostly) done with it for
 the sake of this book.
 
+While persistence context (`EntityManager` or session) is sometimes considered a cache too, it
+is merely a part of the unit-of-work pattern ([identity map](http://martinfowler.com/eaaCatalog/identityMap.html)).
+The real cache sits underneath and is shared on the level of the `EntityManagerFactory` -- or
+even between more of them across various JVMs in case of distributed caches. This is called
+the *second-level cache*.[^slc] It is used to enhance performance, typically by avoiding
+round-trips to the database. But caching has consequences.
+
+[^slc]: Second-level cache is most popular term, used also in [[JPspec](#bib-jpspec)]. It appears
+    in [[PJPA2](#bib-projpa2)] too, but *in-memory cache* is used more often there.
+
 
 ## Caching considerations {#caching-considerations}
 
@@ -47,7 +57,7 @@ or not. We already mentioned that units of work bigger than necessary are not fo
 
 T> ### When JPA is not the only one caching
 T>
-T> Imagine you're caching returned JPA entities with JSR-107, e.g. using Spring implementation of
+T> Imagine you're caching returned JPA entities with *JSR 107*, e.g. using Spring implementation of
 T> the JSR. It can be some data access method that returns single entity for a filter -- filter
 T> is the key to the cache. There is one serious problem with this approach. Let's ignore that
 T> we may have many keys that return the same entity, but in the cache these may be stored as
@@ -61,15 +71,6 @@ T> All in all -- don't cache managed stuff with technology that doesn't understa
 
 
 ## Second-level cache vs queries {#cache-vs-queries}
-
-While persistence context (`EntityManager` or session) is sometimes considered a cache too, it
-is merely a part of the unit-of-work pattern. The real cache sits underneath and is shared on the
-level of the `EntityManagerFactory` -- or even between more of them across various JVMs in case
-of distributed caches. This is called the *second-level cache*.[^slc] It is used to enhance
-performance, typically by avoiding round-trips to the database. But caching has consequences.
-
-[^slc]: Second-level cache is most popular term, used also in [[JPspec](#bib-jpspec)]. It appears
-    in [[PJPA2](#bib-projpa2)] too, but *in-memory cache* is used more often there.
 
 Caching should be transparent, but just turning it on is a kind of *premature optimization* which
 -- in virtually all cases -- ends up being wrong. Any auto-magic can only go so far, and any
@@ -99,8 +100,73 @@ the cache in some "dehydrated" form.[^ecacheorm]
 
 ## Explicit application-level cache
 
+Previously we ignored the case when we cache some entities under multiple different keys, not
+necessarily retrieved by the same method. Imagine a component that returns some classifiers
+by various attributes (ID, name, code, whatnot) -- this is pretty realistic scenario. You code
+it as a managed component with declarative cache. There are separate methods to obtain the
+classifier by specific attributes. If you retrieve the same classifier by three different
+attributes you'll populate three different caches with -- essentially the same -- entity stored
+under different key (attribute value) in each of these caches.
+
+Even if we ignore that the entities sometimes participate in the persistence context and
+sometimes don't this consumes more memory space than necessary. It may still be acceptable though.
+Personally I believe that the non-determinism regarding the attached/detached state is more serious
+but let's say these are only for reading and we may not care. Imagine further that we may filter
+on these entities -- like "give me a list of classifiers with name starting with BA". Now we have
+even more variability in cache keys -- any distinct filter is the key -- and probably many more
+repeated entities in the results. But these are likely distinct objects even for the same
+logical entities. This may either explode your cache, or cause frequent evictions rendering your
+cache useless, probably utilizing more CPU in the process.
+
+If the amount of underlying data is big we may have no other chance, but in case of various
+administered static data, code books or classifiers the size of the table is typically small.
+Once our DB admins reported that we queried a table with 20k rows of static data 20 million times
+a day -- not to mention the traffic on our site was in order of thousands of request a day. It was
+an unnecessarily rich relational model and this part of system would be better represented in some
+kind of document/NoSQL store. We didn't use the relations in that data that much -- and they
+actually prevented some needed data fixes because of overly restricted cobweb of foreign keys.
+But this was the design we had and we needed a fix. "Can't you just cache it somehow?" The data
+were localization keys -- not for the application itself but for some form templates -- so it was
+part of the data model. We joined these keys based on the user's language for each row of possibly
+multi-row template (often with hundreds of rows).
+
+First we needed to drop the joins. Plan was to ask some cache component for any of these
+localization keys based on its ID and the language. It took us some time to rewrite all the code
+that could utilize it and originally just joined the data in queries. But the result was worth
+it. The component simply read the whole table and created map of maps based on the languages and
+IDs. DB guys were happy. We stopped executing some queries altogether and removed unnecessary
+joins from many others.
+
+There are other situations when you may seriously consider just coding your own cache explicitly
+and not rely on declarative one like *JSR 107*. Declarative cache doesn't mean *unattended* anyway.
+You should limit it, set policies, etc. It can be extremely handy when you can get results cheap
+and this typically happens when limited subset of possibly big chunk of data is used repeatedly
+using the same keys.
+
+Programmatic (explicit) cache can shine in other areas:
+
+* When you work with limited set of data and you need it often -- and you want to pre-cache it.
+This may be reasonable scenario also for declarative cache if you can pre-fill it somehow and
+there is a single way how you obtain the data.
+* If you require the same data based on various attributes (different views). You can use
+multiple maps that point to the same actual instances. This can work both for cases when you
+cache as you go (when misses are possible) and when you preload the whole set (ideal case when
+not too big).
+* The cache can cooperate with any administrative features that modify the underlying data.
+Because we code it with full knowledge of the logic behind the data we can selectively refresh
+update the cache in a smart way. In declarative cache you often have to evict it completely --
+although this can still be good simple strategy even for programmatic caches, especially
+when the refresh requires a single select.
+* Full preload requires more memory up-front and slows down the startup of the application (can
+be done lazily on-demand) but deals with the DB once and for all. Declarative cache executes
+query for every miss and loads only data for a single entity.
+
+Of course, there are cases when we can't use fully pre-loaded cache. In general, ask yourself
+a question whether "cache this by this key" is best (or good enough) solution or whether you can
+implement a component utilizing logic behind the data better -- and whether it's all worth it.
+
+
 TODO
-* explicit application caching
 * entity cache memory considerations
 
 

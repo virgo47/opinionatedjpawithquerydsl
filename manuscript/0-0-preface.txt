@@ -70,7 +70,7 @@ are covered elsewhere anyway. Let's talk about some of the books available in th
 
 ## Other JPA books
 
-JPA came with EJB 3, actually first as a part of JSR 220 "Enterprise JavaBeans 3.0", but it soon
+JPA came with EJB 3, actually first as a part of *JSR 220* "Enterprise JavaBeans 3.0", but it soon
 proved as a worthy API on its own because it is not tied to EJP in particular. In those days I'd
 recommend [Pro EJB 3: Java Persistence API](http://www.amazon.com/dp/1590596455), but I think the
 book is now dead (and yes, in 2016 it celebrates its 10^th^ anniversary).
