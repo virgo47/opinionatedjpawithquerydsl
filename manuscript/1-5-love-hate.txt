@@ -140,6 +140,10 @@ If we avoid it, we have to choose relational or object world, but we can hardly 
 
 ## Is tuning-down a way out?
 
+Not so long ago Uncle Bob has written an article [Make the Magic go away](https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html).
+It nicely sums up many points related to using frameworks and although ORM is not mentioned it
+definitely fits the story.
+
 Using less of ORM and relying less on complex auto-magic features is a way I propose. It builds
 on the premise that we should use ORM where it helps us, avoid it where it does not and know the
 consequences of both styles and their interactions. It may happen that using both ways adds

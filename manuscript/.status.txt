@@ -24,6 +24,11 @@ To actually finish something, I want to do this in the 1st edition:
     * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
         * https://dzone.com/articles/opensessioninview-antipattern (OSIV anti-pattern)
         * https://vladmihalcea.com/2016/05/30/the-open-session-in-view-anti-pattern
+%%    * *Many-to-many* relations mapping consequences, what SQL it generates, explicit/implicit mapping
+%% also eclipselink bug with left-join + dropped ON: https://bugs.eclipse.org/bugs/show_bug.cgi?id=422510
+%% Also on cascade: https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types/
+%% (describes cascading in general for various *To*, including dangerous REMOVE on @ManyToMany that
+%% often does not do what we want (actually does more and removes not only link, but also target).
 * Common Problems
 
 %%    * Object identity, easy problem, recommended always the same way
@@ -41,11 +46,6 @@ To actually finish something, I want to do this in the 1st edition:
 %%			|| obj != null && getClass().isAssignableFrom(obj.getClass())
 %%			&& Objects.equals(getId(), ((BaseObject<?>) obj).getId());
 %%	}
-%%    * *Many-to-many* relations mapping consequences, what SQL it generates, explicit/implicit mapping
-%% also eclipselink bug with left-join + dropped ON: https://bugs.eclipse.org/bugs/show_bug.cgi?id=422510
-%% Also on cascade: https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types/
-%% (describes cascading in general for various *To*, including dangerous REMOVE on @ManyToMany that
-%% often does not do what we want (actually does more and removes not only link, but also target).
 
     * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
     do it when you need to fetch from *to-many* as well (famous N+1 select problem)
@@ -75,5 +75,3 @@ this part for every project I've made.
 * DAO vs Repository vs...?
 * http://stackoverflow.com/questions/23625885/does-querydsl-suffers-of-the-same-limitations-as-jpa-criteria-api
 `JPASQLQuery`? How does it use JPA mapping?
-
-Mention Make the Magic go away: https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html

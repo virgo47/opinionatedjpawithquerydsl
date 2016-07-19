@@ -148,4 +148,49 @@ and you can sense the deep understanding of the topic.
 
 ## When to tune down and when not?
 
-TODO:...
+I'd say: "Just use it out of the box until it works for you." There are good reasons not to rely
+on something we don't understand but in custom enterprise software there often is no other way.
+For many systems everything will be OK, but for slightly complicated database/domain models
+a lot of things can go wrong.
+
+
+### Performance problems
+
+Most typically the performance degrades first. You definitely should start looking at the generated
+queries. Something can be fixed in the database (typically with indexes), some queries can be
+rewritten in the application but sometimes you have to adjust the mapping.
+
+With *to-one* relations you either have ORM with reliable lazy fetch or you have to do tricks
+described in [Troubles with *to-one* relationships](#ch-to-one-troubles) or even change the mapping
+in a way that is not JPA compliant, as in [Removing *to-one* altogether](#ch-without-to-one).
+There are also still JPA native queries and JDBC underneath -- needless to say that all of this
+introduces new concept into the code and if we mix it too much the complexity is on the rise.
+
+*To-many* has less problems but some mappers generate more SQL joins than necessary. This can be
+often mended by introducing explicit entity mapping for the associative table. This does not raise
+conceptual complexity but some query code may look awkward and more SQL like instead of JPA like.
+I argue that explicit joins are not that bad though.
+
+Other typical problems involve N+1 select problem, but this type of problems is easy to avoid if
+we are explicit with our service contracts and don't let presentation layer to initiate lazy load.
+
+
+### Strange persistence bugs
+
+Most typical enterprise applications can keep persistence context short -- and we should. When
+ORM got mainstream a lot of people complained about lazy load exceptions (like the Hibernate famous
+`LazyInitializationException`) but this results from misusing ORM. Programmers solved it with
+making the session (persistence context) longer and introduced *Open Session In View* (OSIV)
+pattern. This is now widely considered anti-pattern and there are many good reasons for that.
+
+Using OSIV allowed to keep "back-end" and "front-end" programmers separated, dealing only with some
+common service API, but this API was leaky when it didn't load all the data and let presentation
+fetch the rest on demand. Instead of making it explicit what data the service call provides for the
+view we let the view[^serviceview] to perform virtually anything on the managed ("live") entities.
+This means that the presentation programmers must be very careful what they do.
+
+[^serviceview]: View from the perspective of a service layer, it could be model in MVC at the
+    presentation layer. We can also talk about client of the service layer but client may be just
+    as confusing out of context.
+
+TODO: bugs with accidental changing of entities and persisting when using multiple service calls

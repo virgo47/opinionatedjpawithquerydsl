@@ -166,10 +166,6 @@ a question whether "cache this by this key" is best (or good enough) solution or
 implement a component utilizing logic behind the data better -- and whether it's all worth it.
 
 
-TODO
-* entity cache memory considerations
-
-
 ## Conclusion
 
 You should be very aware of your cache setup. You should be very clear how you want to do it.
