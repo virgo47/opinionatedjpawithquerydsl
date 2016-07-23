@@ -48,5 +48,5 @@
 * http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html
 * http://www.groovy-lang.org/databases.html
 * [DataNucleus](http://www.datanucleus.org/)
-* http://www.jooq.org
+* [jOOQ](http://www.jooq.org)
 * [H2 database](http://h2database.com)

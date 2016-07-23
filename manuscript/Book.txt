@@ -24,6 +24,7 @@
 
 a1-h2.txt
 a2-project-example.txt
-ax-bugs-found.txt
+a3-bugs-found.txt
+a4-acronyms.txt
 
 bibliography.txt

@@ -1,0 +1,13 @@
+# List of acronyms {#acronyms}
+
+DDD
+
+DTO
+
+JPA
+
+ORM
+
+OSIV
+
+SQL
