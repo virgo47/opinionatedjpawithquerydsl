@@ -21,13 +21,13 @@ where each `Breed` points to its parent via attribute called `derivedFrom`.
 
 Our entities are quite plain -- `Dog` looks like this:
 
-{lang="java", crop-end-line=15}
-<<[Dog.java](../examples/many-to-one-eager/src/main/java/modeltoone/Dog.java)
+{lang=java, crop-end-line=15}
+<<[ Dog.java](../examples/many-to-one-eager/src/main/java/modeltoone/Dog.java)
 
 The rest are getters/setters -- complete code is [here](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-eager/src/main/java/modeltoone/Dog.java).
 Referenced `Breed` is mapped like this ([full source code](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-eager/src/main/java/modeltoone/Breed.java)):
 
-{lang="java", crop-end-line=15}
+{lang=java, crop-end-line=15}
 <<[Breed.java](../examples/many-to-one-eager/src/main/java/modeltoone/Breed.java)
 
 There is nothing special on these entities, but let's see what happens when we load some dog. In
