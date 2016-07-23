@@ -71,7 +71,7 @@ itself, for instance. You can use it over SQL directly, bypassing the JPA altoge
 contributor, Timo Westkämper, answers virtually any question anywhere (groups, issues,
 StackOverflow)... the only risk here is it seems to be predominantly
 [one-man show](https://github.com/querydsl/querydsl/graphs/contributors) even though it is backed
-by a company. You can also check [JOOQ](http://www.jooq.org), though here you can't avoid
+by a company. You can also check [jOOQ](http://www.jooq.org), though here you can't avoid
 commercial licences if you want to use it with commercial databases. Both these projects -- and
 their popularity -- show that the JPA is far from being the last word in Java persistence landscape
 and also not the only way how to do it.
