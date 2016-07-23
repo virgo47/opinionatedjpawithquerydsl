@@ -183,7 +183,8 @@ ORM got mainstream a lot of people complained about lazy load exceptions (like t
 making the session (persistence context) longer and introduced *Open Session In View* (OSIV)
 pattern. This is now widely considered anti-pattern and there are many good reasons for that.
 
-Using OSIV allowed to keep "back-end" and "front-end" programmers separated, dealing only with some
+Using OSIV allowed to keep back-end and front-end programmers separated (with all the disadvantages
+when two minds do what one mind can do as well), dealing only with some
 common service API, but this API was leaky when it didn't load all the data and let presentation
 fetch the rest on demand. Instead of making it explicit what data the service call provides for the
 view we let the view[^serviceview] to perform virtually anything on the managed ("live") entities.
@@ -193,4 +194,27 @@ This means that the presentation programmers must be very careful what they do.
     presentation layer. We can also talk about client of the service layer but client may be just
     as confusing out of context.
 
-TODO: bugs with accidental changing of entities and persisting when using multiple service calls
+There is a serious consequence when the service layer loses control over the persistence context.
+Transaction boundaries will stop working as one would expect. When the presentation layer combines
+multiple calls to the service layer you may get unexpected results -- results no one have ever
+consciously implemented.
+
+1. Presentation layer first fetches some entity `A`. Programmer knows it is read-only call -- which
+is not reliable across the board, but let's say they know it works for their environment -- and
+because used entity objects as DTO.
+2. Based on the request we are servicing it changes the entity -- knowing it will not get persisted
+in the database.
+3. There is some transactional read-write service call working with completely different type of
+entities `B`.
+
+Result without OSIV is quite deterministic and if we hit some lazy-load exception than we should
+fetch all the necessary data in the first service call. With OSIV, however, modified `A` gets
+persisted together with changes to `B` -- because they are both part of the same persistence
+context which got flushed and committed.
+
+There is a couple of wrong decisions made here. We may argue that even when the presentation layer
+is not remote we should still service it with one coarse-grained call. Some will scowl at entities
+used as DTOs and will propose separate DTO classes (others will scowl at that in turn). But OSIV
+is the real culprit, the one that gives you unexpected behaviour spanning across multiple service
+calls. Even if the example (real-life one, mind you) seems contrived when we dropped OSIV from
+our project everything around transactions got much cleaner.
