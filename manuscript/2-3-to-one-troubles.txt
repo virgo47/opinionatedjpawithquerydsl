@@ -228,11 +228,12 @@ Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_
 val = Breed{id=3, name='collie'}
 ~~~
 
-This is perfectly lazy. The solution seems even magic when you think about it. Doing lazy
-collection (`@OneToMany` or `@ManyToMany`) is not a problem, we would probably mess around a bit
-but eventually we would create some collection implementation that does it right. The trick is we
-have the actual entities wrapped in a collection that works as an intermediary. We don't need to
-perform any bytecode voodoo on the entity class.
+This is perfectly lazy. The solution seems even magic when you think about it.
+
+Doing lazy collection (`@OneToMany` or `@ManyToMany`) -- on the other hand -- is not a problem,
+we would probably mess around a bit but eventually we would create some collection implementation
+that does it right. The trick is we have the actual entities wrapped in a collection that works
+as an intermediary. We don't need to perform any bytecode voodoo on the entity class.
 
 
 ### Lazy *to-one* not guaranteed {#lazy-not-guaranteed}
