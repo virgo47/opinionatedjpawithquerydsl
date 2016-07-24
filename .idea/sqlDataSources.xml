@@ -8,7 +8,7 @@
           <option name="name" value="00-basic" />
           <option name="urls">
             <array>
-              <option value="file://$PROJECT_DIR$/examples/dbinit/00-basic/create.sql" />
+              <option value="file://$PROJECT_DIR$/manuscript/examples/dbinit/00-basic/create.sql" />
             </array>
           </option>
         </State>
