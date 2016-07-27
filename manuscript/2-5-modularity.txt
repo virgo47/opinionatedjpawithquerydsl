@@ -9,21 +9,21 @@ TODO: can we even do it with pure Java EE? How to merge persistence.xml from all
 TODO: this does not work if in superclass in different module (at least not with EclipseLink's
 static weaving, check different scenarios):
 
-~~
+~~~
 @Id
 @Column(name = "id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Integer id;
-~~
+~~~
 
 Thrown exception:
 
-~~
+~~~
 org.eclipse.persistence.exceptions.ValidationException:
 Exception Description: Null or zero primary key encountered in UnitOfWork clone
   [entity.toString result here], primary key [null]. Set descriptor's IdValidation or the
   "eclipselink.id-validation" property.
-~~
+~~~
 
 ## Cutting cyclic dependencies
 
@@ -43,14 +43,14 @@ method that in the process calls common `preDelete(entity)` method. For convenie
 already pre-implemented, but does nothing.
 
 Now our `RoleDao` cannot contain this implementation:
-~~
+~~~
 @Override
 protected void preDelete(Role entity) {
   QRolePermission rp = QRolePermission.rolePermission;
   execute(deleteFrom(rp)
     .where(rp.roleId.eq(entity.getId())));
 }
-~~
+~~~
 
 It's not possible because `QRolePermission` (just like `RolePermission`) is not available in the
 `users` module.
