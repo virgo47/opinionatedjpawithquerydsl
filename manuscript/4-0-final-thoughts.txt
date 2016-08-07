@@ -23,7 +23,7 @@ know that I would rather use some other solution instead, I'd think couple of ti
 possibility of this small project/product becoming big.
 
 Do I prefer JPA or concrete ORM provider? For many years the answer was pretty clear -- I always
-strove to stay within JPA realm. Accidentally, though, I went down the path with EclipseLink[^hib51]
+strove to stay within JPA realm. Accidentally, though, I went down the path with EclipseLink[^hib51x]
 and its capability to `JOIN` with entity roots -- which I believe would be an incredible addition
 for the *JPA 2.2*. The more I work with JPA the less I believe in easy transition from one provider
 to another -- except for simple cases. The more complex queries the more I'd try to find some
@@ -31,7 +31,7 @@ alternative. Maybe the first step would be staying with ORM and utilizing the fu
 single provider -- whatever the provider is. That means checking the bugs on their issue tracking
 system when you encounter one, reporting new ones and so on.
 
-[^hib51]: Available in Hibernate starting with version 5.1.0, released early in 2016.
+[^hib51x]: Available in Hibernate starting with version 5.1.0, released early in 2016.
 
 On the other hand, sticking with EclipseLink for a while -- and diving deep -- leaves you enough
 time to encounter bugs, some of them quite painful. I decided to collect all the bugs we found
