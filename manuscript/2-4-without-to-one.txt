@@ -1,8 +1,5 @@
 # Removing *to-one* altogether {#ch-without-to-one}
 
-%% TODO - check Hibernate 5.1: http://in.relation.to/2016/02/10/hibernate-orm-510-final-release/
-%% it also contains ad hoc joins! Welcome to the party
-
 W> This solution builds on JPA 2.1 `ON` clause but is not JPA compliant because it also uses
 W> root entity after `JOIN` keyword that is only supported in EclipseLink and not according to
 W> [[JPspec](#bib-jpspec)]. Specification details this on page 176 and the following sections
@@ -18,12 +15,17 @@ W> to get us from the quagmire of that ORM Vietnam and got us into another quagm
 W> war, obviously -- but now out of specification fences. There is no real problem for us as we
 W> cannot switch to Hibernate with the project easily anyway (for Hibernate real bugs for a
 W> change), but when using ORM on Java I always voted for JPA way (well, since *JPA 2.0* at least).
+W> In the meantime Hibernate joined the "crowd" supporting entity joins with its 5.1.0 release
+W> (February of 2016), so this solution is not an obstacle when migrating between major
+W> JPA providers.
 W>
-W> Anyway, the solution -- or a pattern if you will -- is still interesting enough for me to
-W> present. I'd just be more happy if the option for joining root entities was in the
-W> specification. To that end I also filed [an issue](https://java.net/jira/browse/JPA_SPEC-128),
-W> although the recent (non-)activity on that Jira project lets me wonder where all the JPA
-W> developers/specifiers are.
+W> The solution -- or a pattern if you will -- is interesting enough to be presented and with
+W> backing of major providers also readily available. I'd just be more happy if the option for
+W> joining root entities was in the specification. To that end I also filed
+W> [an issue](https://java.net/jira/browse/JPA_SPEC-128), although the recent (non-)activity on
+W> that Jira project lets me wonder where all the JPA developers/specifiers are.[^eeinact]
+
+[^eeinact]: The whole Java EE 8 is kind of dormant as of 2016.
 
 To get full control over the fetching -- and to do it without any high-tech solution -- we have to
 drop the relation and map row foreign key instead. Before we go on, we will discuss the important
@@ -140,7 +142,7 @@ creates for our convenience -- which is a good thing, and better part of the abs
 is there is no technological problem to obtain the referenced entity by its ID.
 
 Queries are where the problem lies. Firstly, and this cannot be overcome with current JPA, we need
-to use root entity in the `JOIN` clause. EclipseLink gives us this beyond and above its JPA duty.
+to use root entity in the `JOIN` clause -- both EclipseLink and Hibernate now allow this.
 This enriched experience cuts both ways, of course, as we may believe we're still in JPA world
 when we're in fact not (my story). Second thing we need is `ON` clause, which is something *JPA 2.1*
 provides. As discussed at the end of previous sections, `ON` clauses were generated for joins

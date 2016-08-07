@@ -31,9 +31,7 @@ alternative. Maybe the first step would be staying with ORM and utilizing the fu
 single provider -- whatever the provider is. That means checking the bugs on their issue tracking
 system when you encounter one, reporting new ones and so on.
 
-[^hib51]: Note that after I started the book -- and much later we started with this technique --
-    Hibernate joined the "crowd" supporting entity joins with its 5.1.0 release. So this part is
-    not the obstacle for JPA provider migration anymore.
+[^hib51]: Available in Hibernate starting with version 5.1.0, released early in 2016.
 
 On the other hand, sticking with EclipseLink for a while -- and diving deep -- leaves you enough
 time to encounter bugs, some of them quite painful. I decided to collect all the bugs we found
