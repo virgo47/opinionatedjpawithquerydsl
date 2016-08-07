@@ -11,7 +11,7 @@ To actually finish something, I want to do this in the 1st edition:
     * Good Parts (100%) FINAL
     * Missing Parts (100%) FINAL
     * Questionable Parts (100%) FINAL
-    * Caching Considerations (75%)
+    * Caching Considerations (100%) REVIEW
     * Love and Hate for ORM (100%) FINAL
 * Opinionated JPA
     * ORM tuned down (90%) - finish When to tune down and when not?

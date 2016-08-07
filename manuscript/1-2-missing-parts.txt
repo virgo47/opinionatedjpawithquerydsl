@@ -39,7 +39,7 @@ when it suits us. `ON` is intended for additional `JOIN` conditions but we would
 ways how to approach the relations which can be bothersome from time to time. We could use `ON`
 to explicitly add our primary `JOIN` condition -- but all this is for naught because *JPA 2.1*
 does not allow to use root entity (representing the table itself) in the `JOIN` clause. More about
-this topic and how to do it with EclipseLink in the chapter
+this topic and how to do it with EclipseLink and Hibernate (5.1.0 and higher) in the chapter
 [Removing *to-one* altogether](#ch-without-to-one).
 
 

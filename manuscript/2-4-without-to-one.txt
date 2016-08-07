@@ -1,7 +1,7 @@
 # Removing *to-one* altogether {#ch-without-to-one}
 
 %% TODO - check Hibernate 5.1: http://in.relation.to/2016/02/10/hibernate-orm-510-final-release/
-%% it also contains ad-hoc joins! Welcome to the party
+%% it also contains ad hoc joins! Welcome to the party
 
 W> This solution builds on JPA 2.1 `ON` clause but is not JPA compliant because it also uses
 W> root entity after `JOIN` keyword that is only supported in EclipseLink and not according to

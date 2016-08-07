@@ -6,9 +6,9 @@ This is a book about my experience with [object-relational mapping](https://en.w
 in general and the [Java Persistence API](https://en.wikipedia.org/wiki/Java_Persistence_API) (JPA)
 in particular. It's a book about [Querydsl](http://www.querydsl.com/) as well, because since I was
 recommended this library I completely fell in love with it. It never let me down and sometimes
-even generated feeling of sheer happiness -- which is not that common in our programming profession.
+generated feeling of sheer happiness -- which is not that common in our programming profession.
 
-Be warned -- this book is, as the title suggests, very opinionated. Sometimes you may even ask:
+Be warned -- this book is, as the title suggests, very opinionated. Sometimes you may ask:
 "Why the hell this guy still uses JPA?!" It is not a typical tutorial book covering the technology
 systematically -- I cherry-pick instead. It's not a typical best practices book either. We use ORM
 technology but not quite as intended. We even left the safe water of JPA specification -- although

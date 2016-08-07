@@ -15,7 +15,8 @@ public class SingleEntityReadRaw {
 
   public static void main(String[] args) {
     run("demo-el");
-//    run("demo-hib"); // not working with Hibernate, because it's not JPA compliant
+    run("demo-hib"); // works with Hibernate from version 5.1.0
+    // http://in.relation.to/2016/02/10/hibernate-orm-510-final-release/
   }
 
   private static void run(String persistenceUnitName) {
@@ -35,12 +36,12 @@ public class SingleEntityReadRaw {
       }
       System.out.println("breed = " + breed.getName());
 
-      // This is invalid JPQL according to spec, because LEFT JOIN must be followed by
-      // an association path
+      // This is invalid JPQL according to JPA 2.1 specification
+      // because LEFT JOIN must be followed by an association path
       List<Dog> dogs = em.createQuery(
         "select dog from Dog dog left join Breed breed on breed.id = dog.breedId" +
         " where breed.name like '%ll%'", Dog.class).getResultList();
-      System.out.println("dogs = " + dogs);
+      System.out.println("(JPQL) dogs = " + dogs);
 
       querydslDemo(em);
     } finally {
@@ -49,14 +50,13 @@ public class SingleEntityReadRaw {
   }
 
   private static void querydslDemo(EntityManager em) {
-    // Does not work on Hibernate - because of WITH generated instead of ON?
     List<Dog> dogs = new JPAQuery<Dog>(em)
       .select(QDog.dog)
       .from(QDog.dog)
       .leftJoin(QBreed.breed).on(QBreed.breed.id.eq(QDog.dog.breedId))
       .where(QBreed.breed.name.contains("ll"))
       .fetch();
-    System.out.println("dogs = " + dogs);
+    System.out.println("(Querydsl) dogs = " + dogs);
   }
 
   private static void prepareData(EntityManager em) {
