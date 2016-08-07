@@ -193,7 +193,7 @@ Querydsl offers so called detached queries. While these are not covered in their
 about [advanced Querydsl topics](#ch-advanced-querydsl).
 
 
-## And the cons? {#querydsl-cons}
+## What about the cons? {#querydsl-cons}
 
 Before we move to a couple of advanced topics I'd go over the disadvantages of using Querydsl.
 For one, you're definitely adding some overhead. I don't know exactly how big, maybe with the SQL
@@ -224,7 +224,131 @@ it is well compensated with the code clarity Querydsl gave us.
 
 ## Be explicit with aliases
 
-http://stackoverflow.com/questions/6385036/querydsl-generated-classes-not-able-to-access-second-level-elements-for-querying
+With attribute paths at our disposal it is easy to require some data without explicitly using
+joins. Let's consider the following entity chain:
+
+![Class diagram of our entity model](images/querydsl-aliases.png)
+
+We will start all the following queries at `EntityA` and first we will want the list of related
+`EntityC` objects. We may approach it like this:
+
+{title="Query with two-level implicit join", lang=java}
+~~~
+List<EntityC> result = new JPAQuery<>(em)
+  .select(QEntityA.entityA.entityB.entityC)
+  .from(QEntityA.entityA)
+  .fetch();
+~~~
+
+This works and Hibernate generates the following SQL:
+{title="Generated SQL (formatted)", lang=sql}
+~~~
+select
+  entityc2_.id as id1_5_,
+  entityc2_.entityD_id as entityD_3_5_,
+  entityc2_.name as name2_5_
+from
+  EntityA entitya0_,
+  EntityB entityb1_ inner join
+  EntityC entityc2_ on entityb1_.entityC_id=entityc2_.id
+where entitya0_.entityB_id=entityb1_.id
+~~~
+
+Effectively these are both inner joins and the result is as expected. But what happens if we
+want to traverse to `EntityD`?
+
+{title="Three-level implicit join", lang=java}
+~~~
+List<EntityD> result = new JPAQuery<>(em)
+  .select(QEntityA.entityA.entityB.entityC.entityD)
+  .from(QEntityA.entityA)
+  .fetch();
+~~~
+
+After running this we end up with `NullPointerException` on the line with `select` method. What
+happened? The core problem is that it is not feasible to generate infinitely deep path using
+final fields. Querydsl offers some solutions to this as [discussed in the reference
+documentation](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2260).
+You can either ask the generator to initialize the path you need with the `@QueryInit` annotation
+or you can mark the entity with `@Config(entityAccessors=true)` which generates accessor methods
+instead of final fields. In the latter case you'd simply use this annotation on `EntityC` and
+in the `select` call use `entityD()` which would create the property on the fly. This way you can
+traverse relations ad lib. It requires some Querydsl annotations on the entities -- which you may
+already use, for instance for custom constructors, etc.
+
+However, instead of customizing the generation I'd advocate being explicit with aliases instead.
+If there is a join let it show! We can go around the limitation of max-two-level paths using just
+a single join:
+
+{title="Taming deep paths with a join", lang=java}
+~~~
+List<EntityD> result = new JPAQuery<>(em)
+  .select(QEntityB.entityB.entityC.entityD)
+  .from(QEntityA.entityA)
+  .join(QEntityA.entityA.entityB, QEntityB.entityB)
+  .fetch();
+~~~
+
+Here we lowered the nesting back to two levels by making `EntityB` explicit. We used existing
+default alias `QEntityB.entityB`. This query makes the code run, but looks... unclean, really.
+Let's go all the way and make all the joins explicit:
+
+{title="Explicit joins with aliases", lang=java}
+~~~
+List<EntityD> result = new JPAQuery<>(em)
+  .select(QEntityD.entityD)
+  .from(QEntityA.entityA)
+  // second parameter is alias for the path in the first parameter
+  .join(QEntityA.entityA.entityB, QEntityB.entityB)
+  // first parameter uses alias from the previous line
+  .join(QEntityB.entityB.entityC, QEntityC.entityC)
+  .join(QEntityC.entityC.entityD, QEntityD.entityD)
+  .fetch();
+~~~
+
+Now this looks long, but it says exactly what it does -- no surprises. We may help it in a couple
+of ways but the easiest one is to introduce the aliases upfront:
+
+{title="Explicit upfront aliases", lang=java}
+~~~
+QEntityA a = new QEntityA("a");
+QEntityB b = new QEntityB("b");
+QEntityC c = new QEntityC("c");
+QEntityD d = new QEntityD("d");
+List<EntityD> result = new JPAQuery<>(em)
+  .select(d)
+  .from(a)
+  .join(a.entityB, b)
+  .join(b.entityC, c)
+  .join(c.entityD, d)
+  .fetch();
+~~~
+
+I like this most -- it is couple of lines longer but very clean and the query is very easy to read.
+Anytime I work with joins I always go for explicit aliases.
+
+Another related problem is joining the same entity more times (but in different roles). Newbie
+programmers also often fall for a trap of using the same alias -- typically the default one offered
+on each Q-class -- for multiple joins on the same entity. There can be two distinct local variables
+representing these aliases but they both point to the same object instance -- hence it's still the
+same alias. Whenever I join an entity more times in a query I always go for created aliases. When
+I'm sure that an entity is in a query just once I may use default alias. It really pays off to
+have a strict and clean strategy of how to use the aliases and local variables pointing at them.
+
+
+## Subqueries
+
+TODO: https://groups.google.com/forum/#!msg/querydsl/YWJ5Ct-33sw/_8oS4L9IBwAJ
+
+
+## Pagination
+
+TODO
+
+
+## Querydsl and code style
+
+TODO: using $, static imports, when to use/not use them
 
 ## More
 
