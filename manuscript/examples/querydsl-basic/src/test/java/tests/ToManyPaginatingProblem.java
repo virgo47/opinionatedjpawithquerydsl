@@ -43,7 +43,7 @@ public class ToManyPaginatingProblem {
     return query.fetch();
   }
 
-  private static void prepareData(EntityManager em) {
+  public static void prepareData(EntityManager em) {
     em.getTransaction().begin();
     Person joe = person(em, "Joe", "Rex");
     Person mike = person(em, "Mike", "Lassie", "Dunco");

@@ -42,7 +42,8 @@ a lot of aliases around already -- and even then mostly without the where part w
 dynamically later.
 
 %% TODO: revisit clone and other methods in multi-threaded environments, with 3.x we must use
-%% synchronized for these cases
+%% synchronized for these cases - do we really? let's wait for the answer:
+%% https://groups.google.com/forum/#!topic/querydsl/OnrWCf6w2V0
 
 
 ## Working with dates and `java.time` API
@@ -61,6 +62,10 @@ Tuple notificationWithState = queryFrom($)
 
 How to coerce with `java.util` types? How to mix `LocalDate` and `LocalDateTime`?
 
+
+## Query object
+
+TODO: aliases as fields, mention metadata possibilities, alias thread-safety
 
 
 ## Note about Querydsl 3 versus 4

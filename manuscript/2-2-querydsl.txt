@@ -338,7 +338,7 @@ have a strict and clean strategy of how to use the aliases and local variables p
 
 ## Subqueries
 
-TODO: https://groups.google.com/forum/#!msg/querydsl/YWJ5Ct-33sw/_8oS4L9IBwAJ
+TODO: Sources from Subqueries.java
 
 
 ## Pagination

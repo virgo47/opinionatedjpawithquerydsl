@@ -11,7 +11,12 @@ import java.util.List;
 public class QuerydslAliases {
 
   public static void main(String[] args) {
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("demo-hib");
+    run("demo-el");
+    run("demo-hib");
+  }
+
+  private static void run(String persistenceUnitName) {
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName);
     try {
       EntityManager em = emf.createEntityManager();
 
@@ -20,6 +25,7 @@ public class QuerydslAliases {
       threeLevelPathWithOneLevelAlias(em);
       explicitAliasesForAllJoins(em);
       preCreatedAliases(em);
+      em.close();
     } finally {
       emf.close();
     }

@@ -11,6 +11,8 @@ public class Dog {
 
   private String name;
 
+  private Integer age;
+
   // lazy is effectively ignored here
   @ManyToOne(fetch = FetchType.LAZY)
   //, cascade = CascadeType.PERSIST) throws exception when using explicit "ghosts" with persist on Hibernate
@@ -31,6 +33,14 @@ public class Dog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public Integer getAge() {
+    return age;
+  }
+
+  public void setAge(Integer age) {
+    this.age = age;
   }
 
   public Breed getBreed() {
@@ -60,6 +70,7 @@ public class Dog {
     return "Dog{" +
       "id=" + id +
       ", name='" + name + '\'' +
+      ", age='" + age + '\'' +
       ", breed.id=" + (breed != null ? breed.getId() : null) +
       '}';
   }
