@@ -3,6 +3,7 @@ package tests;
 
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.*;
+import org.antlr.v4.runtime.tree.ParseTree;
 import vexpressedmini.core.ExpressionException;
 import vexpressedmini.core.*;
 import vexpressedmini.grammar.ExprBaseVisitor;
@@ -34,6 +35,10 @@ public class QueryExpressionVisitor extends ExprBaseVisitor {
       throw new IllegalArgumentException("Variable resolver must be provided");
     }
     this.variableResolver = variableResolver;
+  }
+
+  public Predicate predicate(ParseTree tree) {
+    return (Predicate) super.visit(tree);
   }
 
   @Override

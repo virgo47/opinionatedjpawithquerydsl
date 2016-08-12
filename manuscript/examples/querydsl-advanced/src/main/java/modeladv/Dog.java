@@ -10,6 +10,9 @@ public class Dog {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Integer id;
 
+  @Column
+  public Integer breedId;
+
   @Column(nullable = false)
   public String name;
 
