@@ -9,6 +9,9 @@
 
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>modeladv.Dog</class>
+    <class>modeladv.Breed</class>
+    <class>modeladv.LocalizedBreedName</class>
+    <class>modeladv.LocalizedBreedNamePk</class>
     <class>modeladv.LocalDateConverter</class>
     <class>modeladv.LocalDateTimeConverter</class>
 

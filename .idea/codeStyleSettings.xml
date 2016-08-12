@@ -56,6 +56,7 @@
           <option name="BRACE_STYLE" value="5" />
           <option name="CLASS_BRACE_STYLE" value="5" />
           <option name="METHOD_BRACE_STYLE" value="5" />
+          <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
           <option name="METHOD_ANNOTATION_WRAP" value="0" />
           <option name="FIELD_ANNOTATION_WRAP" value="0" />
           <indentOptions>

@@ -17,6 +17,7 @@
     <eclipselink.version>2.6.2</eclipselink.version>
     <querydsl.version>4.0.7</querydsl.version>
     <h2.version>1.4.190</h2.version>
+    <antlr.version>4.5.3</antlr.version>
   </properties>
 
   <dependencies>
@@ -60,6 +61,12 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>${h2.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>${antlr.version}</version>
     </dependency>
   </dependencies>
 
