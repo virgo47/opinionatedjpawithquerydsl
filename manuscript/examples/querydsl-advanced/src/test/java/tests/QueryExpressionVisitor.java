@@ -157,7 +157,7 @@ public class QueryExpressionVisitor extends ExprBaseVisitor {
     String text = ctx.STRING_LITERAL().getText();
     text = text.substring(1, text.length() - 1)
       .replaceAll("''", "'");
-    return ConstantImpl.create(text);
+    return ConstantImpl.create(String.class, text);
   }
 
   @Override
@@ -259,11 +259,6 @@ public class QueryExpressionVisitor extends ExprBaseVisitor {
     return result;
   }
 
-  @ExpressionFunction("IN")
-  public Expression in(SimpleExpression what, Collection collection) {
-    return what.in(collection);
-  }
-
   private static LocalDateTime parseIsoDateTime(String dateTime) {
     dateTime = dateTime.replace(' ', 'T');
     return LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
@@ -293,5 +288,15 @@ public class QueryExpressionVisitor extends ExprBaseVisitor {
       return instant;
     }
     return instant + 'Z';
+  }
+
+  @ExpressionFunction("IN")
+  public BooleanExpression in(SimpleExpression what, Collection collection) {
+    return what.in(collection);
+  }
+
+  @ExpressionFunction("LIKE")
+  public BooleanExpression like(StringExpression left, Expression right) {
+    return Expressions.booleanOperation(Ops.LIKE, left, right);
   }
 }

@@ -45,6 +45,9 @@ public class QueryVariableResolver implements VariableResolver {
   public Expression resolve(String variableName) throws UnknownVariable {
     String[] sa = variableName.split("\\.", 2);
     EntityPathBase<?> entityPathBase = aliases.get(sa[0]);
+    if (entityPathBase == null) {
+      throw new UnknownVariable(variableName);
+    }
     return getExpression(entityPathBase, sa[1].split("\\."));
   }
 

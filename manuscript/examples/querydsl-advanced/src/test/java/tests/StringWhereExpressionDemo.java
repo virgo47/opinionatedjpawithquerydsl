@@ -14,6 +14,7 @@ import javax.persistence.Persistence;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class StringWhereExpressionDemo {
 
@@ -28,31 +29,51 @@ public class StringWhereExpressionDemo {
       EntityManager em = emf.createEntityManager();
       prepareData(em);
 
-      QDog d = new QDog("d");
-      QBreed b = new QBreed("b");
-      QLocalizedBreedName lbn = new QLocalizedBreedName("lbd");
-      JPAQuery<Dog> query = new JPAQuery<>()
-        .select(d)
-        .from(d)
-        .join(b).on(d.breedId.eq(b.id))
-        .join(lbn).on(lbn.breedId.eq(b.id));
+      DogQuery dogQuery = new DogQuery(em);
+      Stream
+        .of(
+          "d.name = 'Dunčo'",
+          "lbn.langCode = 'sk' and lbn.name like '%a%'")
+        .forEach(e -> System.out.println("EXPRESSION: " + e + "\n> " + dogQuery.list(e) + "\n\n"));
 
-      QDog qDog = new QDog("x");
-      qDog.getMetadata();
-      VariableResolver variableResolver = new QueryVariableResolver(query);
+    } finally {
+      emf.close();
+    }
+  }
 
-      String expression = "d.name = 'Dunčo'";
+  static class DogQuery {
+
+    private final QDog dog = new QDog("d");
+    private final QBreed breed = new QBreed("b");
+    private final QLocalizedBreedName localizedBreedName = new QLocalizedBreedName("lbn");
+
+    /**
+     * This query does NOT allow to select dog and localized name for missing language,
+     * for that we would need ON lang='...' as well in that left join.
+     */
+    private final JPAQuery<Dog> query = new JPAQuery<>()
+      .select(dog)
+      .from(dog)
+      .leftJoin(breed).on(dog.breedId.eq(breed.id))
+      .leftJoin(localizedBreedName).on(
+        localizedBreedName.breedId.eq(breed.id));
+
+    private final VariableResolver variableResolver = new QueryVariableResolver(query);
+
+    private final EntityManager em;
+
+    DogQuery(EntityManager em) {
+      this.em = em;
+    }
+
+    public List<Dog> list(String expression) {
       ParseTree parseTree = VexpressedUtils.createParseTree(expression);
       Predicate predicate = new QueryExpressionVisitor(variableResolver)
         .predicate(parseTree);
 
-      List<Dog> dogs = query.clone(em)
+      return query.clone(em)
         .where(predicate)
         .fetch();
-
-      System.out.println("DOGS: " + dogs);
-    } finally {
-      emf.close();
     }
   }
 
