@@ -70,7 +70,7 @@ public class Dog {
     return "Dog{" +
       "id=" + id +
       ", name='" + name + '\'' +
-      ", age='" + age + '\'' +
+      ", age=" + age +
       ", breed.id=" + (breed != null ? breed.getId() : null) +
       '}';
   }

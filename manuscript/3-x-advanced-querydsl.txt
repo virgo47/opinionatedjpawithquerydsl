@@ -68,6 +68,11 @@ How to coerce with `java.util` types? How to mix `LocalDate` and `LocalDateTime`
 TODO: aliases as fields, mention metadata possibilities, alias thread-safety
 
 
+## Query transformation
+
+TODO: ResultTransformer and GroupBy; how does QMap relate? (it goes into select part)
+
+
 ## Note about Querydsl 3 versus 4
 
 I've used major versions 2 and 3 in my projects and started to use version 4 only when I started
@@ -117,6 +122,30 @@ programming mindset. For me personally version 3 hit the sweet spot perfectly, n
 Java syntax (I feel a bit of a struggle between Querydsl 4 and Java) and giving me very
 SQL-like style of queries.
 
+In Querydsl 3 you could also use handy `map(key, value)` method instead of `list` -- and it
+returned `Map` exactly as you'd expect:
+{title="Querydsl version 3 query returning map", lang=java}
+~~~
+Map<Integer, Dog> dogsById = new JPAQuery(em)
+  .from(QDog.dog)
+  .map(QDog.dog.id, QDog.dog);
+~~~
+
+In Querydsl 4 you have something more abstract, more elusive and definitely more talkative:
+{title="Querydsl version 4 query returning map", lang=java}
+~~~
+Map<Integer, Dog> breedsById = new JPAQuery<>(em)
+  .from(QDog.dog)
+  .transform(groupBy(QDog.dog.id).as(QDog.dog));
+~~~
+
+Method `groupBy` is statically imported from provided `GroupBy` class. You can return list of
+multiple results in `as` part, or you can use aggregation functions like `sum`, `avg`, etc. Here
+we merely returned map by an attribute that is unique, but grouping goes beyond that, of course.
+You may notice that you don't need `select` when you use `transform` because it works as a terminal
+operation -- just like `list` worked in version 3. So in order to get a list you have to use
+different flow of the fluent API than for a map.
+
 We can also question what changes more. Sometimes we change the list of expressions, which means
 we have to construct the whole query again and the most moving part -- the list of resulting
 expressions -- go somewhere in the middle (actually right at the start!). I cannot have my query
@@ -142,4 +171,4 @@ D> that can help you with the `SELECT` part of the query. What will you do? You'
 D> and finish the rest (froms, joins, wheres) and return to that `*` expecting that IDE will give
 D> you hints based on actual tables/aliases used. This "backward-ish" flow opens space for that
 D> question: Is the original order of clauses really the best one? I believe Querydsl 3 was ahead
-D> and shouldn't go back to SQL.
+D> and shouldn't have gone back to SQL style.
