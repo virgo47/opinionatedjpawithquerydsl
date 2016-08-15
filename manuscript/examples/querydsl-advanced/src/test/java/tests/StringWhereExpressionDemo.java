@@ -51,8 +51,7 @@ public class StringWhereExpressionDemo {
      * This query does NOT allow to select dog and localized name for missing language,
      * for that we would need ON lang='...' as well in that left join.
      */
-    private final JPAQuery<Dog> query = new JPAQuery<>()
-      .select(dog)
+    private final JPAQuery<?> query = new JPAQuery<>()
       .from(dog)
       .leftJoin(breed).on(dog.breedId.eq(breed.id))
       .leftJoin(localizedBreedName).on(
@@ -73,6 +72,7 @@ public class StringWhereExpressionDemo {
 
       return query.clone(em)
         .where(predicate)
+        .select(dog)
         .fetch();
     }
   }
