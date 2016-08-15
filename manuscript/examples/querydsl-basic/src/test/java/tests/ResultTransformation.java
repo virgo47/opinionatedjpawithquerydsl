@@ -31,8 +31,13 @@ public class ResultTransformation {
       Map<Integer, Dog> breedsById = new JPAQuery<>(em)
         .from(QDog.dog)
         .transform(groupBy(QDog.dog.id).as(QDog.dog));
-
       System.out.println("breedsById = " + breedsById);
+
+      Map<String, Long> countByName = new JPAQuery<>(em)
+        .from(QDog.dog)
+        .groupBy(QDog.dog.name)
+        .transform(groupBy(QDog.dog.name).as(QDog.dog.id.count()));
+      System.out.println("countByName = " + countByName);
 
       em.close();
     } finally {
@@ -51,6 +56,10 @@ public class ResultTransformation {
     Dog ben = new Dog();
     ben.setName("Ben");
     em.persist(ben);
+
+    Dog ben2 = new Dog();
+    ben2.setName("Ben");
+    em.persist(ben2);
 
     em.getTransaction().commit();
   }
