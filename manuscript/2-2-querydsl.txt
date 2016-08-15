@@ -336,12 +336,22 @@ I'm sure that an entity is in a query just once I may use default alias. It real
 have a strict and clean strategy of how to use the aliases and local variables pointing at them.
 
 
-## Subqueries
+## Subqueries {#querydsl-subqueries}
 
 TODO: Sources from Subqueries.java
 
 
+## Aggregate functions {#querydsl-aggregation}
+
+TODO
+
+
 ## Pagination
+
+TODO
+
+
+## Tuple for rows
 
 TODO
 
