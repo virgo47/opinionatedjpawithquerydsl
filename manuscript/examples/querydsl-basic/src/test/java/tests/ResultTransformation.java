@@ -7,9 +7,11 @@ import model00.QDog;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.util.List;
 import java.util.Map;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 
 /**
  * See http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2228 and
@@ -38,6 +40,11 @@ public class ResultTransformation {
         .groupBy(QDog.dog.name)
         .transform(groupBy(QDog.dog.name).as(QDog.dog.id.count()));
       System.out.println("countByName = " + countByName);
+
+      Map<String, List<Dog>> listByName = new JPAQuery<>(em)
+        .from(QDog.dog)
+        .transform(groupBy(QDog.dog.name).as(list(QDog.dog)));
+      System.out.println("listByName = " + listByName);
 
       em.close();
     } finally {
