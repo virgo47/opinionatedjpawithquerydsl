@@ -241,6 +241,7 @@ List<EntityC> result = new JPAQuery<>(em)
 ~~~
 
 This works and Hibernate generates the following SQL:
+
 {title="Generated SQL (formatted)", lang=sql}
 ~~~
 select
@@ -343,14 +344,14 @@ Before checking subqueries, let's see what data we will work on (code
 
 {title="Breed", width="narrow"}
 | id | name |
--------------
+|----|------|
 | 1 | collie |
 | 2 | german shepherd |
 | 3 | retriever |
 
 {title="Dog (id is not important)", width="narrow"}
 | name | age | breed_id |
-----------------------
+|------|-----|----------|
 | Lassie | 7 | 1 (collie) |
 | Rex | 6 | 2 (german shepherd) |
 | Ben | 4 | 2 (german shepherd) |
@@ -360,6 +361,7 @@ Before checking subqueries, let's see what data we will work on (code
 ### Independent subquery
 
 If we want to find all the dogs that are of breed with a long name, we can do this:
+
 {title="Dogs with a long breed name", lang=java}
 ~~~
 List<Dog> dogsWithLongBreedName = new JPAQuery<>(em)
@@ -382,6 +384,7 @@ an idea of a subquery. The previous result can be achieved with join as well -- 
 joins are almost always preferable.
 
 Another example finds average age of all dogs and returns only those above it:
+
 {title="Dogs older than average", lang=java}
 ~~~
 List<Dog> dogsOlderThanAverage = new JPAQuery<>(em)
@@ -402,6 +405,7 @@ always provides the same result. Second case is perhaps on the edge, because it 
 ### Correlated subquery
 
 Let's see some more interesting subquery. We want to know for what breeds we have no dogs:
+
 {title="Breeds with no dogs", lang=java}
 ~~~
 List<Breed> breedsWithoutDogs = new JPAQuery<>(em)
@@ -425,6 +429,7 @@ result for each row of the outer query.
 This can actually be done by join, as well, but in this case I'd not recommend it. Depending on
 the mapping you use, various things work on various providers. When you map `@ManyToOne Breed
 breed` than this works on EclipseLink:
+
 {title="Breeds with no dogs", lang=java}
 ~~~
 List<Breed> result = new JPAQuery<>(em)
@@ -440,6 +445,7 @@ Alas, it fails on Hibernate (5.2.2) with `InvalidWithClauseException: with claus
 reference columns in the driving table`. It seems to be an open bug mentioned in (this StackOverflow
 answer)[http://stackoverflow.com/a/26527967/658826] -- and the suggested solution of using plain
 keys instead of objects indeed work:
+
 ~~~
 // the rest is the same
 .leftJoin(QDog.dog).on(QBreed.breed.id.eq(QDog.dog.breedId))
@@ -447,6 +453,7 @@ keys instead of objects indeed work:
 
 For this we need to switch `Breed breed` mapping to plain FK mapping, or use both of them with
 one marked with updatable `false`:
+
 ~~~
 @Column(name = "breed_id", updatable = false, insertable = false)
 private Integer breedId;
@@ -454,6 +461,7 @@ private Integer breedId;
 
 If you add mapping for set of all dogs existing for a breed -- which may be rather superfluous
 (there is always a query for it) you can use very natural query:
+
 ~~~
 List<Breed> xxx = new JPAQuery<>(em)
   .select(QBreed.breed)
@@ -465,6 +473,7 @@ List<Breed> xxx = new JPAQuery<>(em)
 Internally this generates subquery with count or (not) exists anyway.
 
 Finally, let's try to find dogs that are older than average -- but this time for each breed:
+
 {title="Dogs older than breed average", lang=java}
 ~~~
 QDog innerDog = new QDog("innerDog");
