@@ -1,9 +1,7 @@
 package model00;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 public class Breed {
@@ -13,6 +11,9 @@ public class Breed {
   private Integer id;
 
   private String name;
+
+  @OneToMany(mappedBy = "breed")
+  private Set<Dog> dogs;
 
   public Integer getId() {
     return id;

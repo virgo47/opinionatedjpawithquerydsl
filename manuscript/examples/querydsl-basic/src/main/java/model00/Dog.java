@@ -19,6 +19,9 @@ public class Dog {
   @JoinColumn(name = "breed_id")
   private Breed breed;
 
+  @Column(name = "breed_id", updatable = false, insertable = false)
+  private Integer breedId;
+
   public Integer getId() {
     return id;
   }

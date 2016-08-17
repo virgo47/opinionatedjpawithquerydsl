@@ -193,3 +193,10 @@ D> and finish the rest (froms, joins, wheres) and return to that `*` expecting t
 D> you hints based on actual tables/aliases used. This "backward-ish" flow opens space for that
 D> question: Is the original order of clauses really the best one? I believe Querydsl 3 was ahead
 D> and shouldn't have gone back to SQL style.
+
+### Subqueries
+
+In Querydsl 3 we used `JPASubQuery` for subqueries -- in Querydsl 4 we use ordinary `JPAQuery`,
+we just don't provide it with entity manager and we don't use terminal operations like `fetch`
+that would trigger it immediately. This change is not substantial from developer's perspective,
+either of this works without problems.

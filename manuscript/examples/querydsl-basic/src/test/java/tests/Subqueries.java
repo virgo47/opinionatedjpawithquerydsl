@@ -24,19 +24,20 @@ public class Subqueries {
       EntityManager em = emf.createEntityManager();
       prepareData(em);
 
-      List<Breed> breedsWithDogs = new JPAQuery<>(em)
-        .select(QBreed.breed)
-        .from(QBreed.breed)
-        .where(
-          new JPAQuery<>()
-            // select not needed here
-            .from(QDog.dog)
-            .where(QDog.dog.breed.eq(QBreed.breed))
-            .exists())
+      // multi-row subquery
+      List<Dog> dogsWithLongBreedName = new JPAQuery<>(em)
+        .select(QDog.dog)
+        .from(QDog.dog)
+        .where(QDog.dog.breed.in(
+          new JPAQuery<>() // no EM here
+            .select(QBreed.breed)
+            .from(QBreed.breed)
+            // no fetch on subquery
+            .where(QBreed.breed.name.length().goe(7))))
         .fetch();
+      System.out.println("dogsWithLongBreedName = " + dogsWithLongBreedName);
 
-      System.out.println("breedsWithDogs = " + breedsWithDogs);
-
+      // single-row subquery (aggregate function)
       List<Dog> dogsOlderThanAverage = new JPAQuery<>(em)
         .select(QDog.dog)
         .from(QDog.dog)
@@ -45,8 +46,33 @@ public class Subqueries {
             .select(QDog.dog.age.avg())
             .from(QDog.dog)))
         .fetch();
-
       System.out.println("dogsOlderThanAverage = " + dogsOlderThanAverage);
+
+      // correlated subquery - exists
+      List<Breed> breedsWithoutDogs = new JPAQuery<>(em)
+        .select(QBreed.breed)
+        .from(QBreed.breed)
+        .where(
+          new JPAQuery<>()
+            // select not needed here, because of exists
+            .from(QDog.dog)
+            .where(QDog.dog.breed.eq(QBreed.breed))
+            .notExists())
+        .fetch();
+      System.out.println("breedsWithoutDogs = " + breedsWithoutDogs);
+
+      // correlated subquery - aggregate function
+      QDog innerDog = new QDog("innerDog");
+      List<Dog> dogsOlderThanBreedAverage = new JPAQuery<>(em)
+        .select(QDog.dog)
+        .from(QDog.dog)
+        .where(QDog.dog.age.gt(
+          new JPAQuery<>()
+            .select(innerDog.age.avg())
+            .from(innerDog)
+            .where(innerDog.breed.eq(QDog.dog.breed))))
+        .fetch();
+      System.out.println("dogsOlderThanBreedAverage = " + dogsOlderThanBreedAverage);
 
       em.close();
     } finally {
@@ -87,6 +113,11 @@ public class Subqueries {
     ben.setBreed(germanShepherd);
     ben.setAge(4);
     em.persist(ben);
+
+    Dog mixer = new Dog();
+    mixer.setName("Mixer (unknown breed)");
+    mixer.setAge(3);
+    em.persist(mixer);
 
     em.getTransaction().commit();
   }

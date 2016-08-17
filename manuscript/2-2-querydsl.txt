@@ -338,7 +338,156 @@ have a strict and clean strategy of how to use the aliases and local variables p
 
 ## Subqueries {#querydsl-subqueries}
 
-TODO: Sources from Subqueries.java
+Before checking subqueries, let's see what data we will work on (code
+[here](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/querydsl-basic/src/test/java/tests/Subqueries.java)).
+
+{title="Breed", width="narrow"}
+| id | name |
+-------------
+| 1 | collie |
+| 2 | german shepherd |
+| 3 | retriever |
+
+{title="Dog (id is not important)", width="narrow"}
+| name | age | breed_id |
+----------------------
+| Lassie | 7 | 1 (collie) |
+| Rex | 6 | 2 (german shepherd) |
+| Ben | 4 | 2 (german shepherd) |
+| Mixer | 3 | null (unknown breed) |
+
+
+### Independent subquery
+
+If we want to find all the dogs that are of breed with a long name, we can do this:
+{title="Dogs with a long breed name", lang=java}
+~~~
+List<Dog> dogsWithLongBreedName = new JPAQuery<>(em)
+  .select(QDog.dog)
+  .from(QDog.dog)
+  .where(QDog.dog.breed.in(
+    new JPAQuery<>() // no EM here
+      .select(QBreed.breed)
+      .from(QBreed.breed)
+      // no fetch on subquery
+      .where(QBreed.breed.name.length().goe(10))))
+  .fetch();
+~~~
+
+This returns Ben and Rex, both german shepherds. Note that subquery looks like normal query, but
+we don't provide `EntityManager` to it and we don't use any `fetch`. If you do the subquery will
+be executed on its own first and its results will be fetched into `in` clause just as any other
+collection would. This is not what we want in most cases -- especially when the code leads us to
+an idea of a subquery. The previous result can be achieved with join as well -- and in such cases
+joins are almost always preferable.
+
+Another example finds average age of all dogs and returns only those above it:
+{title="Dogs older than average", lang=java}
+~~~
+List<Dog> dogsOlderThanAverage = new JPAQuery<>(em)
+  .select(QDog.dog)
+  .from(QDog.dog)
+  .where(QDog.dog.age.gt(
+    new JPAQuery<>()
+      .select(QDog.dog.age.avg())
+      .from(QDog.dog)))
+  .fetch();
+~~~
+
+In both cases the same result can be obtained when we execute the inner query first because it
+always provides the same result. Second case is perhaps on the edge, because it uses the same
+`QDog.dog` alias for both cases, but I dare to say it does not matter here.
+
+
+### Correlated subquery
+
+Let's see some more interesting subquery. We want to know for what breeds we have no dogs:
+{title="Breeds with no dogs", lang=java}
+~~~
+List<Breed> breedsWithoutDogs = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .where(
+    new JPAQuery<>()
+      // select not needed here, because of exists
+      .from(QDog.dog)
+      .where(QDog.dog.breed.eq(QBreed.breed))
+      .notExists())
+  .fetch();
+~~~
+
+We used a subquery with `exist/notExists` and we could omit `select`, although it can be used.
+This returns a single breed -- *retriever*. Interesting aspect is that the inner query uses
+something from the outer select (here `QBreed.breed`), that's why it's called *correlated*
+subquery. Compared to the subqueries from the previous section this one can have different
+result for each row of the outer query.
+
+This can actually be done by join, as well, but in this case I'd not recommend it. Depending on
+the mapping you use, various things work on various providers. When you map `@ManyToOne Breed
+breed` than this works on EclipseLink:
+{title="Breeds with no dogs", lang=java}
+~~~
+List<Breed> result = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .leftJoin(QDog.dog).on(QBreed.breed.eq(QDog.dog.breed))
+  .where(QDog.dog.isNull())
+  .distinct() // not needed for isNull, only for isNotNull
+  .fetch();
+~~~
+
+Alas, it fails on Hibernate (5.2.2) with `InvalidWithClauseException: with clause can only
+reference columns in the driving table`. It seems to be an open bug mentioned in (this StackOverflow
+answer)[http://stackoverflow.com/a/26527967/658826] -- and the suggested solution of using plain
+keys instead of objects indeed work:
+~~~
+// the rest is the same
+.leftJoin(QDog.dog).on(QBreed.breed.id.eq(QDog.dog.breedId))
+~~~
+
+For this we need to switch `Breed breed` mapping to plain FK mapping, or use both of them with
+one marked with updatable `false`:
+~~~
+@Column(name = "breed_id", updatable = false, insertable = false)
+private Integer breedId;
+~~~
+
+If you add mapping for set of all dogs existing for a breed -- which may be rather superfluous
+(there is always a query for it) you can use very natural query:
+~~~
+List<Breed> xxx = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .where(QBreed.breed.dogs.isEmpty())
+  .fetch();
+~~~
+
+Internally this generates subquery with count or (not) exists anyway.
+
+Finally, let's try to find dogs that are older than average -- but this time for each breed:
+{title="Dogs older than breed average", lang=java}
+~~~
+QDog innerDog = new QDog("innerDog");
+List<Dog> dogsOlderThanBreedAverage = new JPAQuery<>(em)
+  .select(QDog.dog)
+  .from(QDog.dog)
+  .where(QDog.dog.age.gt(
+    new JPAQuery<>()
+      .select(innerDog.age.avg())
+      .from(innerDog)
+      .where(innerDog.breed.eq(QDog.dog.breed))))
+  .fetch();
+~~~
+
+Notice the use of `innerDog` alias which is very important. Had you use `QDog.dog` in the subquery
+it would return the same results like `dogsOlderThanAverage` above. This query returns only Rex,
+because only german shepherds have more than a single dog -- and a single (or no) dog can't be
+older than average.
+
+This section is not about going deep into subquery theory (I'm not the right person for it in the
+first place), but to demonstrate how easy and readable it is to write subqueries with Querydsl
+API. You're limited by JPQL (no subqueries in `from` or `select` clauses), of course. When writing
+subqueries be careful not to "reuse" alias from the outer query.
 
 
 ## Aggregate functions {#querydsl-aggregation}
@@ -352,6 +501,11 @@ TODO
 
 
 ## Tuple for rows
+
+TODO
+
+
+## Fetching *to-many* eagerly
 
 TODO
 
