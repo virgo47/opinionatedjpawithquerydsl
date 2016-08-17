@@ -342,20 +342,20 @@ have a strict and clean strategy of how to use the aliases and local variables p
 Before checking subqueries, let's see what data we will work on (code
 [here](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/querydsl-basic/src/test/java/tests/Subqueries.java)).
 
-{title="Breed", width="narrow"}
+{title="Content of **Breed** table", width="narrow"}
 | id | name |
 |----|------|
 | 1 | collie |
 | 2 | german shepherd |
 | 3 | retriever |
 
-{title="Dog (id is not important)", width="narrow"}
+{title="Content of **Dog** table (id is not important)", width="narrow"}
 | name | age | breed_id |
 |------|-----|----------|
 | Lassie | 7 | 1 (collie) |
 | Rex | 6 | 2 (german shepherd) |
 | Ben | 4 | 2 (german shepherd) |
-| Mixer | 3 | null (unknown breed) |
+| Mixer | 3 | NULL (unknown breed) |
 
 
 ### Independent subquery
@@ -442,9 +442,10 @@ List<Breed> result = new JPAQuery<>(em)
 ~~~
 
 Alas, it fails on Hibernate (5.2.2) with `InvalidWithClauseException: with clause can only
-reference columns in the driving table`. It seems to be an open bug mentioned in (this StackOverflow
-answer)[http://stackoverflow.com/a/26527967/658826] -- and the suggested solution of using plain
-keys instead of objects indeed work:
+reference columns in the driving table`. It seems to be an open bug mentioned in [this
+StackOverflow answer](http://stackoverflow.com/a/26527967/658826) -- and the suggested solution
+of using plain keys instead of objects indeed work (we'll elaborate on this in the next two
+chapters):
 
 ~~~
 // the rest is the same
@@ -459,20 +460,28 @@ one marked with updatable `false`:
 private Integer breedId;
 ~~~
 
-If you add mapping for set of all dogs existing for a breed -- which may be rather superfluous
-(there is always a query for it) you can use very natural query:
+Neither of the previous joins is *JPA 2.1* compliant as it uses entity join. There is, however,
+another JPA query that works:
 
 ~~~
-List<Breed> xxx = new JPAQuery<>(em)
+List<Breed> result = new JPAQuery<>(em)
   .select(QBreed.breed)
   .from(QBreed.breed)
   .where(QBreed.breed.dogs.isEmpty())
   .fetch();
 ~~~
 
-Internally this generates subquery with count or (not) exists anyway.
+Internally this generates subquery with count or (not) exists anyway, there is no way around it.
+But for this to work we also have to add the mapping to `Breed`:
 
-Finally, let's try to find dogs that are older than average -- but this time for each breed:
+~~~
+@OneToMany(mappedBy = "breed")
+private Set<Dog> dogs;
+~~~
+
+This may be rather superfluous because there is always a query for it, but it should not hurt. We
+somehow foreshadowed themes from the following sections, but we're not done with subqueries yet.
+Let's now try to find dogs that are older than average -- but this time for each breed:
 
 {title="Dogs older than breed average", lang=java}
 ~~~
