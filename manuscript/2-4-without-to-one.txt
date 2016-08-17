@@ -41,10 +41,11 @@ mapping, let's see an example:
 
 Here the `Breed` does not have a name, only some synthetic code, and names are offered in multiple
 languages thanks to `BreedLocalizedName`. Demo code is
-[here](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/on-with-to-many/src/test/java/OnDemonstration.java).
+[here](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/on-with-to-many/src/test/java/OnDemonstration.java).
 Our favourite breeds are:
 
-* wolf, with code `WLF` and localized names for English and Slovak (*wolf* and *vlk* respectively),
+* wolf, with code `WLF` and localized names for English and Slovak (*wolf* and *vlk* respectively
+-- and yes, I know a wolf is not a dog),
 * collie, with code `COL` with localized name available only for Slovak (kólia).
 
 Now imagine we want to get list of all breeds with English names. If the localized name is not
@@ -278,7 +279,7 @@ new ReferenceChecker(em).checkReferences(lassie);
 ~~~
 
 This either does nothing when everything is OK, or it fails with some exception of your choice
-depending on how you implement it. Our version is similar to [this example](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-raw/src/main/java/support/ReferenceChecker.java)
+depending on how you implement it. Our version is similar to [this example](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/many-to-one-raw/src/main/java/support/ReferenceChecker.java)
 on GitHub. If you go through the code you notice that it can do more than just checking -- it can
 also push the real entities to some transient fields, for instance. Such a mechanism can be
 easily incorporated into validation framework you use if you wish to.

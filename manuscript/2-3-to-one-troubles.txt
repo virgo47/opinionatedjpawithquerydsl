@@ -7,7 +7,7 @@ an entity with such a relationship when we are not interested in this relation.
 ## Simple example of `@ManyToOne`
 
 We will continue experimenting on dogs in the demonstration of *to-one* mapping. The code is
-available in a GitHub sub-project [many-to-one-eager](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/examples/many-to-one-eager).
+available in a GitHub sub-project [many-to-one-eager](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/manuscript/examples/many-to-one-eager).
 This particular demo project is also referenced in appendix [Project example](#app-project-example)
 where particulars of build files and `persistence.xml` are described. We will skip these but
 because this is our first serious experiment in the book we will still include more of the code
@@ -24,15 +24,15 @@ Our entities are quite plain -- `Dog` looks like this:
 {lang=java, crop-end-line=15}
 <<[ Dog.java](examples/many-to-one-eager/src/main/java/modeltoone/Dog.java)
 
-The rest are getters/setters -- complete code is [here](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-eager/src/main/java/modeltoone/Dog.java).
-Referenced `Breed` is mapped like this ([full source code](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-eager/src/main/java/modeltoone/Breed.java)):
+The rest are getters/setters -- complete code is [here](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/many-to-one-eager/src/main/java/modeltoone/Dog.java).
+Referenced `Breed` is mapped like this ([full source code](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/many-to-one-eager/src/main/java/modeltoone/Breed.java)):
 
 {lang=java, crop-end-line=15}
 <<[Breed.java](examples/many-to-one-eager/src/main/java/modeltoone/Breed.java)
 
 There is nothing special on these entities, but let's see what happens when we load some dog. In
 the process we will also compare Hibernate and EclipseLink, that's why we have two nearly
-equivalent persistence units in our [persistence.xml](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-eager/src/main/resources/META-INF/persistence.xml).
+equivalent persistence units in our [persistence.xml](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/many-to-one-eager/src/main/resources/META-INF/persistence.xml).
 We will prepare data like this:
 
 {title="Preparing a dog", lang=java}
@@ -192,7 +192,7 @@ G> and their XML equivalents...
 
 Footnote [4] is important here, obviously. So "it should" but it's just "a hint". These results
 can be recreated by running `SingleEntityReadLazy` (in test classpath) from GitHub sub-project
-[many-to-one-lazy](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/examples/many-to-one-lazy).
+[many-to-one-lazy](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/manuscript/examples/many-to-one-lazy).
 
 
 ### How bulletproof is Hibernate's solution?
@@ -290,7 +290,7 @@ Tuple tuple = new JPAQuery<QDog>(em)
   .fetchOne();
 ~~~
 
-[Our demo code](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/examples/many-to-one-eager/src/test/java/tests/SingleEntityReadSelectedColumns.java)
+[Our demo code](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/many-to-one-eager/src/test/java/tests/SingleEntityReadSelectedColumns.java)
 returns Querydsl `Tuple` but it can also return a DTO using the constructor expression. We're
 selecting a single entity, but it works the same way for lists as well. I included an expression
 returning value of the column `breed_id`, we have to use an association path -- and that raises
