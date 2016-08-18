@@ -12,4 +12,4 @@ TODO
 
 ### Querydsl and Gradle
 
-TODO
+TODO: Querydsl does not provide support (plugin) for Gradle directly.

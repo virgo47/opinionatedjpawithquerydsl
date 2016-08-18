@@ -5,7 +5,7 @@
 TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
 
 
-## Using FUNCTION template
+## Using FUNCTION template {#qdsl-function-template}
 
 TODO
 
@@ -71,6 +71,7 @@ TODO: aliases as fields, mention metadata possibilities, alias thread-safety
 
 ## Result transformation {#querydsl-transformations}
 
+Example sources ResultTransformation.java
 TODO: ResultTransformer and GroupBy; how does QMap relate? (it goes into select part)
 
 Method `groupBy` is statically imported from provided `GroupBy` class. You can return list of

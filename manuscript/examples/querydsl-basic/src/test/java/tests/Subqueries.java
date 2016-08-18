@@ -78,7 +78,6 @@ public class Subqueries {
     } finally {
       emf.close();
     }
-
   }
 
   public static void prepareData(EntityManager em) {

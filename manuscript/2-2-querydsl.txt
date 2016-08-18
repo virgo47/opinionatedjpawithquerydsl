@@ -337,10 +337,81 @@ I'm sure that an entity is in a query just once I may use default alias. It real
 have a strict and clean strategy of how to use the aliases and local variables pointing at them.
 
 
+## Functions and operations {#querydsl-aggregation}
+
+When we want to write some operation we simply follow the fluent API. You can write `QDog.dog.age.`
+and hit auto-complete -- this offers us all the possible functions we can use on the attribute.
+These are based on the known type of that attribute, so we only get the list of functions that make
+sense (from technical point of view, not necessarily from business perspective, of course).
+
+This naturally makes sense for binary operations. If we want report dog's age halved we can do it
+like this:
+
+~~~
+List<Tuple> dogsGettingYounger = new JPAQuery<>(em)
+  .select(QDog.dog.name, QDog.dog.age.divide(2))
+  .from(QDog.dog)
+  .fetch();
+~~~
+
+We will cover [Tuples](#querydsl-tuples) soon, now just know they can be printed easily and the
+output would be `[[Lassie, 3], [Rex, 3], [Ben, 2], [Mixer (unknown breed), 1]]`. We are not limited
+to constants and can add together two columns or multiply `amount` by `rate`, etc.
+
+Unary functions are a bit less natural, as they are appended to the attribute expression just like
+binary operations -- they just don't take any arguments:
+
+~~~
+List<Tuple> dogsAndNameLengths = new JPAQuery<>(em)
+  .select(QDog.dog.name, QDog.dog.name.length())
+  .from(QDog.dog)
+  .fetch();
+~~~
+
+This returns `[[Lassie, 6], [Rex, 3], [Ben, 3], [Mixer (unknown breed), 21]]`. *JPA 2.1* allows
+to call any functions using the `FUNCTION` construct. We will cover this in [separate
+section](#qdsl-function-template) in the [advanced chapter]({#ch-advanced-querydsl}) on Querydsl.
+
+
+### Aggregate functions {#querydsl-aggregation}
+
+Using aggregate functions is the same like any other function -- but as we know from SQL, we need
+to group on any other non-aggregated columns. For instance to see the counts of dogs for any
+age we can write (our example data have each dog with different age, so the results are boring):
+
+~~~
+List<Tuple> dogCountByAge = new JPAQuery<>(em)
+  .select(QDog.dog.age, QDog.dog.count())
+  .from(QDog.dog)
+  .groupBy(QDog.dog.age)
+  .fetch();
+~~~
+
+If we want to see average age of dogs per breed we write this:
+
+~~~
+List<Tuple> dogAvgAgeByBreed = new JPAQuery<>(em)
+  .select(QBreed.breed.id, QBreed.breed.name, QDog.dog.age.avg())
+  .from(QDog.dog)
+  .leftJoin(QDog.dog.breed, QBreed.breed)
+  .groupBy(QBreed.breed.id, QBreed.breed.name)
+  .orderBy(QBreed.breed.name.asc())
+  .fetch();
+~~~
+
+Because of `leftJoin` this returns also line `[null, null, 3.0]`. With `innerJoin` (or just `join`)
+we would get only dogs with defined breed. On screen I'm probably interested in breed's name but
+that relies on their uniqueness -- which may not be the case. To get "true" results per breed
+I added `breed.id` into the results, we can always display just names and if they are not unique
+user will at least be curious about it. But that's beyond the discussion for now.
+
+Querydsl supports `having` clause as well if the need arises. We also demonstrated `orderBy`
+clause, just by the way, as it hardly deserves special treatment in this book.
+
+
 ## Subqueries {#querydsl-subqueries}
 
-Before checking subqueries, let's see what data we will work on (code
-[here](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/src/test/java/tests/Subqueries.java)).
+Before checking subqueries, let's see what data we will work on:
 
 {title="Content of **Breed** table", width="narrow"}
 | id | name |
@@ -356,6 +427,8 @@ Before checking subqueries, let's see what data we will work on (code
 | Rex | 6 | 2 (german shepherd) |
 | Ben | 4 | 2 (german shepherd) |
 | Mixer | 3 | NULL (unknown breed) |
+
+All the following examples can be found on GitHub in [Subqueries.java](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/src/test/java/tests/Subqueries.java)).
 
 
 ### Independent subquery
@@ -437,7 +510,8 @@ List<Breed> result = new JPAQuery<>(em)
   .from(QBreed.breed)
   .leftJoin(QDog.dog).on(QBreed.breed.eq(QDog.dog.breed))
   .where(QDog.dog.isNull())
-  .distinct() // not needed for isNull, only for isNotNull
+  // needed for isNotNull, not for isNull as those lines are unique
+  .distinct()
   .fetch();
 ~~~
 
@@ -508,17 +582,12 @@ API. You're limited by JPQL (no subqueries in `from` or `select` clauses), of co
 subqueries be careful not to "reuse" alias from the outer query.
 
 
-## Aggregate functions {#querydsl-aggregation}
-
-TODO
-
-
 ## Pagination
 
-TODO
+TODO - mention order
 
 
-## Tuple for rows
+## Tuple results {#querydsl-tuples}
 
 TODO
 
@@ -534,6 +603,7 @@ TODO: using $, static imports, when to use/not use them
 
 ## More
 
+querydsl@googlegroups.com
 http://www.slideshare.net/timowestkamper/querydsl-overview-2014
 Slides about older version 3, but except for the fluent API changes the concept is the same.
 See also chapter with [advanced Querydsl topics](#ch-advanced-querydsl).
