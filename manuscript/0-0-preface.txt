@@ -140,9 +140,6 @@ that Fowler's work organizing and describing all these (still applicable) patter
 
 ## Structure of the book
 
-I aim for something not very long for the first edition (and maybe last), but I want to split it
-into couple of parts anyway.
-
 In the [first part](#part-jpa-good-bad) of the book we'll quickly go through JPA highs and lows
 (all highly subjective, you know the disclaimer drill) with a bit of historical context as well.
 This part should prepare a backdrop for any further arguments.
@@ -172,17 +169,19 @@ want to run it in IDE, I recommend those that can create multiple run configurat
 to run normal classes (with `main`) from test sources as well -- I suspect some prominent IDEs
 don't support this. But you can always run the demo code using Maven like this (from the project
 directory, e.g. `examples/querydsl-basic`:
-```
+
+~~~
 mvn test-compile exec:java -Dexec.mainClass="tests.DogQueryDemo"
-```
+~~~
 
 There is also neat way how to download subtree of a GitHub project using -- surprisingly -- SVN
 export. This makes running any example on the command line a breeze:
-```
+
+~~~
 svn export https://github.com/virgo47/opinionatedjpawithquerydsl/trunk/examples/querydsl-basic
 cd querydsl-basic
 mvn test-compile exec:java -Dexec.mainClass="tests.DogQueryDemo"
-```
+~~~
 
 Example classes mentioned in the book also link directly to the sources on GitHub (unless you
 print the e-book, of course).

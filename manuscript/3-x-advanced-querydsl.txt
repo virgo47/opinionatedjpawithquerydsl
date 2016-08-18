@@ -51,14 +51,15 @@ dynamically later.
 TODO
 
 This is how to convert return of the `DateTimeExpression` function to specific date/time type:
-```
+
+~~~
 Tuple notificationWithState = queryFrom($)
   .innerJoin(n).on(n.id.eq($.notificationId))
   .where($.mailStatus.eq(GuiUserNotificationSendStatus.TO_SEND)
     .and(n.validFrom.lt(DateTimeExpression.currentTimestamp(LocalDateTime.class))))
   .orderBy($.id.desc())
   .singleResult($, n);
-```
+~~~
 
 How to coerce with `java.util` types? How to mix `LocalDate` and `LocalDateTime`?
 
@@ -123,6 +124,7 @@ far from ideal from API/DSL point of view.
 
 In Querydsl 3 you could also use handy `map(key, value)` method instead of `list` -- and it
 returned `Map` exactly as you'd expect:
+
 {title="Querydsl version 3 query returning map", lang=java}
 ~~~
 Map<Integer, Dog> dogsById = new JPAQuery(em)
@@ -131,6 +133,7 @@ Map<Integer, Dog> dogsById = new JPAQuery(em)
 ~~~
 
 In Querydsl 4 you are left with something more abstract, more elusive and definitely more talkative:
+
 {title="Querydsl version 4 query returning map", lang=java}
 ~~~
 Map<Integer, Dog> breedsById = new JPAQuery<>(em)

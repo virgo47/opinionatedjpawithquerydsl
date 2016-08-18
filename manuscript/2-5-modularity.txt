@@ -43,6 +43,7 @@ method that in the process calls common `preDelete(entity)` method. For convenie
 already pre-implemented, but does nothing.
 
 Now our `RoleDao` cannot contain this implementation:
+
 ~~~
 @Override
 protected void preDelete(Role entity) {
