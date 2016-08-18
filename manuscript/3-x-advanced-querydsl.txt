@@ -5,6 +5,11 @@
 TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
 
 
+## Constants
+
+TODO: `Expressions.constant`
+
+
 ## Using FUNCTION template {#qdsl-function-template}
 
 TODO
@@ -85,7 +90,7 @@ I> explained in the section about [aggregate functions](#querydsl-aggregation).
 I> Aggregating the results and transforming them are two separate things.
 
 
-## Note about Querydsl 3 versus 4
+## Note about Querydsl 3 versus 4 {#querydsl3vs4}
 
 I've used major versions 2 and 3 in my projects and started to use version 4 only when I started
 to write this book. After initial investigation I realized that I'll hardly switch from version 3
