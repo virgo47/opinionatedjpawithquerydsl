@@ -1,5 +1,6 @@
 package tests;
 
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import model00.Breed;
 import model00.Dog;
@@ -29,9 +30,7 @@ public class Subqueries {
         .select(QDog.dog)
         .from(QDog.dog)
         .where(QDog.dog.breed.in(
-          new JPAQuery<>() // no EM here
-            .select(QBreed.breed)
-            .from(QBreed.breed)
+          JPAExpressions.selectFrom(QBreed.breed)
             // no fetch on subquery
             .where(QBreed.breed.name.length().goe(7))))
         .fetch();
@@ -42,8 +41,7 @@ public class Subqueries {
         .select(QDog.dog)
         .from(QDog.dog)
         .where(QDog.dog.age.gt(
-          new JPAQuery<>()
-            .select(QDog.dog.age.avg())
+          JPAExpressions.select(QDog.dog.age.avg())
             .from(QDog.dog)))
         .fetch();
       System.out.println("dogsOlderThanAverage = " + dogsOlderThanAverage);
@@ -53,9 +51,7 @@ public class Subqueries {
         .select(QBreed.breed)
         .from(QBreed.breed)
         .where(
-          new JPAQuery<>()
-            // select not needed here, because of exists
-            .from(QDog.dog)
+          JPAExpressions.selectFrom(QDog.dog)
             .where(QDog.dog.breed.eq(QBreed.breed))
             .notExists())
         .fetch();
@@ -67,8 +63,7 @@ public class Subqueries {
         .select(QDog.dog)
         .from(QDog.dog)
         .where(QDog.dog.age.gt(
-          new JPAQuery<>()
-            .select(innerDog.age.avg())
+          JPAExpressions.select(innerDog.age.avg())
             .from(innerDog)
             .where(innerDog.breed.eq(QDog.dog.breed))))
         .fetch();

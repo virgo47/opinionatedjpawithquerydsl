@@ -441,6 +441,7 @@ clause, just by the way, as it hardly deserves special treatment in this book.
 
 Here we will use the same data like in the previous section on functions and operations.
 The following examples can be found on GitHub in [Subqueries.java](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/src/test/java/tests/Subqueries.java)).
+You can also check Querydsl [reference documentation](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e410).
 
 
 ### Independent subquery
@@ -468,7 +469,16 @@ collection would. This is not what we want in most cases -- especially when the 
 an idea of a subquery. The previous result can be achieved with join as well -- and in such cases
 joins are almost always preferable.
 
-Another example finds average age of all dogs and returns only those above it:
+To make our life easier we can use `JPAExpressions.select(...)` instead of
+`new JPAQuery().select(...)`. There is also a neat shortcut for the subquery with `select` and
+`from` with the same expression.
+
+~~~
+JPAExpressions.selectFrom(QBreed.breed) ...
+~~~
+
+We will prefer using `JPAExpression` from now on. Another example finds average age of all dogs
+and returns only those above it:
 
 {title="Dogs older than average", lang=java}
 ~~~
@@ -476,8 +486,7 @@ List<Dog> dogsOlderThanAverage = new JPAQuery<>(em)
   .select(QDog.dog)
   .from(QDog.dog)
   .where(QDog.dog.age.gt(
-    new JPAQuery<>()
-      .select(QDog.dog.age.avg())
+    JPAExpressions.select(QDog.dog.age.avg())
       .from(QDog.dog)))
   .fetch();
 ~~~
@@ -499,9 +508,7 @@ List<Breed> breedsWithoutDogs = new JPAQuery<>(em)
   .select(QBreed.breed)
   .from(QBreed.breed)
   .where(
-    new JPAQuery<>()
-      // select not needed here, because of exists
-      .from(QDog.dog)
+    JPAExpressions.selectFrom(QDog.dog)
       .where(QDog.dog.breed.eq(QBreed.breed))
       .notExists())
   .fetch();
@@ -578,8 +585,7 @@ List<Dog> dogsOlderThanBreedAverage = new JPAQuery<>(em)
   .select(QDog.dog)
   .from(QDog.dog)
   .where(QDog.dog.age.gt(
-    new JPAQuery<>()
-      .select(innerDog.age.avg())
+    JPAExpressions.select(innerDog.age.avg())
       .from(innerDog)
       .where(innerDog.breed.eq(QDog.dog.breed))))
   .fetch();
@@ -666,7 +672,57 @@ And yes, it does not execute the second query when the count is zero.[^qdslpagex
 
 ## Tuple results {#querydsl-tuples}
 
-TODO
+When you call `fetch()` the `List` is returned. When you call `fetchOne()` or `fetchFirst()` one
+object is returned. The question is -- what type of object? This depends on the `select` clause
+which can have a single parameter which determines the type or you can use list of expressions
+for `select` in which case `Tuple` is returned. That is, a query with `select(QDog.dog)` will
+return `Dog` (or `List<Dog>`) because `QDog.dog` is of type `QDog` that extends
+`EntityPathBase<Dog>` which eventually implements `Expression<Dog>` -- hence the `Dog`.
+
+But when you return multiple results we need to wrap them somehow. In JPA you will get `Object[]`
+(array of objects) for each row. That works, but is not very convenient. Criteria API brings
+`Tuple` for that reason which is much better. Querydsl uses `Tuple` idea as well. What's the deal?
+
+{title="Tuples of attributes (columns)", lang=java}
+~~~
+List<Tuple> result = new JPAQuery<>(em)
+  .select(QDog.dog.name, QBreed.breed.name)
+  .from(QDog.dog)
+  .join(QDog.dog.breed, QBreed.breed)
+  .fetch();
+result.forEach(t -> {
+  String name = t.get(QDog.dog.name);
+  String breed = t.get(1, String.class);
+  System.out.println("Dog: " + name + " is " + breed);
+});
+~~~
+
+As you can see in the `forEach` block we can extract columns by either using the expression that
+was used in the `select` as well (here `QDog.dog.name`) or by index. Needless to say that the first
+way is preferred. You can also extract the underlying array of objects using `toArray()`.
+
+Because `Tuple` works with any expression we can use the whole entities too:
+
+{title="Tuples of entities", lang=java}
+~~~
+List<Tuple> result = new JPAQuery<>(em)
+  .select(QDog.dog, QBreed.breed)
+  .from(QDog.dog)
+  .join(QDog.dog.breed, QBreed.breed)
+  .fetch();
+result.forEach(t -> {
+  Dog dog = t.get(QDog.dog);
+  Breed breed = t.get(QBreed.breed);
+  System.out.println("\nDog: " + dog);
+  System.out.println("Breed: " + breed);
+});
+~~~
+
+And of course, you can combine entities with columns ad-lib.
+
+There are other ways how to combine multiple expressions into one object. See the reference guide
+to see how to [populate beans](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2187),
+or how to use [projection constructors](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2198).
 
 
 ## Fetching *to-many* eagerly
@@ -677,6 +733,7 @@ TODO
 ## Querydsl and code style
 
 TODO: using $, static imports, when to use/not use them
+
 
 ## More
 

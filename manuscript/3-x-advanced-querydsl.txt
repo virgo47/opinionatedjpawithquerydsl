@@ -1,5 +1,7 @@
 # Advanced Querydsl {#ch-advanced-querydsl}
 
+TODO: Do we want to cover projects? I'd just reference to docs.
+
 ## Tricky predicate parts
 
 TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
