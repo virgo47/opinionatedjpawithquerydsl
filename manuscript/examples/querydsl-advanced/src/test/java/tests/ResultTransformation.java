@@ -1,8 +1,9 @@
 package tests;
 
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQuery;
-import model00.Dog;
-import model00.QDog;
+import modeladv.Dog;
+import modeladv.QDog;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
 
 /**
  * See http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2228 and
@@ -43,7 +43,7 @@ public class ResultTransformation {
 
       Map<String, List<Dog>> listByName = new JPAQuery<>(em)
         .from(QDog.dog)
-        .transform(groupBy(QDog.dog.name).as(list(QDog.dog)));
+        .transform(groupBy(QDog.dog.name).as(GroupBy.list(QDog.dog)));
       System.out.println("listByName = " + listByName);
 
       em.close();
@@ -53,19 +53,19 @@ public class ResultTransformation {
 
   }
 
-  public static void prepareData(EntityManager em) {
+  private static void prepareData(EntityManager em) {
     em.getTransaction().begin();
 
     Dog rexo = new Dog();
-    rexo.setName("Rex");
+    rexo.name = "Rex";
     em.persist(rexo);
 
     Dog ben = new Dog();
-    ben.setName("Ben");
+    rexo.name = "Ben";
     em.persist(ben);
 
     Dog ben2 = new Dog();
-    ben2.setName("Ben");
+    ben2.name = "Ben";
     em.persist(ben2);
 
     em.getTransaction().commit();

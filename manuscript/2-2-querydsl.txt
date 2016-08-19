@@ -598,7 +598,70 @@ writing subqueries be careful not to "reuse" alias from the outer query.
 
 ## Pagination
 
-TODO - mention order
+Very often we need to cut our results into smaller chunks, typically pages for some user interface,
+but pagination is often used also with various APIs. To do it manually, we can simply specify
+`offset` (what record is the first) and `limit` (how many records):
+
+{title="Fetching a single page", lang=java}
+~~~
+List<Breed> breedsPageX = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .where(QBreed.breed.id.lt(17)) // random where
+  .orderBy(QBreed.breed.name.asc())
+  .offset((page - 1) * pageSize)
+  .limit(pageSize)
+  .fetch();
+~~~
+
+I used variables `page` (starting at one, hence the correction) and `pageSize` to calculate the
+right values. Any time you paginate the results you want to use `orderBy` because SQL specification
+does not guarantee any order without it. Sure, databases typically give you results in some natural
+order (like "by ID"), but it is dangerous to rely on it.
+
+Content of the page is good, but often we want to know total count of all the results. We use the
+same query with the same conditions, we just first use `.fetchCount` like this:
+
+{title="Fetching a single page and total count", lang=java}
+~~~
+JPAQuery<Breed> breedQuery = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .where(QBreed.breed.id.lt(17))
+  .orderBy(QBreed.breed.name.asc());
+
+long total = breedQuery.fetchCount();
+List<Breed> breedsPageX = breedQuery
+  .offset((page - 1) * pageSize)
+  .limit(pageSize)
+  .fetch();
+~~~
+
+We can even add `if` skipping the second query when count is 0 as we can just create an empty list.
+And because this scenario is so typical Querydsl provides a shortcut for it:
+
+{title="Pagination with Querydsl `fetchResults`", lang=java}
+~~~
+QueryResults<Breed> results = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .where(QBreed.breed.id.lt(17))
+  .orderBy(QBreed.breed.name.asc())
+  .offset((page - 1) * pageSize)
+  .limit(pageSize)
+  .fetchResults();
+System.out.println("total count: " + results.getTotal());
+System.out.println("results = " + results.getResults());
+~~~
+
+Results wraps all the information we need for paginated result, including offset and limit. It
+does not help us with reverse calculation of the `page` number from an `offset`, but I guess we
+probably track the page number in some filter object anyway as we needed it as the input in the
+first place.
+
+And yes, it does not execute the second query when the count is zero.[^qdslpagexam]
+
+[^qdslpagexam]: Example source code: https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/src/test/java/tests/Pagination.java
 
 
 ## Tuple results {#querydsl-tuples}
