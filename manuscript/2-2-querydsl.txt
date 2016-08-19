@@ -654,8 +654,8 @@ System.out.println("total count: " + results.getTotal());
 System.out.println("results = " + results.getResults());
 ~~~
 
-Results wraps all the information we need for paginated result, including offset and limit. It
-does not help us with reverse calculation of the `page` number from an `offset`, but I guess we
+`QueryResults` wrap all the information we need for paginated result, including offset and limit.
+It does not help us with reverse calculation of the `page` number from an `offset`, but I guess we
 probably track the page number in some filter object anyway as we needed it as the input in the
 first place.
 
