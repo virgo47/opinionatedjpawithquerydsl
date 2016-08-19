@@ -12,6 +12,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
 
+import static tests.Tools.breed;
+import static tests.Tools.dog;
+
 public class Tuples {
 
   public static void main(String[] args) {
@@ -64,15 +67,8 @@ public class Tuples {
   public static void prepareData(EntityManager em) {
     em.getTransaction().begin();
 
-    Breed breed = new Breed();
-    breed.setName("collie");
-    em.persist(breed);
-
-    Dog dog = new Dog();
-    dog.setName("Rex");
-    dog.setAge(3);
-    dog.setBreed(breed);
-    em.persist(dog);
+    Breed collie = breed(em, "collie");
+    dog(em, "Rex", collie, 3);
 
     em.getTransaction().commit();
   }

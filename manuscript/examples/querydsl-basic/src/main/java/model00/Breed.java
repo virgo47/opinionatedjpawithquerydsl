@@ -31,6 +31,14 @@ public class Breed {
     this.name = name;
   }
 
+  public Set<Dog> getDogs() {
+    return dogs;
+  }
+
+  public void setDogs(Set<Dog> dogs) {
+    this.dogs = dogs;
+  }
+
   @Override
   public String toString() {
     return "Breed{" +

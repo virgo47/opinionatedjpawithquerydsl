@@ -11,6 +11,8 @@ import javax.persistence.Persistence;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static tests.Tools.breed;
+
 public class Pagination {
 
   private static int pageSize = 10;
@@ -82,11 +84,7 @@ public class Pagination {
     em.getTransaction().begin();
 
     IntStream.range(1, 27)
-      .forEach(i -> {
-        Breed breed = new Breed();
-        breed.setName("Breed" + i);
-        em.persist(breed);
-      });
+      .forEach(i -> breed(em, "Breed" + i));
 
     em.getTransaction().commit();
   }

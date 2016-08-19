@@ -1,5 +1,9 @@
 package tests;
 
+import model00.Breed;
+import model00.Dog;
+
+import javax.persistence.EntityManager;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -25,5 +29,21 @@ public class Tools {
 
   public static void printResult() {
     System.out.println(result.toString());
+  }
+
+  static Breed breed(EntityManager em, String name) {
+    Breed collie = new Breed();
+    collie.setName(name);
+    em.persist(collie);
+    return collie;
+  }
+
+  static Dog dog(EntityManager em, String name, Breed breed, int age) {
+    Dog dog = new Dog();
+    dog.setName(name);
+    dog.setBreed(breed);
+    dog.setAge(age);
+    em.persist(dog);
+    return dog;
   }
 }

@@ -13,7 +13,7 @@ public class Dog {
 
   private Integer age;
 
-  // lazy is effectively ignored here
+  // lazy may be ignored here
   @ManyToOne(fetch = FetchType.LAZY)
   //, cascade = CascadeType.PERSIST) throws exception when using explicit "ghosts" with persist on Hibernate
   @JoinColumn(name = "breed_id")

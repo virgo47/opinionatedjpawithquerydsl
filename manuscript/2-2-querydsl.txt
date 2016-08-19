@@ -727,7 +727,38 @@ or how to use [projection constructors](http://www.querydsl.com/static/querydsl/
 
 ## Fetching *to-many* eagerly
 
-TODO
+In the following example we select all the breeds and we want to print the collection of the dogs
+of that breed:
+
+{title="Naive approach to *to-many*", lang=java}
+~~~
+// mapping on Breed
+@OneToMany(mappedBy = "breed")
+private Set<Dog> dogs;
+
+// query
+List<Breed> breed = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .fetch();
+breed.forEach(b ->
+  System.out.println(b.toString() + ": " + b.getDogs()));
+~~~
+
+This executes three queries. First the one that is obvious and then one for each breed when you
+want to print the dogs. Actually, for EclipseLink it does not produce the other queries and merely
+prints `{IndirectSet: not instantiated}` instead of the collection content. You can nudge
+EclipseLink with something like `b.getDogs().size()` or other meaningful collection operation.
+It seems `toString()` isn't meaningful enough for EclipseLink.
+
+W> While writing this example I got a really hard time to make it act consistently for both
+W> Hibernate and EclipseLink and, actually, even to make it load those dogs at all. This was caused
+W> by using the same `EntityManager` I used for data preparation. I had to clear (or reopen) the
+W> entity manager and also evict the second-level cache for EclipseLink (Hibernate doesn't use it
+W> out of the box).
+
+TODO:
+...the problem [we mentioned already](#cant-escape-sql) and we return to it [later](#to-many-paginating).
 
 
 ## Querydsl and code style

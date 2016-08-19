@@ -3,6 +3,8 @@
 https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
 
 TODO: can we even do it with pure Java EE? How to merge persistence.xml from all JARs?
+Also see: 8.2 Persistence Unit Packaging in [JPspec], but it does not indicate we can "split"
+persistence.xml across multiple JARs
 
 ## Splitting JPA persistence unit
 

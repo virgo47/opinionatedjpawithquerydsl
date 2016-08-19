@@ -12,6 +12,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
 
+import static tests.Tools.breed;
+import static tests.Tools.dog;
+
 public class Subqueries {
 
   public static void main(String[] args) {
@@ -78,40 +81,14 @@ public class Subqueries {
   public static void prepareData(EntityManager em) {
     em.getTransaction().begin();
 
-    Breed collie = new Breed();
-    collie.setName("collie");
-    em.persist(collie);
+    Breed collie = breed(em, "collie");
+    Breed germanShepherd = breed(em, "german shepherd");
+    breed(em, "retriever");
 
-    Breed germanShepherd = new Breed();
-    germanShepherd.setName("german shepherd");
-    em.persist(germanShepherd);
-
-    Breed retriever = new Breed();
-    retriever.setName("retriever");
-    em.persist(retriever);
-
-    Dog lassie = new Dog();
-    lassie.setName("Lassie");
-    lassie.setBreed(collie);
-    lassie.setAge(7);
-    em.persist(lassie);
-
-    Dog rexo = new Dog();
-    rexo.setName("Rex");
-    rexo.setBreed(germanShepherd);
-    rexo.setAge(6);
-    em.persist(rexo);
-
-    Dog ben = new Dog();
-    ben.setName("Ben");
-    ben.setBreed(germanShepherd);
-    ben.setAge(4);
-    em.persist(ben);
-
-    Dog mixer = new Dog();
-    mixer.setName("Mixer (unknown breed)");
-    mixer.setAge(3);
-    em.persist(mixer);
+    dog(em, "Lassie", collie, 7);
+    dog(em, "Rex", germanShepherd, 6);
+    dog(em, "Ben", germanShepherd, 4);
+    dog(em, "Mixer (unknown breed)", null, 3);
 
     em.getTransaction().commit();
   }

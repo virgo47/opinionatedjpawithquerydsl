@@ -17,6 +17,9 @@ import javax.persistence.criteria.Root;
 import java.io.IOException;
 import java.util.List;
 
+import static tests.Tools.breed;
+import static tests.Tools.dog;
+
 public class DogQueryDemo {
 
   public static void main(String[] args) throws IOException {
@@ -131,23 +134,10 @@ public class DogQueryDemo {
   public static void prepareData(EntityManager em) {
     em.getTransaction().begin();
 
-    Breed collie = new Breed();
-    collie.setName("collie");
-    em.persist(collie);
-
-    Breed germanShepherd = new Breed();
-    germanShepherd.setName("german shepherd");
-    em.persist(germanShepherd);
-
-    Dog lassie = new Dog();
-    lassie.setName("Lassie");
-    lassie.setBreed(collie);
-    em.persist(lassie);
-
-    Dog rexo = new Dog();
-    rexo.setName("Rex");
-    rexo.setBreed(germanShepherd);
-    em.persist(rexo);
+    Breed collie = breed(em, "collie");
+    Breed germanShepherd = breed(em, "german shepherd");
+    dog(em, "Lassie", collie, 6);
+    dog(em, "Rex", germanShepherd, 6);
 
     em.getTransaction().commit();
   }
