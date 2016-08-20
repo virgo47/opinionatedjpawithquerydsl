@@ -25,7 +25,7 @@ handy when you produce some very long exports that are streamed straight to the 
 or a file. Hibernate offers `ScrollableResults`, I personally used JDBC with Spring `JdbcTemplate`
 instead and solved the problem without JPA altogether -- obviously, I had to do the mapping myself,
 while Hibernate can do it for you. Even so, as mentioned in this
-[stackoverflow answer](http://stackoverflow.com/q/2826319/658826) this may still cause
+[StackOverflow answer](http://stackoverflow.com/q/2826319/658826) this may still cause
 `OutOfMemoryError` or similar memory related issue, this time not on JPA/ORM level, but because
 of silly JDBC driver (or even because of database limitations, but that's rare).
 

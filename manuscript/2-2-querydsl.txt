@@ -209,12 +209,12 @@ compare it with Criteria API which does not have to go through JPQL, but also cr
 graph in the memory (richer or not? depends).
 
 Documentation, while good, is definitely not complete. For instance, detached queries are not
-mentioned in their [Query Reference Guide](http://www.querydsl.com/static/querydsl/4.0.7/reference/html_single/)
+mentioned in their [Querydsl Reference Guide](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/)
 and there is much more you need to find out yourself. You'll need to find your own best practices,
 probably, but it is not that difficult with Querydsl. Based (not only) on my own experience, it
 is literally joy to work with Querydsl and explore what it can provide -- for me it worked like
 this from day zero. It's also very easy to find responses on the
-[stackoverlow](http://stackoverflow.com/questions/tagged/querydsl) or their
+[StackOverflow](http://stackoverflow.com/questions/tagged/querydsl) or their
 [mailing-list](https://groups.google.com/forum/#!forum/querydsl), very often provided directly
 by Querydsl developers. This makes any lack of documentation easy to overcome.
 
@@ -816,7 +816,12 @@ List<Breed> breeds = new JPAQuery<>(em)
 ~~~
 
 You use `fetchJoin()` just after the `join` with a collection path and in this case you don't
-need to use second parameter with alias, unless you want to use it in `where` or `select`, etc.
+need to use second parameter with alias, unless you want to use it in `where` or `select`, etc.[^fjall]
+
+[^fjall]: There is also Hibernate specific `fetchAll()` that loads lazy single-valued properties,
+    but this is beyond JPA specification.
+
+
 Because we used `join` with *to-many* relations ourselves JPA assumes we want all the results
 (5 with our demo data [defined previously](#querydsl-aggregation)). That's why we also added
 `distinct()` -- this ensures we get only unique results from the `select` clause. But these unique
@@ -827,12 +832,123 @@ or not. This is something we will tackle in a [dedicated section](#to-many-pagin
 
 ## Querydsl and code style
 
-TODO: using $, static imports, when to use/not use them
+Querydsl is a nice API and DSL but may lead to horrific monsters like:
+
+~~~
+new JPAQuery(em)
+  .select(QClientAgreementBankAccountTransaction.clientAgreementBankAccountTransaction.transactionId))
+  .from(QClientAgreement.clientAgreement)
+  .join(QClientAgreementBankAccount.clientAgreementBankAccount).on(
+    QClientAgreementBankAccount.clientAgreementBankAccount.clientAgreementId
+      .eq(QClientAgreement.clientAgreement.id))
+  .join(QClientAgreementBankAccountTransaction.clientAgreementBankAccountTransaction).on(
+    QClientAgreementBankAccountTransaction.clientAgreementBankAccountTransaction.clientAgreementBankAccountId
+      .eq(QClientAgreementBankAccount.clientAgreementBankAccount.id))
+  .where(QClientAgreement.clientAgreement.id.in(clientAgreementsToDelete))
+  .fetch();
+~~~
+
+The problems here are caused by long entity class names but often there is nothing you can about
+it. Querydsl exacerbates it with the duplication of the name in `QClassName.className`. There are
+many ways how to tackle the problem.
+
+We can introduce local variables, even with very short names as they are very close to the
+query itself. In most queries I saw usage of acronym aliases, like `cabat` for
+`QClientAgreementBankAccountTransaction`. This clears up the query significantly, especially when
+the same alias is repeated many times:
+
+~~~
+QClientAgreement ca = QClientAgreement.clientAgreement;
+QClientAgreementBankAccount caba =
+  QClientAgreementBankAccount.clientAgreementBankAccount;
+QClientAgreementBankAccountTransaction cabat =
+  QClientAgreementBankAccountTransaction.clientAgreementBankAccountTransaction;
+new JPAQuery(em)
+  .select(cabat.transactionId)
+  .from(ca)
+  .join(caba).on(caba.clientAgreementId.eq(ca.id))
+  .join(cabat).on(cabat.clientAgreementBankAccountId.eq(caba.id))
+  .where(ca.id.in(clientAgreementsToDelete))
+  .fetch();
+~~~
+
+You give up some explicitness in the query with those acronyms but you get much higher
+signal-to-noise ratio which can easily overweight the burden of mental mapping to local variables.
+
+Another option is to use static imports which halves the QNames into half:
+
+~~~
+new JPAQuery(em)
+  .select(clientAgreementBankAccountTransaction.transactionId)
+  .from(clientAgreement)
+  .join(clientAgreementBankAccount).on(
+    clientAgreementBankAccount.clientAgreementId.eq(clientAgreement.id))
+  .join(clientAgreementBankAccountTransaction).on(
+    clientAgreementBankAccountTransaction.clientAgreementBankAccountId
+      .eq(clientAgreementBankAccount.id))
+  .where(clientAgreement.id.in(clientAgreementsToDelete))
+  .fetch()
+~~~
+
+This is clearly somewhere between the first (totally unacceptable) version and the second where
+the query was very brief at the cost of using acronyms for aliases. Using static names is great
+when they don't collide with anything else. But while `QDog` itself says clearly it is metadata
+type, name of its static field `dog` clearly collides with any dog variable of a real `Dog` type
+you may have in your code. Still, we use static imports extensively in various infrastructural
+code where no confusion is possible.
+
+We also often use field or variable named `$` that represents the root of our query. I never ever
+use that name for anything else and long-term experiments showed that it brought no confusion into
+our team whatsoever. Snippet of our DAO class may look like this:
+
+~~~
+public class ClientDao {
+	public static final QClient $ = QClient.client;
+
+	public Client findByName(String name) {
+ 		return queryFrom($) // our shortcut for new/select/from
+ 			.where($.name.eq(name))
+ 			.fetchOne($);
+	}
+
+	public List<Client> listByRole(ClientRole clientRole) {
+		return queryFrom($)
+			.where($.roles.any().eq(clientRole))
+			.list($);
+	}
+...
+~~~
+
+As a bonus you can see how `any()` is used on collection path `$.roles`. You can even go on
+to a specific property -- for instance with our demo data we can obtain list of breeds where any
+dog is named Rex like this:
+
+~~~
+List<Breed> breedsWithRex = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .where(QBreed.breed.dogs.any().name.eq("Rex"))
+  .fetch();
+~~~
+
+This produces SQL with `EXISTS` subquery although the same can be written with `join`
+and `distinct`.
 
 
 ## More
 
-querydsl@googlegroups.com
-http://www.slideshare.net/timowestkamper/querydsl-overview-2014
-Slides about older version 3, but except for the fluent API changes the concept is the same.
-See also chapter with [advanced Querydsl topics](#ch-advanced-querydsl).
+That's it for our first tour around Querydsl. We will see more in the chapter on more [advanced
+features](#ch-advanced-querydsl) (or perhaps just features used less). In the course of this
+chapter there was plenty of links to other resources too -- let's sum it up:
+
+* [Querydsl Reference Guide](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/)
+is the first stop when you want to learn more. It is not the last stop though, as it does not even
+cover all the stuff from this chapter. It still is a useful piece of documentation.
+* Querydsl is also popular enough on [StackOverflow](http://stackoverflow.com/questions/tagged/querydsl)
+with Timo Westkämper himself often answering the questions.
+* Finally there is their [mailing-list](https://groups.google.com/forum/#!forum/querydsl)
+(`querydsl@googlegroups.com`) -- with daily activity where you get what you need.
+
+For an introduction you can also check [this slide
+deck](http://www.slideshare.net/timowestkamper/querydsl-overview-2014) that covers older version 3,
+but except for the fluent API changes the concept is the same.
