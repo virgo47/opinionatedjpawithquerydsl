@@ -753,12 +753,76 @@ It seems `toString()` isn't meaningful enough for EclipseLink.
 
 W> While writing this example I got a really hard time to make it act consistently for both
 W> Hibernate and EclipseLink and, actually, even to make it load those dogs at all. This was caused
-W> by using the same `EntityManager` I used for data preparation. I had to clear (or reopen) the
-W> entity manager and also evict the second-level cache for EclipseLink (Hibernate doesn't use it
-W> out of the box).
+W> by using the same `EntityManager` I used for data preparation (although it was after commit).
+W> I had to clear (or reopen) the entity manager and also evict the second-level cache for
+W> EclipseLink (Hibernate doesn't use it out of the box).
 
-TODO:
-...the problem [we mentioned already](#cant-escape-sql) and we return to it [later](#to-many-paginating).
+We can force the eager fetch when we adjust the mapping:
+
+~~~
+@OneToMany(mappedBy = "breed", fetch = FetchType.EAGER)
+private Set<Dog> dogs;
+~~~
+
+However, while the fetch is eager, EclipseLink still does it with three queries (1+N in general).
+Hibernate uses one query with join. So yes, it is eager, but not necessarily efficient. There is
+a potential problem with paging when using join to *to-many* -- the problem [we mentioned
+already](#cant-escape-sql) and we'll return to it [later](#to-many-paginating). What happens when
+we add `offset` and `limit`?
+
+~~~
+List<Breed> breeds = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .offset(1)
+  .limit(1)
+  .fetch();
+~~~
+
+Because EclipseLink uses separate query for breeds, nothing changes and we get the second result
+(BTW: we forgot to order it!). Hibernate is smart enough to use separate query too, as soon as it
+smells the offset/limit combo. It makes sense, because query says "gimme breeds!" -- although not
+everything in JPA is always free of surprises. In any case, eager collection is not recommended.
+There may be notable exceptions -- maybe some embeddables or other really primitive collections --
+but I'd never risk fetching collection of another entities as it asks for fetching the whole
+database eventually.
+
+What if we write a query that joins breed and dogs ourselves? We assuming no pagination again.
+
+~~~
+List<Breed> breeds = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .join(QBreed.breed.dogs, QDog.dog)
+  .distinct()
+  .fetch();
+breeds.forEach(b ->
+  System.out.println(b.toString() + ": " + b.getDogs()));
+~~~
+
+If you check the logs queries are indeed generated with joins, but it is not enough. EclipseLink
+still prints uninitialized indirect list (and relevant operation would trigger the select),
+Hibernate prints it nicely, but needs additional N selects as well. We need to say what collection
+we want initialized explicitly using `fetchJoin` like so:
+
+{title="Fetch join", lang=java}
+~~~
+List<Breed> breeds = new JPAQuery<>(em)
+  .select(QBreed.breed)
+  .from(QBreed.breed)
+  .join(QBreed.breed.dogs).fetchJoin()
+  .distinct()
+  .fetch();
+~~~
+
+You use `fetchJoin()` just after the `join` with a collection path and in this case you don't
+need to use second parameter with alias, unless you want to use it in `where` or `select`, etc.
+Because we used `join` with *to-many* relations ourselves JPA assumes we want all the results
+(5 with our demo data [defined previously](#querydsl-aggregation)). That's why we also added
+`distinct()` -- this ensures we get only unique results from the `select` clause. But these unique
+results will still have their collections initialized because SQL still returns 5 results and
+JPA "distincts" it in post-process. This means we cannot paginate queries with joins, `distinct`
+or not. This is something we will tackle in a [dedicated section](#to-many-paginating).
 
 
 ## Querydsl and code style

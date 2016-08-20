@@ -21,22 +21,25 @@ public class ToManyFetch {
     try {
       EntityManager em = emf.createEntityManager();
       prepareData(em);
-      em.close();
-      // We need to isolate EMs here, otherwise Breeds don't get their dogs reliably.
 
-      // And for EclipseLink we also need to evict old breeds that don't know their dogs yet.
-      // This would probably be necessary for Hibernate too, if we used some cache with it.
-      emf.getCache().evictAll();
-
-      em = emf.createEntityManager();
-
+      clearEmAndCache(em);
       naiveFetch(em);
+
+      clearEmAndCache(em);
       joinFetch(em);
 
       em.close();
     } finally {
       emf.close();
     }
+  }
+
+  private static void clearEmAndCache(EntityManager em) {
+    // We need to isolate EMs here, otherwise Breeds don't get their dogs reliably.
+    em.clear();
+    // And for EclipseLink we also need to evict old breeds that don't know their dogs yet.
+    // This would probably be necessary for Hibernate too, if we used some cache with it.
+    em.getEntityManagerFactory().getCache().evictAll();
   }
 
   private static void naiveFetch(EntityManager em) {
