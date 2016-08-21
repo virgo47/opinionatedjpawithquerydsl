@@ -1,8 +1,8 @@
 # Bugs discovered while writing this book {#app-bugs}
 
-To demonstrate the dark side of JPA, I'll point to couple of bugs I discovered while writing
-this book (or those that lead to it). With a single ORM you seemingly have no choice to switch,
-but the truth is you always trade some bugs (most of the relevant ones known to you already) for
+To demonstrate the dark side of JPA, I'll point to a couple of bugs I discovered while writing
+this book (or those that lead to it). With a single ORM you have no choice to switch -- with many
+you always trade some bugs (most of the relevant ones known to you already) for
 new bugs. If you have good test coverage, you may be able to make a qualified decision. Otherwise
 you'll find the bugs later and randomly (or your users will).
 
@@ -20,30 +20,32 @@ supported.
 * [Wrong SQL generated for delete with where crossing tables](https://hibernate.atlassian.net/browse/HHH-9711)
 (Hibernate) Open in Apr 2015, but older linked bug was open in May 2012. Works on EclipseLink.
 * [Bad SQL result for method countDistinct with join from criteria API](https://bugs.eclipse.org/bugs/show_bug.cgi?id=317777)
-(EclipseLink) I haven't reported this one, but I commented on it when we encountered it. However,
-this is not a *JPA 2.1* bug as the specification explicitly says: "The use of DISTINCT with COUNT
-is not supported for arguments of embeddable types or map entry types." This is a big blow for
+This got reported for EclipseLink, however, it is not a *JPA 2.1* bug as the specification
+explicitly says: "The use of DISTINCT with COUNT is not supported for arguments of embeddable types
+or map entry types." It is just so unexpected it got reported by someone. This is a big blow for
 many reasons. You either cannot use embeddables, or you cannot count such cases in the query. This
 means you actually have to list it (you can use DISTINCT then) and then check the size of the
 result. This may not be possible for long lists. Finally, while in SQL you can go around this
 using SELECT in FROM clause, JPA does not allow this (yet). (By the way, Hibernate supports this,
-even against explicit "not supported". I'd say it's a violation of JPA specification and may be
-problem when porting to another provider.)
+even against explicit "not supported". I'm not sure whether it is a violation of JPA specification
+but it may become a problem when porting to another provider.)
 * [Stream API gets no results](https://bugs.eclipse.org/bugs/show_bug.cgi?id=433075) (EclipseLink)
 This one is fixed already. It caused that streams based on lazy lists were empty. It was easy to
 work around it -- just stream the copy of the list -- but it was annoying and unexpected. Reason
 for the bug was the fact that `IndirectList` (lazy list implementation) extended from `Vector`,
 (probably some legacy reasons, JPA does not explicitly mentions `Vector` as specially supported
 collection), but ignored invariants of the superclass and its `protected` fields. This shows
-two things -- first, that when you extend something, you should follow through completely, and
-second, that `Vector` was badly designed back in 1995 or so. Oh, and third, prefer delegation
-instead of extension, of course. That way you can often avoid both previous points.
+two things -- first, when you extend something you should follow through completely with its
+contract, and second, `Vector` was badly designed back in 1995 or so. Oh, and third, prefer
+delegation instead of extension, of course. That way you can often avoid both previous pitfalls.
 * [Abstract MappedSuperclass in separate JAR is not weaved statically](https://bugs.eclipse.org/bugs/show_bug.cgi?id=466271)
-(EclipseLink) This relates to modularity and will be fixed in version 2.7. TODO: check
+(EclipseLink) This relates to modularity and may be fixed in version 2.7.
 * [JPQL Case operator is not thread-safe](https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042)
-(EclipseLink) CASE in named queries or with normal queries combined with caching hint cause
-randomly either `ArrayIndexOutOfBoundsException` in EclipseLink stack or `SQLException` because
-the CASE clause is serialized wrongly in the SQL.
+(EclipseLink) `CASE` in queries cause randomly either `ArrayIndexOutOfBoundsException` in
+EclipseLink stack or `SQLException` because the CASE clause is serialized wrongly in the SQL. As
+a concurrency problem it shows very randomly, more likely for bigger/longer queries. No response
+from EclipseLink team so far, so we just synchronize around queries where we absolutely need
+to use `CASE`.
 * [H2 dialect generates FOR UPDATE before LIMIT/OFFSET](https://bugs.eclipse.org/bugs/show_bug.cgi?id=449062)
 (EclipseLink) This one is about particular database vendor SQL support. In H2 you need to say
 `FOR UPDATE` after `LIMIT/OFFSET` combo, but EclipseLink does not respect this syntactic detail.
@@ -65,5 +67,3 @@ if the collection is mapped by a single FK on the entity contained in the collec
 is to explicitly map the association table or using different way to get to the result -- possibly
 more queries, because LEFT JOIN is difficult to rewrite without losing some results. Should work
 according to specification and works fine with Hibernate.
-
-%% JPA spec change to add support for root entities in JOINs: https://java.net/jira/browse/JPA_SPEC-128
