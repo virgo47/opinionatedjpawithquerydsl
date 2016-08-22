@@ -17,6 +17,35 @@ TODO: `Expressions.constant`
 TODO
 
 
+## Update/delete clauses and exception handling
+
+Instead of:
+~~~
+// delete by holidays by calendar ID
+new JPADeleteClause(entityManager, $)
+  .where($.calendarId.eq(calendar.getId()))
+  .execute();
+~~~
+
+We use:
+~~~
+execute(deleteFrom($)
+  .where($.calendarId.eq(calendar.getId())));
+
+// with these methods in common `BaseDao`
+public final JPADeleteClause deleteFrom(EntityPath<?> path) {
+  return new JPADeleteClause(entityManager, path);
+}
+
+protected long execute(DMLClause dmlClause) {
+  try {
+    return dmlClause.execute();
+  } catch (PersistenceException e) {
+    throw convertPersistenceException(e);
+  }
+}
+~~~
+
 ## Detached queries {#querydsl-detached-queries}
 
 While we can create all the queries in methods provided with `EntityManager` parameter, but
