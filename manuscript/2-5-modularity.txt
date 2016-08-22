@@ -1,6 +1,6 @@
 # Modularity, if you must[^modblog] {#ch-modularity}
 
-[^modblog] This chapter is based on (and mostly copies) my blog post:
+[^modblog]: This chapter is based on (and mostly copies) my blog post:
     https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
 
 I'm convinced that people who designed and specified JPA were not aware (or were ignorant) of
