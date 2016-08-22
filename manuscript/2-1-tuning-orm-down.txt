@@ -118,7 +118,7 @@ master Martin Fowler a bit again:
 G> In essence the problem with anemic domain models is that they incur all of the costs of a domain
 G> model, without yielding any of the benefits. The primary cost is the awkwardness of mapping to
 G> a database, which typically results in a whole layer of O/R mapping. This is worthwhile iff you
-G> use the powerful OO techniques to organize complex logic. By pulling all the behavior out into
+G> use the powerful OO techniques to organize complex logic. By pulling all the behaviour out into
 G> services, however, you essentially end up with Transaction Scripts, and thus lose the advantages
 G> that the domain model can bring. As I discussed in P of EAA, Domain Models aren't always the
 G> best tool.

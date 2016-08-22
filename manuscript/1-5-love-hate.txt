@@ -114,11 +114,11 @@ hardly model real-life objects as they act in real life, because in many cases w
 Information systems allow changing data about things that normally cannot change, because someone
 might have entered the information incorrectly in the first place.
 
-How to model the behavior of a tin can? Should it have `open` method? Even in real life *someone*
+How to model the behaviour of a tin can? Should it have `open` method? Even in real life *someone*
 opens the *tin* with a *tin opener* -- an interaction of three objects. Why do we insist on objects
 storing themselves then? It still may be perfectly valid pattern -- as I said real life is not
 always a good answer to our modelling needs -- but it is often overused. While in real-life human
-does it, we often have various *helper* objects for behavior, often ending with *-er*. While I see
+does it, we often have various *helper* objects for behaviour, often ending with *-er*. While I see
 why this is considered anti-pattern, I personally dislike the generalization of rules like
 *objects (classes) ending with -er are evil*. Sure, they let me think -- but *TinOpener* ends with
 "-er" too and it's perfectly valid (even real-life!) object.

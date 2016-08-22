@@ -237,7 +237,7 @@ as an intermediary. We don't need to perform any bytecode voodoo on the entity c
 ### Lazy *to-one* not guaranteed {#lazy-not-guaranteed}
 
 With *to-one* situation changes dramatically as you have no intermediary. It would be interesting
-if JPA at least offered some wrapper to enforce lazy behavior when you really need it regardless
+if JPA at least offered some wrapper to enforce lazy behaviour when you really need it regardless
 of the JPA provider, but that would give away you're using some ORM (like you don't know) and
 even more voices would talk about that "leaking abstraction".
 
@@ -268,7 +268,7 @@ D> being persisted. Both is allowed according to [[JPspec](#bib-jpspec)], sectio
 D> states that "If X is detached object ... `EntityExistsException` or another
 D> `PersistenceException` may be thrown". X here is our ghost representing the relation and
 D> `cascade=PERSIST` (or `ALL`) causes persist on the root entity to recursively persist the ghost.
-D> Damn "may" in specification, although strictly speaking Hibernate behavior seems logical.
+D> Damn "may" in specification, although strictly speaking Hibernate behaviour seems logical.
 
 So the whole trouble with *to-one* is that you rely on out-of-language features (bytecode
 manipulation) for `LAZY` support or suffer potentially very costly cascade of relation loading.
