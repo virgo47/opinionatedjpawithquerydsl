@@ -1,7 +1,7 @@
 # Modularity, if you must[^modblog] {#ch-modularity}
 
 [^modblog]: This chapter is based on (and mostly copies) my blog post:
-    https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
+    https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied
 
 I'm convinced that people who designed and specified JPA were not aware (or were ignorant) of
 modern modularity trends.[^trend] For a long time I'm trying to put things into domain named
@@ -15,7 +15,7 @@ instead of putting everything from one layer in a single JAR.
 Rest assured that if you have all your entities in a single JAR you have no problem altogether.
 If you fancy to split the entities into multiple JARs -- including their definitions in
 `persistence.xml` -- then you're venturing beyond the JPA specification. [JPspec](#bib-jpspec),
-section *8.2 * says:
+section *8.2 Persistence Unit Packaging* says:
 
 {icon=quote-right}
 G> A persistence unit may be packaged within one or more jar files contained within a WAR or EAR,
@@ -41,20 +41,23 @@ W> persistence XMLs ourselves.
 I decided to experiment with modularization of applications after I read *Java Application
 Architecture: Modularity Patterns with Examples Using OSGi* ([JAA](#bib-jaa)).[^jaareviews] After
 that I couldn't sleep that well with typical mega-jars containing all the classes at a particular
-architectural level. Yeah, we modularize but only by levels. That is, we typically have one JAR
-with all entity classes, some call it "domain", some just "jpa-entities" (admitting the [anemic
-domain model](http://www.martinfowler.com/bliki/AnemicDomainModel.html)).
+architectural level. Yeah, we modularize but only by levels.
 
 [^jaareviews]: Amazon reviews of this book mostly settle on 4 stars but there are many lower scores
     for various reasons. Some say it doesn't cover OSGi enough, some that it covers it too much.
     I think it covers it just fine -- which is not too much, as it focuses on the principles of
     modularity in the first place.
 
-And then we have our `@Service` classes in a different JAR -- but all of them in one -- accessing
-entities via DAOs. Complete stack actually starts at the REST-like resource class which uses
-`@Service` which in turns talks to DAOs (marked as `@Repository`, although it's not a repository
-in the proper sense). Complex logic is pushed to specific `@Components` somewhere under the
-service layer. It's not DDD, but at least the dependencies flow nicely from top down.
+I'll use one of the projects from my past as an example. We had one JAR with all entity classes,
+sometimes it was called `domain`, sometimes `jpa-entities` (admitting the [anemic domain
+model](http://www.martinfowler.com/bliki/AnemicDomainModel.html)).
+
+Then we had our `@Service` classes in a different JAR -- but all of them in one -- accessing
+entities via DAOs (or another component on that level that contains queries and other persistence
+related code). Complete stack actually started at the presentation layer which called `@Service`s
+which in turns talked to DAOs (marked as `@Repository`, although they were not repositories
+in the proper sense). Complex logic was pushed to specific `@Components` somewhere under the
+service layer. It was not DDD, but at least the dependencies flowed clearly from the top down.
 
 
 ## Components based on features
