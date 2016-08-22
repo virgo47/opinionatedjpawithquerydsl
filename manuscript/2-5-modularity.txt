@@ -1,62 +1,340 @@
-# Modularity, if you must {#ch-modularity}
+# Modularity, if you must[^modblog] {#ch-modularity}
 
-https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
+[^modblog] This chapter is based on (and mostly copies) my blog post:
+    https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
 
-TODO: can we even do it with pure Java EE? How to merge persistence.xml from all JARs?
-Also see: 8.2 Persistence Unit Packaging in [JPspec], but it does not indicate we can "split"
-persistence.xml across multiple JARs
+I'm convinced that people who designed and specified JPA were not aware (or were ignorant) of
+modern modularity trends.[^trend] For a long time I'm trying to put things into domain named
+packages (sometimes low-level technical domains, as it happens with complex layered software)
+and naturally I started to split big JARs into smaller ones rather across vertical (domain) lines
+instead of putting everything from one layer in a single JAR.
 
-## Splitting JPA persistence unit
+[^trend]: Trends in software are not necessarily always progressive, we all know plenty of useless
+    buzzwords and sometimes what is *en vogue* are not the best ideas available.
 
-TODO: this does not work if in superclass in different module (at least not with EclipseLink's
-static weaving, check different scenarios):
+Rest assured that if you have all your entities in a single JAR you have no problem altogether.
+If you fancy to split the entities into multiple JARs -- including their definitions in
+`persistence.xml` -- then you're venturing beyond the JPA specification. [JPspec](#bib-jpspec),
+section *8.2 * says:
+
+{icon=quote-right}
+G> A persistence unit may be packaged within one or more jar files contained within a WAR or EAR,
+G> as a set of classes within an EJB-JAR file or in the WAR `classes` directory, or as
+G> a combination of these as defined below.
+G>
+G> A persistence unit is defined by a `persistence.xml` file. The jar file or directory whose
+G> `META-INF` directory contains the `persistence.xml` file is termed the *root* of the persistence
+G> unit.
+
+This does not explicitly forbid using multiple `persistence.xml` files but I believe it implies we
+should not do it. It's actually the other way around -- we can have multiple persistence units
+in one XML, that's a piece of cake.
+
+W> Following text and examples utilize [Spring](https://spring.io/) project because we use
+W> `MergingPersistenceUnitManager` from [Spring Data JPA](http://projects.spring.io/spring-data-jpa/).
+W> It is possible to do the same in pure Java EE but we would likely need to implement merging of
+W> persistence XMLs ourselves.
+
+
+## Everybody knows layers
+
+I decided to experiment with modularization of applications after I read *Java Application
+Architecture: Modularity Patterns with Examples Using OSGi* ([JAA](#bib-jaa)).[^jaareviews] After
+that I couldn't sleep that well with typical mega-jars containing all the classes at a particular
+architectural level. Yeah, we modularize but only by levels. That is, we typically have one JAR
+with all entity classes, some call it "domain", some just "jpa-entities" (admitting the [anemic
+domain model](http://www.martinfowler.com/bliki/AnemicDomainModel.html)).
+
+[^jaareviews]: Amazon reviews of this book mostly settle on 4 stars but there are many lower scores
+    for various reasons. Some say it doesn't cover OSGi enough, some that it covers it too much.
+    I think it covers it just fine -- which is not too much, as it focuses on the principles of
+    modularity in the first place.
+
+And then we have our `@Service` classes in a different JAR -- but all of them in one -- accessing
+entities via DAOs. Complete stack actually starts at the REST-like resource class which uses
+`@Service` which in turns talks to DAOs (marked as `@Repository`, although it's not a repository
+in the proper sense). Complex logic is pushed to specific `@Components` somewhere under the
+service layer. It's not DDD, but at least the dependencies flow nicely from top down.
+
+
+## Components based on features
+
+But how about dependencies between parts of the system at the same level? When we have a lot of
+entity classes, some are pure business (Clients, their Transactions, financial Instruments), some
+are rather infrastructural (meta model, localization, audit trail). Why can't these be separated?
+Most of the stuff depends on meta model, localization is quite independent in our case, audit trail
+needs meta model and permission module (containing Users)... It all clicks when one thinks about
+it -- and it is more or less in line with modularity based on features, not on technology or
+layers. Sure we can still use layer separation and have `permission-persistence` and
+`permission-service` as well.
+
+Actually, this is quite repeating question: Should we [base packages by features or by
+layer/technology/pattern](http://stackoverflow.com/q/6260302/658826)? It seems that the consensus
+was reached -- start by feature -- which can be part of your business domain. If stuff gets big
+you can split them into layers too.
+
+
+## Multiple JARs with JPA entities
+
+So we carefully try to put different entity classes into different JAR modules. Sure, we can just
+repackage them in the same JAR and check how tangled they are with Sonar but it is recommended to
+enforce the separation and to make dependencies explicit (not only in the [JAA](#bib-jaa) book).
+My experience confirms it quite clearly -- contracts of any kind must be enforced.
+
+And here comes the problem when your persistence is based on JPA. Because JPA clearly wasn't
+designed to have a single persistence unit across multiple `persistence.xml` files. So what are
+these problems actually?
+
+1. How to distribute `persistence.xml` across these JARs? Do we even have to?
+2. What classes need to be mentioned where? E.g., we need to mention classes from upstream JARs
+in `persistence.xml` if they are used in relations (breaks the DRY principle).
+3. When we have multiple `persistence.xml` files, how to merge them in our persistence unit
+configuration?
+4. What about configuration in persistence XML? What properties are used from what file?
+(Little spoiler, we just don't know reliably!) Where to put them so we don't have to repeat
+ourselves again?
+5. How to use EclipseLink static weaving for all these modules? How about a module with only
+abstract mapped superclass (some `dao-common` module)?
+
+That's quite a lot of problems for an age when modularity is so often mentioned, too many for
+a technology that comes from an "enterprise" stack. And they are mostly phrased as questions --
+because the answers are not readily available.
+
+
+## Distributing `persistence.xml` -- do we need it?
+
+This one is difficult and may depend on the provider you use and the way you use it. We use
+EclipseLink and its static weaving. This requires `persistence.xml`. Sure we may try keep it
+together in some neutral module (or any path, as it can be configured for weaving plugin), but
+it goes against the modularity quest. What options do we have?
+
+* We can create some union `persistence.xml` in a module that depends on all needed JARs. This
+would be OK if we had just one such module -- typically some downstream module like WAR or runnable
+JAR. But we have many. If we made `persistence.xml` for each they would contain a lot of
+repetition. And we'd reference downstream resource which is unacceptable.
+* We can have dummy upstream module or out of module path with union `persistence.xml`. This would
+keep things simple, but it would be more difficult to develop modules independently, maybe even
+with different teams.
+* Keep `persistence.xml` in the JAR with related classes. This seems best from the modularity point
+of view, but it means we need to merge multiple `persistence.xml` files when the persistence
+unit starts.
+* Or can we have different persistence unit for each `persistence.xml`? This is OK, if they truly
+are in different databases (different JDBC URL), otherwise it doesn't make sense. In our case we
+have rich DB and any module can see the part it is interested in -- that is entities from the JARs
+it has on the classpath. If you have data in different databases already, you're probably sporting
+microservices anyway.
+
+We went for third option -- especially because EclipseLink's weaving plugin likes it and we didn't
+want to redirect to non-standard path to `persistence.xml` -- but it also seems to be the right
+logical way. However, there is nothing like dependency between `persistence.xml` files. So if we
+have `b.jar` that uses `a.jar`, and there is entity class `B` in `b.jar` that contains `@ManyToOne`
+to `A` entity from `a.jar`, we have to mention `A` class in `persistence.xml` in `b.jar`. Yes,
+the class is already mentioned in `a.jar`, of course. Here, clearly, engineers of JPA didn't even
+think about possibility of using multiple JARs in a really modular way.
+
+In any case -- this works, compiles, weaves our classes during build -- and more or less answers
+questions 1 and 2 from our problem list.
+
+
+## It doesn't start anyway
+
+When we have a single `persistence.xml` it will get found as a unique resource, typically in
+`META-INF/persistence.xml` -- in any JAR actually (the one JPA refers to as "the *root* of
+persistence unit"). But when we have more of them they don't get all picked and merged magically
+-- and the application fails during startup. We need to merge all those `persistence.xml` files
+during the initialization of our persistence unit. Now we're tackling questions 3 and 4 at once,
+for they are linked.
+
+To merge all the configuration XMLs into one unit we can use this configuration for
+`PersistenceUnitManger` in Spring (clearly, using `MergingPersistenceUnitManager` is the key):
 
 ~~~
-@Id
-@Column(name = "id")
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private Integer id;
+@Bean
+public PersistenceUnitManager persistenceUnitManager(DataSource dataSource) {
+  MergingPersistenceUnitManager persistenceUnitManager =
+    new MergingPersistenceUnitManager();
+  persistenceUnitManager.setDefaultDataSource(dataSource);
+  persistenceUnitManager.setDefaultPersistenceUnitName("you-choose");
+  // default persistence.xml location is OK, goes through all classpath*
+  return persistenceUnitManager;
+}
 ~~~
 
-Thrown exception:
+But before I unveil the whole configuration we should talk about the configuration that was in
+the original singleton `persistence.xml` -- which looked something like this:
 
 ~~~
-org.eclipse.persistence.exceptions.ValidationException:
-Exception Description: Null or zero primary key encountered in UnitOfWork clone
-  [entity.toString result here], primary key [null]. Set descriptor's IdValidation or the
-  "eclipselink.id-validation" property.
+<exclude-unlisted-classes>true</exclude-unlisted-classes>
+<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+<properties>
+  <property name="eclipselink.weaving" value="static"/>
+  <property name="eclipselink.allow-zero-id" value="true"/>
+  <!--
+  Without this there were other corner cases when field change was ignored.
+  This can be worked-around calling setter, but that sucks.
+  -->
+  <property name="eclipselink.weaving.changetracking" value="false"/>
+</properties>
 ~~~
+
+The biggest question here is: What is used during build (e.g. by static weaving) and what can be
+put into runtime configuration somewhere else? Why somewhere else? Because we don't want to repeat
+these properties in all XMLs.
+
+But before finishing the programmatic configuration we should take a little detour to
+`shared-cache-mode` that displays the problem with merging `persistence.xml` files in the most
+bizarre way.
+
+
+## Shared cache mode
+
+We wanted to enable cached entities selectively (to ensure that `@Cacheable` annotations have any
+effect). But I made a big mistake when I created another `persistence.xml` file -- I forgot to
+mention `shared-cache-mode` there. My persistence unit picked both XMLs (using
+`MergingPersistenceUnitManager`) but my caching went completely nuts. It cached more than expected
+and I was totally confused. The trouble here is -- `persistence.xml` don't get really merged.
+The lists of classes in them do, but the configurations do not. Somehow my second persistence XML
+became dominant (one always does!) and because there was no `shared-cache-mode` specified, it
+used defaults -- which is anything EclipseLink thinks is the best. No blame there, just another
+manifestation that JPA people didn't even think about this setup scenarios.
+
+If you really want to get some hard evidence how things are in your setup put a breakpoint
+anywhere you can reach your configured `EntityManagerFactory` and when it stops there dig deeper
+to find what your cache mode is. Or anything else -- you can check the list of known entity
+classes, JPA properties, anything really. And it's much faster than guessing.
+
+![Debugging JPA EntityManagerFactory setup](images/jpa-emf-debugged.png)
+
+In the picture above we can see that now I can be sure what shared cache mode I use. We can also
+see which XML file was used to determine it -- in our case it came from `meta-model` module (JAR)
+so this one would dominate. Luckily, I don't rely on this anymore, not for runtime configuration
+at least.
+
+
+## Putting the Spring configuration together
+
+Now we're ready to wrap up our configuration and move some of repeated configuration snippets from
+`persistence.xml` into Spring configuration -- here we will use Java-based configuration (XML works
+too, of course).
+
+Most of our properties were related to EclipseLink. I read their weaving manual, but I still didn't
+understand what works when and how. I had to debug some of the stuff to be really sure.
+
+It seems that `eclipselink.weaving` is the crucial property namespace, that should stay in our
+`persistence.xml`, because it gets used by the plugin performing the static weaving. I debugged
+Maven build and the plugin definitely uses `eclipselink.weaving.changetracking` property value
+(we set it to `false` which is not default). Funny enough, it doesn't need `eclipselink.weaving`
+itself because running the plugin implies we wish for static weaving. During startup it gets
+picked though, so EclipseLink knows it can treat classes as statically weaved -- which means it
+can be pushed into programmatic configuration too.
+
+The rest of the properties (and shared cache mode) are clearly used at the startup time. Spring
+configuration may then look like this:
+
+~~~
+@Bean public DataSource dataSource(...) { /* as usual */ }
+
+@Bean
+public JpaVendorAdapter jpaVendorAdapter() {
+  EclipseLinkJpaVendorAdapter jpaVendorAdapter = new EclipseLinkJpaVendorAdapter();
+  jpaVendorAdapter.setShowSql(true);
+  jpaVendorAdapter.setDatabase(
+    Database.valueOf(env.getProperty("jpa.dbPlatform", "SQL_SERVER")));
+  return jpaVendorAdapter;
+}
+
+@Bean
+public PersistenceUnitManager persistenceUnitManager(DataSource dataSource) {
+  MergingPersistenceUnitManager persistenceUnitManager =
+    new MergingPersistenceUnitManager();
+  persistenceUnitManager.setDefaultDataSource(dataSource);
+  persistenceUnitManager.setDefaultPersistenceUnitName("you-choose");
+  persistenceUnitManager.setSharedCacheMode(
+    SharedCacheMode.ENABLE_SELECTIVE);
+  // default persistence.xml location is OK, goes through all classpath*
+
+  return persistenceUnitManager;
+}
+
+@Bean
+public FactoryBean<EntityManagerFactory> entityManagerFactory(
+  PersistenceUnitManager persistenceUnitManager, JpaVendorAdapter jpaVendorAdapter)
+{
+  LocalContainerEntityManagerFactoryBean emfFactoryBean =
+    new LocalContainerEntityManagerFactoryBean();
+  emfFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
+  emfFactoryBean.setPersistenceUnitManager(persistenceUnitManager);
+
+  Properties jpaProperties = new Properties();
+  jpaProperties.setProperty("eclipselink.weaving", "static");
+  jpaProperties.setProperty("eclipselink.allow-zero-id",
+    env.getProperty("eclipselink.allow-zero-id", "true"));
+  jpaProperties.setProperty("eclipselink.logging.parameters",
+    env.getProperty("eclipselink.logging.parameters", "true"));
+  emfFactoryBean.setJpaProperties(jpaProperties);
+  return emfFactoryBean;
+}
+~~~
+
+Clearly, we can set the database platform, shared cache mode and all runtime relevant properties
+programmatically -- and we can do it just once. This is not a problem for a single
+`persistence.xml`, but in any case it offers better control. We can now use Spring's
+`@Autowired private Environment env;` and override whatever we want with property files or even
+`-D` JVM arguments -- and still fallback to default values -- just as we do for database property
+of the `JpaVendorAdapter`. Or we can use [SpEL](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html).
+This is flexibility `persistence.xml` simply cannot provide.
+
+And of course, all the things mentioned in the configuration can now be removed from all our
+`persistence.xml` files.
+
+I'd love to get rid of `eclipselink.weaving.changetracking` in the XML too, but I don't see any way
+how to provide this as the Maven plugin configuration option, which we have neatly unified in our
+parent POM. That would also eliminate some repeating.
+
+
+## Common base entity classes in separate JAR
+
+This one (question 5 from our list) is no problem after all the previous, just a nuisance.
+EclipseLink refuses to weave our base class regardless of `@MappedSuperclass` usage. But as
+mentioned in [one SO question/answer](http://stackoverflow.com/q/13392986/658826), just add dummy
+concrete `@Entity` class and we are done. We never use it, it is no problem at all. And we can
+[vote for this bug](https://bugs.eclipse.org/bugs/show_bug.cgi?id=466271).
+
+This may be no-problem for load-time weaving or for Hibernate, but I haven't tried that so I can't
+claim it reliably.
+
 
 ## Cutting cyclic dependencies
 
-Imagine you have two modules -- `users` and `permissions` -- where `permissions` built upon the
+Imagine we have two modules -- `users` and `permissions` -- where `permissions` depends on the
 `users` module. Module `users` contains `User` and `Role` entity while `permission` module contains
-`Permissions` and `RolePermissions` association that is mapped explicitly because it contains some
+`Permission` and `RolePermission` association that is mapped explicitly because it contains some
 additional information. See the following picture:
 
-TODO picture
+![Modules `users` and `permissions`](images/modularity-deps-1.png)
 
-Obviously, `Role` cannot depend on `RolePermissions` because that would cross module boundaries
-in a wrong direction. When the `Role` is deleted we also want to remove all related
-`RolePermissions` (but not `Permissions`, of course). Imagine we have `RoleDao` and
+Obviously, `Role` cannot depend on `RolePermission` because that would cross module boundaries
+in a wrong direction. But when the `Role` is deleted we also want to remove all related
+`RolePermission` (but not `Permission`, of course). Imagine we have `RoleDao` and
 `RolePermissionDao` and both these are derived from some [layer supertype](http://martinfowler.com/eaaCatalog/layerSupertype.html)
 named `BaseDao`. This handy class implements all common functionality, including `delete(...)`
 method that in the process calls common `preDelete(entity)` method. For convenience this is
 already pre-implemented, but does nothing.
 
-Now our `RoleDao` cannot contain this implementation:
+Were all the classes in a single module our `RoleDao` could contain this implementation:
 
 ~~~
 @Override
 protected void preDelete(Role entity) {
   QRolePermission rp = QRolePermission.rolePermission;
-  execute(deleteFrom(rp)
-    .where(rp.roleId.eq(entity.getId())));
+  new JPADeleteClause(entityManager, rp)
+    .where(rp.roleId.eq(entity.getId()))
+    .execute();
 }
 ~~~
 
-It's not possible because `QRolePermission` (just like `RolePermission`) is not available in the
-`users` module.
+With separate modules it's not possible because `QRolePermission` (just like `RolePermission`)
+is not available in the `users` module.
 
 Sure, we can argue whether we have the entities split into modules properly -- for instance, is
 `Role` really a concept belonging to `User` without considering permissions? However after moving
@@ -77,7 +355,7 @@ but not about "roled users" although this line of thinking is often deceiving.
 
 TODO picture for both ways how to split modules above these the tables?
 
-Long story short, we decided where the boundary is and we have our `RolePermissions` in the
+Long story short, we decided where the boundary is and we have our `RolePermission` in the
 downstream module pointing to `Role` entity in the upstream one. We wanted to map it explicitly
 anyway, good for us because you'd probably have to give up `@ManyToMany` using association table
 that is not mapped to entity if the relation crosses modules for reasons mentioned above.
@@ -90,3 +368,28 @@ the code does, but calls it anyway. This pattern will be implemented by `BaseDao
 generally available.
 
 TODO example?
+
+
+## Conclusion
+
+* JPA clearly wasn't designed with modularity in mind -- especially not when modules form a single
+persistence unit, which is perfectly legitimate usage.
+* It is possible to distribute persistence classes into multiple JARs, and then:
+    * We can go either with a single union `persistence.xml`, which can be downstream or upstream
+    -- this depends if we need it only in runtime or during build too.
+    * I believe it is more proper to pack partial `persistence.xml` into each JAR, especially if
+    we need it during build. Unfortunately, there is no escape from repeating some upstream
+    classes in the module again just because they are referenced in relations (typical culprit
+    when we get into state of "I don't understand how this is not entity, when it clearly is!").
+* If we have multiple `persistence.xml` files, it is possible to merge them using Spring's
+`MergingPersistenceUnitManager`. I don't know if we can use it for non-Spring applications, but
+I saw this idea reimplemented and it wasn't that hard. (If I had to reimplement it, I'd try to
+merge the configuration part too!)
+* When we are merging `persistence.xml` files it is recommended to minimize configuration in them
+so it doesn't have to be repeated. E.g., for Eclipselink we leave only stuff necessary for
+built-time static weaving, the rest is set programmatically in our Spring `@Configuration` class.
+
+There are still some open questions but I think they lead nowhere. Can I use multiple persistence
+units with a single data source? This way I can have each `persistence.xml` as a separate unit.
+But I doubt relationships would work across these and the same goes for transactions (without XA
+that is).

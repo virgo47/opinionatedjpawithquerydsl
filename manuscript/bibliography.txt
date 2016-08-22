@@ -10,6 +10,10 @@
 %%[HPJP] Vlad Mihalcea. *High Performance Java Persistence*, Leanpub, 2016 (in-progress).
 %%https://leanpub.com/high-performance-java-persistence
 
+{#bib-jaa}
+[JAA] Kirk Knoernschild. *Java Application Architecture: Modularity Patterns with Examples Using
+OSGi*, Prentice Hall, 2012.
+
 {#bib-jpspec}
 [JPspec] Java Persistence 2.1 Expert Group. *JSR 338: JavaTM Persistence API, Version 2.1*, Oracle,
 2013. http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html
