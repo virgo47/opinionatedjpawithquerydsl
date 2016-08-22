@@ -354,10 +354,10 @@ It is used by upper layers of the module so maybe we should split the modules li
 This allows us `users` module to depend on `permissions` (entity part) and bring `RolePermission`
 where it really belongs.
 
-Let's focus on `User` and `Role` *many-to-many* relationship and various ways how it can cross
-module boundary -- for that we split these into modules `users` and `roles`.
+Now let's focus only on the `User` and `Role` *many-to-many* relationship and various ways how it
+can cross module boundary -- for that we split these into modules `users` and `roles`.
 
-![Modules `users` and `roles`. Unidirectional `@ManyToMany` is OK here.](images/modularity-deps-2.png)
+![Modules `users` and `roles`. Unidirectional `@ManyToMany` follows the dependency.](images/modularity-deps-2.png)
 
 In this particular case it is probably acceptable as the `User` is a natural owner of the
 information about its roles and `Role` doesn't necessarily need the list of users in it. It gets
@@ -367,29 +367,26 @@ additional attributes on that association.
 ![Modules `users` and `roles`, explicit `UserRole` in `users`.](images/modularity-deps-3.png)
 
 Notice that database relational design limitations dictating where to put the foreign key
-are actually quite useful to decide which way the dependency goes. In case of `User` and `Role`
-we may split them between various modules and then the module knowing about `UserRole` (or
-`RoleUser`) table is the one that depends on the other one. We don't choose randomly, of course.
-I don't see the logic of roles being separate concept -- often we talk about "user roles" after
-all and much less about "role's users".
+are actually quite useful to decide which way the dependency goes. The module knowing about
+`UserRole` (or `RoleUser`?) table is the one that depends on the other one. If it wasn't that way
+we would get invalid case with cyclic dependency like this:
 
 ![Modules `users` and `roles`, explicit `UserRole` in `roles` forms a cycle.](images/modularity-deps-4.png)
 
-Last picture shows invalid case -- we either need to reverse the dependency on the module or split
-one module (probably `roles`) into two like shown previously.
+We either need to reverse the dependency on the module or split one module (probably `roles`) into
+two like shown previously with `permissions`.
 
 In any of these cases we have a problem when we delete the "blind" side of the relationship. In
 the pictures of valid cases it was the `Role` entity. Deletion of a `Role` somehow needs to signal
 to the `users` module that it needs to remove relationship too. We can get away with it applying
 the [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern) that allows to register an
-arbitrary callback with a DAO. This way `RolePermissionDao` can register code (pretty much the one
-in the previous `preDelete` listing) with `RoleDao` that doesn't know what the code does, but calls
-it anyway when the `Role` is deleted. This pattern will be implemented by `BaseDao` to make it
-generally available.
+arbitrary callback with a DAO.
 
-Following example demonstrates how it can use when explicit `UserRole` is used:
+This pattern will be implemented by `BaseDao` to make it generally available. The following example
+demonstrates how it can be used when explicit `UserRole` entity is used:
 
 ~~~
+// in some dao-base module
 public abstract class BaseDao<T> ... {
   private List<PreDeleteHook<T>> preDeleteHooks = new ArrayList<>();
 
@@ -409,10 +406,11 @@ public abstract class BaseDao<T> ... {
   ...
 }
 
+// in users module
 public class UserRoleDao extends BaseDao<UserRole> {
 	public static final QUserRole $ = QUserRole.userRole;
 
-  @Autowired RoleDao roleDao;
+  @Autowired RoleDao roleDao; // from downstream roles module, OK
 
   @PostConstruct public void init() {
     roleDao.addPreDeleteHook(this::deleteByRole);
