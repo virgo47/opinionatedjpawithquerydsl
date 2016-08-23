@@ -1,19 +1,19 @@
 # Modularity, if you must[^modblog] {#ch-modularity}
 
-[^modblog]: This chapter is based on (and mostly copies) my blog post:
+[^modblog]: This chapter is based on my blog post:
     https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied
 
 I'm convinced that people who designed and specified JPA were not aware (or were ignorant) of
-modern modularity trends.[^trend] For a long time I'm trying to put things into domain named
+modern modularity trends.[^trend] For a long time I've been trying to put things into domain named
 packages (sometimes low-level technical domains, as it happens with complex layered software)
-and naturally I started to split big JARs into smaller ones rather across vertical (domain) lines
-instead of putting everything from one layer in a single JAR.
+and as a next step I naturally started to split big JARs into smaller ones rather across vertical
+(domain) lines instead of putting everything from one layer in a single JAR.
 
 [^trend]: Trends in software are not necessarily always progressive, we all know plenty of useless
     buzzwords and sometimes what is *en vogue* are not the best ideas available.
 
-Rest assured that if you have all your entities in a single JAR you have no problem altogether.
-If you fancy to split the entities into multiple JARs -- including their definitions in
+If you have all your entities in a single JAR you have no problem altogether. But if you fancy to
+split the entities into multiple JARs -- including their definitions in
 `persistence.xml` -- then you're venturing beyond the JPA specification. [JPspec](#bib-jpspec),
 section *8.2 Persistence Unit Packaging* says:
 
@@ -30,7 +30,7 @@ This does not explicitly forbid using multiple `persistence.xml` files but I bel
 should not do it. It's actually the other way around -- we can have multiple persistence units
 in one XML, that's a piece of cake.
 
-W> Following text and examples utilize [Spring](https://spring.io/) project because we use
+W> The following text and examples utilize [Spring](https://spring.io/) project because we use
 W> `MergingPersistenceUnitManager` from [Spring Data JPA](http://projects.spring.io/spring-data-jpa/).
 W> It is possible to do the same in pure Java EE but we would likely need to implement merging of
 W> persistence XMLs ourselves.
@@ -38,26 +38,24 @@ W> persistence XMLs ourselves.
 
 ## Everybody knows layers
 
-I decided to experiment with modularization of applications after I read *Java Application
-Architecture: Modularity Patterns with Examples Using OSGi* ([JAA](#bib-jaa)).[^jaareviews] After
-that I couldn't sleep that well with typical mega-jars containing all the classes at a particular
+I decided to experiment with modularization of applications after I had read *Java Application
+Architecture: Modularity Patterns with Examples Using OSGi* [[JAA](#bib-jaa)].[^jaareviews] After
+that I couldn't sleep that well with typical mega-JARs containing all the classes at a particular
 architectural level. Yeah, we modularize but only by levels.
 
 [^jaareviews]: Amazon reviews of this book mostly settle on 4 stars but there are many lower scores
     for various reasons. Some say it doesn't cover OSGi enough, some that it covers it too much.
-    I think it covers it just fine -- which is not too much, as it focuses on the principles of
-    modularity in the first place.
+    I think it covers it just fine -- not too much, mostly for examples, as it focuses on the
+    principles of modularity in the first place.
 
 I'll use one of the projects from my past as an example. We had one JAR with all entity classes,
 sometimes it was called `domain`, sometimes `jpa-entities` (admitting the [anemic domain
 model](http://www.martinfowler.com/bliki/AnemicDomainModel.html)).
 
 Then we had our `@Service` classes in a different JAR -- but all of them in one -- accessing
-entities via DAOs (or another component on that level that contains queries and other persistence
-related code). Complete stack actually started at the presentation layer which called `@Service`s
-which in turns talked to DAOs (marked as `@Repository`, although they were not repositories
-in the proper sense). Complex logic was pushed to specific `@Components` somewhere under the
-service layer. It was not DDD, but at least the dependencies flowed clearly from the top down.
+entities via DAOs. Service layer was used by a presentation layer. Complex logic was pushed to
+specific `@Components` somewhere under the service layer. It was not domain-driven but it made
+sense for us and the dependencies flowed clearly from the top down.
 
 
 ## Components based on features
@@ -66,22 +64,22 @@ But how about dependencies between parts of the system at the same level? When w
 entity classes, some are pure business (Clients, their Transactions, financial Instruments), some
 are rather infrastructural (meta model, localization, audit trail). Why can't these be separated?
 Most of the stuff depends on meta model, localization is quite independent in our case, audit trail
-needs meta model and permission module (containing Users)... It all clicks when one thinks about
+needs meta model and permission module. It all clicks when one thinks about
 it -- and it is more or less in line with modularity based on features, not on technology or
 layers. Sure we can still use layer separation and have `permission-persistence` and
-`permission-service` as well.
+`permission-service` as well (later we will see an example where it makes a lot of sense).
 
-Actually, this is quite repeating question: Should we [base packages by features or by
+Actually, this is quite a repeating question: [Should we base packages by features or by
 layer/technology/pattern](http://stackoverflow.com/q/6260302/658826)? It seems that the consensus
 was reached -- start by feature -- which can be part of your business domain. If stuff gets big
-you can split them into layers too.
+you can split them into layers too, unless you find even more suitable sub-domains.
 
 
 ## Multiple JARs with JPA entities
 
 So we carefully try to put different entity classes into different JAR modules. Sure, we can just
 repackage them in the same JAR and check how tangled they are with Sonar but it is recommended to
-enforce the separation and to make dependencies explicit (not only in the [JAA](#bib-jaa) book).
+enforce the separation and to make dependencies explicit (not only in the [[JAA](#bib-jaa)] book).
 My experience confirms it quite clearly -- contracts of any kind must be enforced.
 
 And here comes the problem when your persistence is based on JPA. Because JPA clearly wasn't
@@ -89,11 +87,11 @@ designed to have a single persistence unit across multiple `persistence.xml` fil
 these problems actually?
 
 1. How to distribute `persistence.xml` across these JARs? Do we even have to?
-2. What classes need to be mentioned where? E.g., we need to mention classes from upstream JARs
-in `persistence.xml` if they are used in relations (breaks the DRY principle).
+2. What classes need to be mentioned where? E.g., we need to mention classes from an upstream JARs
+in `persistence.xml` if they are used in relations (which breaks the DRY principle).
 3. When we have multiple `persistence.xml` files, how to merge them in our persistence unit
 configuration?
-4. What about configuration in persistence XML? What properties are used from what file?
+4. What about the configuration in `persistence.xml`? What properties are used from what file?
 (Little spoiler, we just don't know reliably!) Where to put them so we don't have to repeat
 ourselves again?
 5. How to use EclipseLink static weaving for all these modules? How about a module with only
@@ -109,7 +107,7 @@ because the answers are not readily available.
 This one is difficult and may depend on the provider you use and the way you use it. We use
 EclipseLink and its static weaving. This requires `persistence.xml`. Sure we may try keep it
 together in some neutral module (or any path, as it can be configured for weaving plugin), but
-it goes against the modularity quest. What options do we have?
+that goes against the modularity quest. What options do we have?
 
 * We can create some union `persistence.xml` in a module that depends on all needed JARs. This
 would be OK if we had just one such module -- typically some downstream module like WAR or runnable
@@ -127,13 +125,13 @@ have rich DB and any module can see the part it is interested in -- that is enti
 it has on the classpath. If you have data in different databases already, you're probably sporting
 microservices anyway.
 
-We went for third option -- especially because EclipseLink's weaving plugin likes it and we didn't
-want to redirect to non-standard path to `persistence.xml` -- but it also seems to be the right
-logical way. However, there is nothing like dependency between `persistence.xml` files. So if we
-have `b.jar` that uses `a.jar`, and there is entity class `B` in `b.jar` that contains `@ManyToOne`
-to `A` entity from `a.jar`, we have to mention `A` class in `persistence.xml` in `b.jar`. Yes,
-the class is already mentioned in `a.jar`, of course. Here, clearly, engineers of JPA didn't even
-think about possibility of using multiple JARs in a really modular way.
+We went for the third option -- especially because EclipseLink's weaving plugin likes it and we
+didn't want to redirect to non-standard path to `persistence.xml` -- but it also seems to be the
+right logical way. However, there is nothing like dependency between `persistence.xml` files. So if
+we have `b.jar` that uses `a.jar`, and there is entity class `B` in `b.jar` that contains
+`@ManyToOne` to `A` entity from `a.jar`, we have to mention `A` class in `persistence.xml` in
+`b.jar`. Yes, the class is already mentioned in `a.jar`, of course. Again, clearly, engineers of
+JPA didn't even think about possibility of using multiple JARs in a really modular way.
 
 In any case -- this works, compiles, weaves our classes during build -- and more or less answers
 questions 1 and 2 from our problem list.
@@ -149,7 +147,7 @@ during the initialization of our persistence unit. Now we're tackling questions 
 for they are linked.
 
 To merge all the configuration XMLs into one unit we can use this configuration for
-`PersistenceUnitManger` in Spring (clearly, using `MergingPersistenceUnitManager` is the key):
+`PersistenceUnitManger` in Spring (using `MergingPersistenceUnitManager` is the key):
 
 ~~~
 @Bean
@@ -163,7 +161,7 @@ public PersistenceUnitManager persistenceUnitManager(DataSource dataSource) {
 }
 ~~~
 
-But before I unveil the whole configuration we should talk about the configuration that was in
+Before I unveil the whole configuration we should talk about the configuration that was in
 the original singleton `persistence.xml` -- which looked something like this:
 
 ~~~
@@ -184,9 +182,8 @@ The biggest question here is: What is used during build (e.g. by static weaving)
 put into runtime configuration somewhere else? Why somewhere else? Because we don't want to repeat
 these properties in all XMLs.
 
-But before finishing the programmatic configuration we should take a little detour to
-`shared-cache-mode` that displays the problem with merging `persistence.xml` files in the most
-bizarre way.
+Now we will take a little detour to `shared-cache-mode` that displays the problem with merging
+`persistence.xml` files in the most bizarre way.
 
 
 ## Shared cache mode
@@ -208,10 +205,18 @@ classes, JPA properties, anything really. And it's much faster than guessing.
 
 ![Debugging JPA EntityManagerFactory setup](images/jpa-emf-debugged.png)
 
-In the picture above we can see that now I can be sure what shared cache mode I use. We can also
-see which XML file was used to determine it -- in our case it came from `meta-model` module (JAR)
-so this one would dominate. Luckily, I don't rely on this anymore, not for runtime configuration
-at least.
+In the picture above we can see the following:
+
+1. We're using Springs `MergingPersistenceUnitManager`.
+2. Persistence unit name is as expected.
+3. This is the path of "the *root* of the persistence unit". It's a directory here, but it would
+be a JAR in production.
+4. Our managed classes (collapsed here).
+5. Shared cache mode is set to `ENABLE_SELECTIVE` -- as required.
+6. Other cofigured properties.
+
+Luckily, we don't rely on the `persistence.xml` root anymore, at least not for runtime
+configuration.
 
 
 ## Putting the Spring configuration together
@@ -220,16 +225,16 @@ Now we're ready to wrap up our configuration and move some of repeated configura
 `persistence.xml` into Spring configuration -- here we will use Java-based configuration (XML works
 too, of course).
 
-Most of our properties were related to EclipseLink. I read their weaving manual, but I still didn't
-understand what works when and how. I had to debug some of the stuff to be really sure.
+Most of our properties were related to EclipseLink. I had read their weaving manual, but I still
+didn't understand what works when and how. I had to debug some of the stuff to be really sure.
 
 It seems that `eclipselink.weaving` is the crucial property namespace, that should stay in our
 `persistence.xml`, because it gets used by the plugin performing the static weaving. I debugged
-Maven build and the plugin definitely uses `eclipselink.weaving.changetracking` property value
+Maven build and the plugin definitely uses property `eclipselink.weaving.changetracking`
 (we set it to `false` which is not default). Funny enough, it doesn't need `eclipselink.weaving`
 itself because running the plugin implies we wish for static weaving. During startup it gets
-picked though, so EclipseLink knows it can treat classes as statically weaved -- which means it
-can be pushed into programmatic configuration too.
+picked though, so EclipseLink knows it can treat classes as statically weaved. This means it
+can be pushed into programmatic configuration.
 
 The rest of the properties (and shared cache mode) are clearly used at the startup time. Spring
 configuration may then look like this:
@@ -280,12 +285,12 @@ public FactoryBean<EntityManagerFactory> entityManagerFactory(
 ~~~
 
 Clearly, we can set the database platform, shared cache mode and all runtime relevant properties
-programmatically -- and we can do it just once. This is not a problem for a single
+programmatically -- and we can do it at a single place. This is not a problem for a single
 `persistence.xml`, but in any case it offers better control. We can now use Spring's
 `@Autowired private Environment env;` and override whatever we want with property files or even
 `-D` JVM arguments -- and still fallback to default values -- just as we do for database property
 of the `JpaVendorAdapter`. Or we can use [SpEL](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html).
-This is flexibility `persistence.xml` simply cannot provide.
+This is the flexibility that `persistence.xml` simply cannot provide.
 
 And of course, all the things mentioned in the configuration can now be removed from all our
 `persistence.xml` files.
@@ -297,13 +302,13 @@ parent POM. That would also eliminate some repeating.
 
 ## Common base entity classes in separate JAR
 
-This one (question 5 from our list) is no problem after all the previous, just a nuisance.
+The question 5 from our problem list is no problem after all the previous, just a nuisance.
 EclipseLink refuses to weave our base class regardless of `@MappedSuperclass` usage. But as
 mentioned in [one SO question/answer](http://stackoverflow.com/q/13392986/658826), just add dummy
-concrete `@Entity` class and we are done. We never use it, it is no problem at all. And we can
+concrete `@Entity` class and we are done. You'll never use it, it is no problem at all. And you can
 [vote for this bug](https://bugs.eclipse.org/bugs/show_bug.cgi?id=466271).
 
-This may be no-problem for load-time weaving or for Hibernate, but I haven't tried that so I can't
+This may be no issue for load-time weaving or for Hibernate, but I haven't tried that so I can't
 claim it reliably.
 
 
@@ -324,7 +329,7 @@ named `BaseDao`. This handy class implements all common functionality, including
 method that in the process calls common `preDelete(entity)` method. For convenience this is
 already pre-implemented, but does nothing.
 
-Were all the classes in a single module our `RoleDao` could contain this implementation:
+Were all the classes in a single module our `RoleDao` could contain this:
 
 ~~~
 @Override
@@ -351,39 +356,44 @@ It is used by upper layers of the module so maybe we should split the modules li
 
 ![Reversing `users` and `permissions` dependency with introducing another module.](images/modularity-deps-1b.png)
 
-This allows us `users` module to depend on `permissions` (entity part) and bring `RolePermission`
-where it really belongs.
+Now `users` module can depend on `permission-persistence` and bring `RolePermission` where it
+really belongs.
 
-Now let's focus only on the `User` and `Role` *many-to-many* relationship and various ways how it
-can cross module boundary -- for that we split these into modules `users` and `roles`.
+In the following cases we will focus on the relationship between the entities `Role` and
+`Permission` -- this time with modules `users` always depending on the `permissions` module (which
+more or less matches `permissions-persistence` from the previous picture). Let's see how we can
+model that *many-to-many* relationship and how it can cross module boundaries.
 
-![Modules `users` and `roles`. Unidirectional `@ManyToMany` follows the dependency.](images/modularity-deps-2.png)
+![Unidirectional `@ManyToMany` follows the dependency.](images/modularity-deps-2.png)
 
-In this particular case it is probably acceptable as the `User` is a natural owner of the
-information about its roles and `Role` doesn't necessarily need the list of users in it. It gets
-interesting when we introduce `UserRole` explicitly as an entity -- perhaps because there are
-additional attributes on that association.
+First we use implicit `role_permission` table without explicit entity. `Role` is a natural owner
+of the information about its `Permission`s and `Permission` doesn't necessarily need the list of
+the roles using it. It gets interesting when we introduce `RolePermission` explicitly as an entity
+-- perhaps because there are additional attributes on that association.
 
-![Modules `users` and `roles`, explicit `UserRole` in `users`.](images/modularity-deps-3.png)
+![Explicit `RolePermission` in `users`.](images/modularity-deps-3.png)
 
-Notice that database relational design limitations dictating where to put the foreign key
+Notice that the database relational design limitations, dictating where to put the foreign key,
 are actually quite useful to decide which way the dependency goes. The module knowing about
-`UserRole` (or `RoleUser`?) table is the one that depends on the other one. If it wasn't that way
+`RolePermission` table is the one that depends on the other one. If it wasn't that way
 we would get invalid case with cyclic dependency like this:
 
-![Modules `users` and `roles`, explicit `UserRole` in `roles` forms a cycle.](images/modularity-deps-4.png)
+![Explicit `UserRole` in `permissions` forms a cycle.](images/modularity-deps-4.png)
 
-We either need to reverse the dependency on the module or split one module (probably `roles`) into
-two like shown previously with `permissions`.
+We either need to reverse the dependency on the module or split one module into two like shown
+previously with `permissions`. If we absolutely needed this dependency from `users` to
+`permissions` and also the "red arrow" then something else in the `users` model depends on
+`permission` -- which is a case for splitting `users` module. (This is rather unnatural, previous
+case for splitting `permissions` was much better.)
 
-In any of these cases we have a problem when we delete the "blind" side of the relationship. In
-the pictures of valid cases it was the `Role` entity. Deletion of a `Role` somehow needs to signal
-to the `users` module that it needs to remove relationship too. We can get away with it applying
-the [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern) that allows to register an
-arbitrary callback with a DAO.
+In any of these cases we still have a problem when we delete the "blind" side of the relationship.
+In the pictures of valid cases it was the `Permission` entity. Deletion of a `Permission` somehow
+needs to signal to the `users` module that it needs to remove relations too. For that we can use
+the [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern) that allows us to register
+an arbitrary callback with a DAO.
 
-This pattern will be implemented by `BaseDao` to make it generally available. The following example
-demonstrates how it can be used when explicit `UserRole` entity is used:
+It will be implemented by already mentioned `BaseDao` to make it generally available. The following
+example demonstrates how it can be used when explicit `RolePermission` entity is used:
 
 ~~~
 // in some dao-base module
@@ -407,41 +417,46 @@ public abstract class BaseDao<T> ... {
 }
 
 // in users module
-public class UserRoleDao extends BaseDao<UserRole> {
-	public static final QUserRole $ = QUserRole.userRole;
+public class RolePermissionDao extends BaseDao<RolePermission> {
+	public static final QRolePermission $ = QRolePermission.rolePermission;
 
-  @Autowired RoleDao roleDao; // from downstream roles module, OK
+  @Autowired PermissionDao permissionDao; // from downstream permissions module, OK
 
   @PostConstruct public void init() {
-    roleDao.addPreDeleteHook(this::deleteByRole);
+    permissionDao.addPreDeleteHook(this::deleteByPermission);
   }
 
-  // this method "implements" PreDeleteHook<Role>
-  public void deleteByRole(Role role) {
+  // this method "implements" PreDeleteHook<Permission>
+  public void deleteByPermission(Permission permission) {
     new JPADeleteClause(entityManager, $)
-      .where($.roleId.eq(role.getId()))
+      .where($.permissionId.eq(permission.getId()))
       .execute();
   }
   ...
 }
+
+// no special changes in PermissionsDao, it can't know about users module anyway
 ~~~
 
-Using unmanaged association table with `@ManyToMany` would require to find all the `User`s having
-this role and removing it from its `roles` collection. I, again, vouch for more explicit way as
-that "delete all relations that use this role" is simpler and likely more efficient.
+Using unmanaged association table with `@ManyToMany` would require to find all the `Role`s having
+this permission and removing it from its `permissions` collection. I, again, vouch for more
+explicit way as that "delete all relations that use this permissions" is simpler and likely more
+efficient.
 
 
 ## Conclusion
 
 * JPA clearly wasn't designed with modularity in mind -- especially not when modules form a single
-persistence unit, which is perfectly legitimate usage.
+persistence unit, which is perfectly legitimate usage. Just because we use one big legacy database
+it doesn't mean we don't want to factor our code into smaller modules.
 * It is possible to distribute persistence classes into multiple JARs, and then:
     * We can go either with a single union `persistence.xml`, which can be downstream or upstream
     -- this depends if we need it only in runtime or during build too.
     * I believe it is more proper to pack partial `persistence.xml` into each JAR, especially if
     we need it during build. Unfortunately, there is no escape from repeating some upstream
     classes in the module again just because they are referenced in relations (typical culprit
-    when we get into state of "I don't understand how this is not entity, when it clearly is!").
+    when some error makes you scream "I don't understand how this is not an entity, when it clearly
+    is!").
 * If we have multiple `persistence.xml` files, it is possible to merge them using Spring's
 `MergingPersistenceUnitManager`. I don't know if we can use it for non-Spring applications, but
 I saw this idea reimplemented and it wasn't that hard. (If I had to reimplement it, I'd try to

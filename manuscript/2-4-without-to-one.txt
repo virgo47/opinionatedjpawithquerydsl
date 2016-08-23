@@ -81,7 +81,7 @@ breedEnNames = new JPAQuery<Breed>(em)
 It seems promising at first, but the result is again only a single lone wolf. There is one
 difference though, although the `WHERE` clause wipes it out. If there was any breed without any
 localized name at all it would be preserved after the `JOIN`. `WHERE` eliminates it only because
-the value for `language` column would be NULL and not "en". We could try to overcome it by an
+the value for `language` column would be `NULL` and not "en". We could try to overcome it by an
 additional `.or(qbn.language.isNull())` in the `WHERE` part, but this would work only for rows
 with no localized name -- but not for those who have missing "en" localizations.
 

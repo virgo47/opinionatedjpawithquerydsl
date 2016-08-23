@@ -1,15 +1,105 @@
 # List of acronyms {#acronyms}
 
+Some of these are probably very obvious but I mention them anyway.
+
+API
+
+BLOB
+
+CLOB
+
+CPU
+
+CQRS
+
+CRUD
+
+DB
+
+DBA
+
+DCI
+
 DDD
 
+DDL
+
+DML
+
+DRY
+
+DSL
+
 DTO
+
+EE
+
+EJB
+
+EM
+
+EMF
+
+FK
+
+GC
+
+GORM
+
+HTTP
+
+ID
+
+IDE
+
+JAR
 
 JDBC
 
 JPA
 
+JPQL
+
+JSR
+
+JTA
+
+JVM
+
+LOB
+
+OO
+
+OOP
+
 ORM
+
+OSGi
 
 OSIV
 
+OWASP
+
+PK
+
+POM
+
+QL
+
+RDBMS
+
+SpEL
+
 SQL
+
+SRP
+
+SVN
+
+UI
+
+URL
+
+WAR
+
+XML

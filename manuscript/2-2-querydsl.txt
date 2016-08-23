@@ -90,7 +90,7 @@ T> [`JdbcTemplate`](http://docs.spring.io/spring/docs/current/spring-framework-r
 T> This still leaves putting the query together to you, but allows you to add each parameter
 T> value at the time when you add the where part. And also takes away many low-level JDBC concerns.
 T>
-T> BTW: Do you remember *JPA 1.0*? It didn't have any Criteria API!
+T> By the way: Do you remember *JPA 1.0*? It didn't have any Criteria API!
 
 Let's see how query for our dogs looks like with Criteria API -- again starting from `em`:
 
@@ -354,7 +354,7 @@ Let's see what data we will work on in the next sections so we can understand th
 | Lassie | 7 | 1 (collie) |
 | Rex | 6 | 2 (german shepherd) |
 | Ben | 4 | 2 (german shepherd) |
-| Mixer | 3 | NULL (unknown breed) |
+| Mixer | 3 | `NULL` (unknown breed) |
 
 The following examples can be found on GitHub in [FunctionsAndOperations.java](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/src/test/java/tests/FunctionsAndOperations.java)).
 
@@ -780,9 +780,9 @@ List<Breed> breeds = new JPAQuery<>(em)
 ~~~
 
 Because EclipseLink uses separate query for breeds, nothing changes and we get the second result
-(BTW: we forgot to order it!). Hibernate is smart enough to use separate query too, as soon as it
-smells the offset/limit combo. It makes sense, because query says "gimme breeds!" -- although not
-everything in JPA is always free of surprises. In any case, eager collection is not recommended.
+(by the way, we forgot to order it!). Hibernate is smart enough to use separate query too, as soon
+as it smells the offset/limit combo. It makes sense, because query says "gimme breeds!" -- although
+not everything in JPA is always free of surprises. In any case, eager collection is not recommended.
 There may be notable exceptions -- maybe some embeddables or other really primitive collections --
 but I'd never risk fetching collection of another entities as it asks for fetching the whole
 database eventually.

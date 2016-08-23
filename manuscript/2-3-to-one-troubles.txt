@@ -81,7 +81,6 @@ thing is we are clearing up the second-level cache as well. We may argue what th
 but unless you have all your entities cached all the time an empty cache simulates real-life
 scenario. And we're just finding the dog by its ID -- we know it's 1:
 
-{title="Finding a dog", lang=java}
 ~~~
 Dog dog = em.find(Dog.class, 1);
 ~~~
