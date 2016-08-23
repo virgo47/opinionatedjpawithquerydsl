@@ -378,7 +378,7 @@ are actually quite useful to decide which way the dependency goes. The module kn
 `RolePermission` table is the one that depends on the other one. If it wasn't that way
 we would get invalid case with cyclic dependency like this:
 
-![Explicit `UserRole` in `permissions` forms a cycle.](images/modularity-deps-4.png)
+![Explicit `RolePermission` in `permissions` forms a cycle.](images/modularity-deps-4.png)
 
 We either need to reverse the dependency on the module or split one module into two like shown
 previously with `permissions`. If we absolutely needed this dependency from `users` to
