@@ -2,9 +2,9 @@
 
 -# Preface
 
-This is a book about my experience with [object-relational mapping](https://en.wikipedia.org/wiki/Object-relational_mapping)
+This book is about my experience with [object-relational mapping](https://en.wikipedia.org/wiki/Object-relational_mapping)
 in general and the [Java Persistence API](https://en.wikipedia.org/wiki/Java_Persistence_API) (JPA)
-in particular. It's a book about [Querydsl](http://www.querydsl.com/) as well, because since I was
+in particular. It's also about [Querydsl](http://www.querydsl.com/), because since I was
 recommended this library I completely fell in love with it. It never let me down and sometimes
 generated feeling of sheer happiness -- which is not that common in our programming profession.
 
@@ -53,8 +53,7 @@ and blur the line between them. I admit I have not yet worked on such a project 
 architecturally big would pay off. Instead I have seen architecture on other projects where the
 effort was wasted for various reasons. Some of them are easy to guess if you're interested in an
 agile or lean software development. That said, I'll talk about some design considerations,
-for instance about the contract between presentation and session layer. I'll talk about infamous
-*open session in view* pattern as well.
+for instance about the contract between presentation and session layer.
 
 This book does not cover any of these topics:
 
@@ -89,8 +88,7 @@ I can only recommend reading at least first 50 pages of the one by O'Reilly (up 
 including), even if you don't use Spring Data after all. It's a nice quick overview of JPA and
 Querydsl with examples of Spring configuration both in XML and Java and they even mention
 kind of advanced things like `orphanRemoval` (although rather in passing). It's definitely a little
-time well spent anyway. I don't know the Packt one, but it seems to be a short book focusing
-on similar topics like the first half of the O'Reilly book.
+time well spent anyway.
 
 I don't know any other relevant books, but there is one more obvious resource -- [Java Persistence
 2.1 Specification](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
@@ -101,7 +99,7 @@ encounter a problem it is good to search through the specification for keywords.
 provider works as specified, even when it does not make sense to us.
 
 There are tons of blog posts, of course, some of them are very influential. I will mention the
-most important ones (from my perspective anyway) in chapter [Tuning ORM down](#ch-tuning-orm-down).
+most important ones in chapter [Love and hate for ORM](#ch-love-hate).
 
 
 ## Looking back to *Patterns of Enterprise Application Architecture*
@@ -120,10 +118,10 @@ Hibernate `Session` in thread-local manner, often forgetting to close session be
 able to clearly put open and close to a single method with try/finally block. That was before we
 read books like *Clean Code*... probably because it was before they were written.[^prpr]
 
-[^prpr]: However, *Pragmatic Programmer* () already was out there. After many years of being
-aware this book exists I've decided to buy it and read it. It is beyond any recommendation and
-tip 25 *How to Balance Resources* is tackling exactly this. Personally I'd say this book is more
-essential than *Clean Code* is, but both should be read in any case.
+[^prpr]: However, *Pragmatic Programmer* (1999) was already out there. After many years of being
+    aware this book exists I've decided to buy it and read it. It is beyond any recommendation and
+    tip 25 *How to Balance Resources* is tackling exactly this. Personally I'd say this book is
+    more essential than *Clean Code* but both should be read in any case.
 
 Closing his chapter *Mapping to Relation Databases* Martin Fowler wrote:
 
@@ -133,9 +131,10 @@ G> that there’s been a lot written on the subject. The surprise is that there 
 G> single coherent, complete, and up-to-date book, which is why I’ve devoted so
 G> much of this one to this tricky yet interesting subject.
 
-Today we have more books about ORM, even if you narrow it to Java world. My attempt tries to step
-away from many ORM concepts and go back to SQL roots to a degree. That does not change the fact
-that Fowler's work organizing and describing all these (still applicable) patterns is remarkable.
+Today there are more books related to ORM, even if you narrow it down to Java world. My attempt
+tries to step away from many ORM concepts and go back to SQL roots to a degree. That does not
+change the fact that Fowler's work organizing and describing all these (still applicable) patterns
+is remarkable.
 
 
 ## Structure of the book
@@ -189,17 +188,9 @@ print the e-book, of course).
 
 ## My writing background
 
-Once I wrote a book. I was 17 or so and it wasn't a technical book. And it was very short, I admit.
-But I managed to finish it and I'm really proud of that, because it is something I am not able to
-repeat consistently. I wanted to write a book about my simple monitoring library for Java called
-[Java Simon](https://github.com/virgo47/javasimon), because books are often easier to
-read than manuals or Javadoc... but you can guess I haven't finished it up. With 50% success rate
-(0% for Java related books) I'll try my luck again.
-
-On the bright side -- I've written more than a few posts on
-[my blog](http://virgo47.wordpress.com/),
-mostly on technical topics, couple of them about JPA. Actually, this book is based on these
-frustrated experiences. I always felt like a writer -- originally just to share, although not
+I've written more than a few posts on [my blog](http://virgo47.wordpress.com/),
+mostly on technical topics, couple of them about JPA. Actually, this book is partially based on
+these frustrated experiences. I always felt like a writer -- originally just to share, although not
 everything is worth sharing, I know. Later I realized that writing helps me to clarify a lot of
 concepts to myself. For the same reasons (sharing and learning) I gave courses and talks. Preparing
 those is also kind of writing. So I hope both me and this book are not lost causes.

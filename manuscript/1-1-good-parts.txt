@@ -70,10 +70,10 @@ groups of columns. Now we will move to the field level:
 * collections -- these might be relations to other entities or embeddable types;
 * enum types -- here you can choose whether it's persisted by its `name()` or by `ordinal()`.
 
-We can't reasonably compare the first part of the list with JDBC, because the principles are
-completely different. But we can compare how easy it is to get the value for any column as your
-preferred type. Here JDBC locks you to low-level types without any good conversion capabilities,
-not even for omnipresent types like `java.util.Date`. In JPA you can declare field as
+Concepts in the first list are not covered by the JDBC at all -- these are the most prominent
+features of ORM. But we can compare JDBC and JPA in how easy it is to get the value for any column
+as your preferred ty  pe. Here JDBC locks you to low-level types without any good conversion
+capabilities, not even for omnipresent types like `java.util.Date`. In JPA you can declare field as
 `java.util.Date` and just say that the column represents time, date or timestamp using `@Temporal`
 annotation. I feel no need to use `java.sql` package anymore.
 
