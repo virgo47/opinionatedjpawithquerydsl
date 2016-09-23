@@ -1,9 +1,12 @@
 # List of acronyms {#acronyms}
 
-Some of these are probably very obvious but I mention them anyway. The goal of this list is
-just to unambiguously expand the acronym, not to define the term.
+The main goal of this list is to unambiguously expand the acronym. Definitions are taken from
+Google or Wikipedia. Some acronyms are probably very obvious but I mention them anyway.
 
-* **API** - [application programming interface](https://en.wikipedia.org/wiki/Application_programming_interface)
+* API -- **application programming interface**: a set of functions and procedures that allow
+the creation of applications which access the features or data of an operating system,
+application, or other service; in Java typically the set of interfaces (in general, including
+public part of the classes) of a particular service, library, etc.
 * BLOB
 * CLOB
 * CPU
@@ -39,7 +42,8 @@ just to unambiguously expand the acronym, not to define the term.
 * LOB
 * OO
 * OOP
-* ORM
+* **ORM** (also O/RM, or O/R mapping) -- object-relational mapping; a programming technique for
+converting data between incompatible type systems in object-oriented programming languages.
 * OSGi
 * OSIV
 * OSS
