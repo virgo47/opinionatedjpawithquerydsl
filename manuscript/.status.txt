@@ -19,16 +19,17 @@ To actually finish something, I want to do this in the 1st edition:
     * Troubles with *to-one* relationships (80%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
     * Removing `@ManyToOne` altogether (not JPA compliant) (100%) NEEDS REVIEW
-    * Modularity, if you must
-        * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
-    * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
-        * https://dzone.com/articles/opensessioninview-antipattern (OSIV anti-pattern)
-        * https://vladmihalcea.com/2016/05/30/the-open-session-in-view-anti-pattern
+%% Second edition:
 %%    * *Many-to-many* relations mapping consequences, what SQL it generates, explicit/implicit mapping
 %% also eclipselink bug with left-join + dropped ON: https://bugs.eclipse.org/bugs/show_bug.cgi?id=422510
 %% Also on cascade: https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types/
 %% (describes cascading in general for various *To*, including dangerous REMOVE on @ManyToMany that
 %% often does not do what we want (actually does more and removes not only link, but also target).
+%%    * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
+%%        * https://dzone.com/articles/opensessioninview-antipattern (OSIV anti-pattern)
+%%        * https://vladmihalcea.com/2016/05/30/the-open-session-in-view-anti-pattern
+    * Modularity, if you must
+        * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
 * Common Problems
 
 %%    * Object identity, easy problem, recommended always the same way

@@ -1,0 +1,20 @@
+# Mapping association tables {#ch-association-tables}
+
+For *to-one* relationships we need a foreign key (FK) that points to the referenced row, but
+we can also introduce an [associative entity](https://en.wikipedia.org/wiki/Associative_entity)
+(here *entity* as used in [entity–relationship](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model)
+theory). In databases we typically implement these using *associative tables*. This table "joins"
+two or more other tables together using multiple foreign keys. The PK of the associative table is
+typically the combination of these FKs.
+
+Back to ORM -- *entities* from now on are the classes with `@Entity` annotation as you know them.
+Many other names are used for this concept and I'll use *association table* (for the thing in the
+database) and *association entity* (the class) because they are probably most popular around ORM
+users.
+
+TODO:
+
+* https://en.wikibooks.org/wiki/Java_Persistence/ManyToMany
+* https://en.wikibooks.org/wiki/Java_Persistence/Relationships#Object_corruption.2C_one_side_of_the_relationship_is_not_updated_after_updating_the_other_side
+* bi-directional problems, bulk operations, too many joins when querying by ID
+* why to map it explicitly
