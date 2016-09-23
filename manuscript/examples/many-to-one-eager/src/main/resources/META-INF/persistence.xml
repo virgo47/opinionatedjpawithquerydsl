@@ -11,6 +11,7 @@
     <!-- Classes should be specified in SE environment, and EclipseLink requires that -->
     <class>modeltoone.Breed</class>
     <class>modeltoone.Dog</class>
+    <class>modeltoone.DogBasicView</class>
 
     <shared-cache-mode>ALL</shared-cache-mode>
 
