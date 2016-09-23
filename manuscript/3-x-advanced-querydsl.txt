@@ -20,6 +20,7 @@ TODO
 ## Update/delete clauses and exception handling
 
 Instead of:
+
 ~~~
 // delete by holidays by calendar ID
 new JPADeleteClause(entityManager, $)
@@ -28,6 +29,7 @@ new JPADeleteClause(entityManager, $)
 ~~~
 
 We use:
+
 ~~~
 execute(deleteFrom($)
   .where($.calendarId.eq(calendar.getId())));

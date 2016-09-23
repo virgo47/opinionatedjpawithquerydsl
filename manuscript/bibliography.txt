@@ -39,11 +39,11 @@ OSGi*, Prentice Hall, 2012.
 * https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html
 * http://www.martinfowler.com/bliki/AnemicDomainModel.html
 * http://www.thoughts-on-java.org/jpa-21-overview
-* [Transaction strategies: Understanding transaction pitfalls](http://www.ibm.com/developerworks/java/library/j-ts1/)
+* Transaction strategies: Understanding transaction pitfalls: http://www.ibm.com/developerworks/java/library/j-ts1/
 * http://martinfowler.com/bliki/OrmHate.html
 * http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern
 * http://docs.spring.io/spring/docs/current/spring-framework-reference/html/jdbc.html#jdbc-JdbcTemplate
-* [My own JPA related blog posts](https://virgo47.wordpress.com/tag/jpa)
+* My own JPA related blog posts: https://virgo47.wordpress.com/tag/jpa
 
 
 ## Other online resources
@@ -51,6 +51,6 @@ OSGi*, Prentice Hall, 2012.
 * http://www.querydsl.com/
 * http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html
 * http://www.groovy-lang.org/databases.html
-* [DataNucleus](http://www.datanucleus.org/)
-* [jOOQ](http://www.jooq.org)
-* [H2 database](http://h2database.com)
+* DataNucleus: http://www.datanucleus.org/
+* jOOQ: http://www.jooq.org
+* H2 database: http://h2database.com
