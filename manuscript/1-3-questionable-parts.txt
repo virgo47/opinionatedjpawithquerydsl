@@ -91,23 +91,30 @@ persistence context. We will talk about that in the next chapter.
 
 ## Unit of work vs queries
 
-JPA without direct SQL-like capabilities (that is JPQL) would be very limited. Sure, there are
-projects you can happily sail through with queries based on criteria API only, but those are the
-easy ones. I remember a project, it was an important budgeting system with hierarchical
+JPA without direct SQL-like capabilities (that is without JPQL) would be very limited. Sure, there
+are projects you can happily sail through with queries based on criteria API only, but those are
+the easy ones. I remember a project, it was an important budgeting system with hierarchical
 organizational structure with thousands of organizations. There were budget items and limits for
 them with multiple categories, each of them being hierarchical too. When we needed to recalculate
-some items for some category (possibly using wildcards) we loaded these items and then perform
+some items for some category (possibly using wildcards) we loaded these items and then performed
 the tasks in memory.
 
-Sometimes it must have been done, rules were simply too complicated for an update. But sometimes
-it didn't have to be this way. When the user approved the budget for an organization (and all its
-sub-units) we merely needed to set a flag on all these items. That's what you can do with a bulk
-update. `UPDATE` and `DELETE` clauses were in the JPA specification since day zero, with the latest
-*JPA 2.1* you can do this not only in JPQL, but also in Criteria API.[^capiq]
+Sometimes the update must be done entity by entity -- rules may be complicated, various fields are
+updated in various way, etc. But sometimes it doesn't have to be this way. When the user approved
+the budget for an organization (and all its sub-units) we merely needed to set a flag on all these
+items. That's what you can do with a bulk update. `UPDATE` and `DELETE` clauses were in the JPA
+specification since day zero, with the latest *JPA 2.1* you can do this not only in JPQL, but also
+in Criteria API.[^capiq]
 
 [^capiq]: We will, however, prefer more expressive Querydsl that generates JPQL.
 
-When you can formulate simple bulk update (you know what to set and `WHERE` to set it) you can
+Q> ## What is a bulk update?
+Q>
+Q> A bulk update (or delete) is an update (or delete) of multiple entities based on a `WHERE`
+Q> condition. When we specify the entity by its ID, it's not really a bulk update. If we omit
+Q> `WHERE` altogether (and have multiple lines in the table) it definitely is a bulk update.
+
+When you can use simple bulk update (you know what to `SET` and `WHERE` to set it) you can
 gain massive performance boost. Instead of iterating and generating N updates you just send a
 single SQL to the database and that way you can go down from a cycle taking minutes to an operation
 taking seconds. But there is one big "but" related to the persistence context (entity manager).
