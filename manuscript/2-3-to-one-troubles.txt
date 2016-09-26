@@ -447,9 +447,30 @@ I> `@IdClass` annotations.
 
 ## Alternative "view" entities
 
+
 %% another problem (merge) is solved by using multiple @Entity "views" on the same table
 %% TODO: If using multiple entity "views" for a single table, can we disable generation for the
 %% duplicates?
+
+%% Naming sidebox
+
+Entity view does not allow to select entities by the omitted foreign keys. So we cannot load all
+`DogBasicView` instances for a collie and do something common with them. This doesn't seem to be
+practical limitation for update scenario though. We would either use bulk update/delete mechanism,
+circumventing the persistence context, or we would load the entity view by its ID, change
+attributes of our interest and let the persistence context perform the update.
+
+Especially for single-instance load/update scenarios this seems to be the most practical solution:
+
+* We avoided problems with eager *to-one* when we don't want to touch that relationship. (If we
+need to touch it we have to deal with it using the main entity.)
+* We can use persistence context naturally.
+
+Because of the missing foreign key these views are unusable when we want to show a table with
+dogs and their breeds (I'm not counting subquery in the `IN` clause although it can be viable
+in some cases). For tables DTOs and things like constructor projection seem to be the answer,
+however cumbersome -- at least if you absolutely need to stay JPA compliant.
+
 
 ## What to do?
 

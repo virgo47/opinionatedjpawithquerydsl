@@ -14,7 +14,7 @@ In an ironic twist I discovered that the way we bent *JPA 2.1* works only on its
 implementation, that is EclipseLink[^hib51], this all more than a year too late. I was considering to
 stop any further work on the book after loosing this most important showcase point. After all
 I decided to go on with a weaker version after all. We will describe the troubles with *to-one*
-relations, their possible solutions -- including the one that is not JPA-compliant -- and there
+relations, their possible solutions -- including the one that is not JPA compliant -- and there
 are also other helpful tips, many Querydsl examples throughout and two Querydsl dedicated chapters.
 
 [^hib51]: This was late March 2016. What I didn't check is the newest Hibernate version then.
