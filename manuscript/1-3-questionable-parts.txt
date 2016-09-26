@@ -114,7 +114,7 @@ Q> A bulk update (or delete) is an update (or delete) of multiple entities based
 Q> condition. When we specify the entity by its ID, it's not really a bulk update. If we omit
 Q> `WHERE` altogether (and have multiple lines in the table) it definitely is a bulk update.
 
-When you can use simple bulk update (you know what to `SET` and `WHERE` to set it) you can
+When you can use a simple bulk update (you know what to `SET` and `WHERE` to set it) you can
 gain massive performance boost. Instead of iterating and generating N updates you just send a
 single SQL to the database and that way you can go down from a cycle taking minutes to an operation
 taking seconds. But there is one big "but" related to the persistence context (entity manager).

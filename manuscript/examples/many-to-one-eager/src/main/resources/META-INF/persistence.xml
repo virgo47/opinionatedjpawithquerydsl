@@ -10,6 +10,7 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <!-- Classes should be specified in SE environment, and EclipseLink requires that -->
     <class>modeltoone.Breed</class>
+    <!-- If you generate schema, first specify the "main" entity, then its views. -->
     <class>modeltoone.Dog</class>
     <class>modeltoone.DogBasicView</class>
 
@@ -27,7 +28,6 @@
   </persistence-unit>
 
   <persistence-unit name="demo-hib" transaction-type="RESOURCE_LOCAL">
-
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <!-- Classes should be specified in SE environment, but Hibernate finds them automatically -->
 

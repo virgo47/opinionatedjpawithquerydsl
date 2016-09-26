@@ -1,21 +1,23 @@
 package modeltoone;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "Dog")
 public class DogBasicView {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(updatable = false)
   private Integer id;
 
   private String name;
 
-  private String description;
-
-  @ManyToOne
-  private Breed breed;
+  // DON'T map additional attributes if you auto-generate schema! Keep your views pure sub-sets of
+  // the main entity. Auto-generator doesn't create union of all attributes, it doesn't expect it.
+  // private String description;
 
   public Integer getId() {
     return id;
@@ -33,20 +35,11 @@ public class DogBasicView {
     this.name = name;
   }
 
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
   @Override
   public String toString() {
     return "Dog{" +
       "id=" + id +
       ", name='" + name + '\'' +
-      ", description='" + description + '\'' +
       '}';
   }
 }

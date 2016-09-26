@@ -11,7 +11,7 @@ import javax.persistence.Persistence;
 public class UsingDogBasicView {
 
   public static void main(String[] args) {
-//    run("demo-el"); // with additional attribute on view it would fail on EclipseLink
+    run("demo-el");
     run("demo-hib");
   }
 
