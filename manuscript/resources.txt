@@ -7,10 +7,7 @@
 
 {#bib-hpjp}
 [HPJP] Vlad Mihalcea. *High Performance Java Persistence*, Leanpub, 2016.
-https://leanpub.com/high-performance-java-persistence (I don't mention this book in the text,
-but it seems to cover high-performance database access in Java world quite thoroughly. Part III is
-dedicated to JPA and Hibernate.)
-%% TODO: review usage of the book at the end
+https://leanpub.com/high-performance-java-persistence
 
 {#bib-jaa}
 [JAA] Kirk Knoernschild. *Java Application Architecture: Modularity Patterns with Examples Using

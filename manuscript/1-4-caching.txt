@@ -86,6 +86,13 @@ Bulk update and deletes using JPQL go around either of these caches and the safe
 avoid inconsistent data is to evict all entities of the modified type from the caches. This is
 often performed by the ORM provider automatically (again, check documentation and settings).
 
+D> Vlad Mihalcea, author of the recent Leanpub book [High-Performance Java
+D> Persistence](https://leanpub.com/high-performance-java-persistence) [[HPJP](#bib-hpjp)],
+D> does not recommend to rely on query cache primarily before tuning other aspects like pooling,
+D> how many rows and columns we fetch, etc. In update-heave applications query cache can actually
+D> worse the overall performance. For more, see also his presentation [High-performance
+D> JDBC](https://www.youtube.com/watch?v=u25Xc88d_iE).
+
 If you only work with whole entities all the time *and* nothing else accesses the database you
 can be pretty sure you always get the right result from the entity cache. You may wonder how this
 cache behaves in concurrent environment (like any EE/Spring application inherently is). If you
@@ -159,7 +166,8 @@ although this can still be good simple strategy even for programmatic caches, es
 when the refresh requires a single select.
 * Full preload requires more memory up-front and slows down the startup of the application (can
 be done lazily on-demand) but deals with the DB once and for all. Declarative cache executes
-query for every miss and loads only data for a single entity.
+a query on demand for every miss but loads only some of the data that require caching --
+potentially less efficiently than full preload.
 
 Of course, there are cases when we can't use fully pre-loaded cache. In general, ask yourself
 a question whether "cache this by this key" is best (or good enough) solution or whether you can
