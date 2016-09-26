@@ -29,4 +29,4 @@ a2-project-example.txt
 a3-bugs-found.txt
 a4-acronyms.txt
 
-bibliography.txt
+resources.txt

@@ -1,3 +1,8 @@
 # Persistence context scope {#ch-persistence-context-scope}
 
 TODO
+
+Both mentioned in resources:
+
+* https://dzone.com/articles/opensessioninview-antipattern (OSIV anti-pattern)
+* https://vladmihalcea.com/2016/05/30/the-open-session-in-view-anti-pattern
