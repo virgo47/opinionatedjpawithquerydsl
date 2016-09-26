@@ -40,17 +40,17 @@ with ORM: http://blogs.tedneward.com/post/the-vietnam-of-computer-science
 * *A beginner’s guide to JPA and Hibernate Cascade Types*: https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types
 * Martin Fowler's *Anemic Domain Model*: http://www.martinfowler.com/bliki/AnemicDomainModel.html
 * *JPA 2.1 -- 12 features every developer should know*: http://www.thoughts-on-java.org/jpa-21-overview
-* *Transaction strategies: Understanding transaction pitfalls*: http://www.ibm.com/developerworks/java/library/j-ts1/
-* Spring, Data access with JDBC, *JdbcTemplate*: http://docs.spring.io/spring/docs/current/spring-framework-reference/html/jdbc.html#jdbc-JdbcTemplate
-* Uncle Bob's *Make the Magic go away*: https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html
+* *Transaction strategies: Understanding transaction pitfalls*:  
+http://www.ibm.com/developerworks/java/library/j-ts1/
+* Spring, Data access with JDBC, [JdbcTemplate](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/jdbc.html#jdbc-JdbcTemplate)
+* Uncle Bob's [Make the Magic go away](https://blog.8thlight.com/uncle-bob/2015/08/06/let-the-magic-die.html)
 * My own JPA related blog posts: https://virgo47.wordpress.com/tag/jpa
 
 
 ## Other online resources {#resources-other}
 
-* JSR-000338 Java^TM^ Persistence 2.1 Final Release (specification): http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html
 * Querydsl: http://www.querydsl.com/
-* Groovy, Working with a relational database: http://www.groovy-lang.org/databases.html
 * DataNucleus: http://www.datanucleus.org/
 * jOOQ: http://www.jooq.org
 * H2 database: http://h2database.com
+* Groovy, [Working with a relational database](http://www.groovy-lang.org/databases.html)
