@@ -111,7 +111,7 @@ D> for underlying SQL `ON` clause from the mapping -- naturally it is that the p
 D> table equals the foreign key of the other. This works fine if you follow *to-one* relations and
 D> join optional relations to existing rows.
 D>
-D> The situations changes dramatically if you follow to-many relations and want to select a
+D> The situations changes dramatically if you follow *to-many* relations and want to select a
 D> concrete one for each row with particular conditions (like a language in our example). This left
 D> you in the dark with previous JPA versions. That's why the addition of `ON` is so important for
 D> these cases.

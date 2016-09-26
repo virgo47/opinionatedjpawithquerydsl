@@ -173,7 +173,7 @@ avoid using `EntityManager`, how could I?
 
 [^cdd]: While class diagram does not say exactly the same like E-R diagram I used it successfully
     to communicate design of tables to my DBA who had absolutely no problem to understand it, even
-    for cases where many-to-many associative table was implied by a named line. E-R diagram was
+    for cases where *many-to-many* associative table was implied by a named line. E-R diagram was
     much easier to generate ex-post for documentation purposes.
 
 

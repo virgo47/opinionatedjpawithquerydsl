@@ -90,12 +90,12 @@ is simply to search for "not supported" string. Some of these are related to emb
 pretty natural (e.g. *"applying setMaxResults or setFirstResult to a query involving fetch joins
 over collections is undefined"*).[^paging]
 
-[^paging]: For paginating with fetch across to-many relations see the chapter
+[^paging]: For paginating with fetch across *to-many* relations see the chapter
     [Avoid N+1 select](#ch-avoid-n-plus-1), concretely [this section](#to-many-paginating).
 
 What I dearly miss in JPA is better control over fetching of *to-one* relations. Current solution
 is trying to be transparent both in terms of object-relational mapping and Java language features,
-but it may kill your performance or require caching, potentially a lot of it. While to-many
+but it may kill your performance or require caching, potentially a lot of it. While *to-many*
 relations can be loaded lazily with special collection implementation enabling it, *to-one*
 cannot work like this without bytecode modification. I believe though, that developers should
 be allowed to decide that this and this *to-one* relation will not be loaded and only detached

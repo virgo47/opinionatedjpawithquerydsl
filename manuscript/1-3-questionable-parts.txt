@@ -197,7 +197,7 @@ with the persistence context, so they are *managed* as expected. This distorts t
 worse, not to mention that for big results it may trigger some additional GC that plain JDBC would
 not have.
 
-Best bet is to monitor performance of the SQL on the server itself. Most decent RDBMS provide
+The best bet is to monitor performance of the SQL on the server itself. Most decent RDBMS provide
 some capabilities in this aspect. You can also use JDBC proxy driver that wraps the real one and
 performs some logging on the way. Maybe your ORM provides this to a degree, at least in the logs
 if nowhere else. This may not be easy to process, but it's still better than no visibility at all.
