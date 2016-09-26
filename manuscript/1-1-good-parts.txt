@@ -47,10 +47,18 @@ invested in one -- especially if you use stored procedures or anything else beyo
 SQL. But JPA is not the problem here, on the contrary. It will require much less (if any) changes
 and the application will work on.
 
-Also, if you start another project and go for different database your application programmers
-using JPA probably don't have to learn anything new. This cuts both ways though. I've heard that
-"you don't have to learn SQL" is considered a benefit of the JPA, but every time programmers didn't
-understand SQL they didn't produce good results.
+One of the best examples of this is pagination. There is a standard way how to do it since
+[SQL:2008](https://en.wikipedia.org/wiki/SQL:2008) using [FETCH FIRST clause](https://en.wikipedia.org/wiki/Select_(SQL)#FETCH_FIRST_clause)
+(along with `OFFSET` and `ORDER BY`) but only newer database versions support this. Before that
+the pagination required anything from `LIMIT/OFFSET` combo (e.g. PostgreSQL) to outer select
+(for Oracle before 12c). JPA makes this problem go away as it uses specific dialect to generate the
+SQL. This portion of the database idiosyncrasies is really something we can live without and JPA
+delivers.
+
+Hence, if you start another project and go for a different database your application programmers
+using JPA probably don't have to learn specifics of its SQL. This cuts both ways though. I've heard
+that "you don't have to learn SQL" (meaning "at all") is considered a benefit of the JPA, but every
+time programmers didn't understand SQL they didn't produce good results.
 
 
 ## Natural SQL-Java type mapping
