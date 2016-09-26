@@ -62,6 +62,8 @@ This book does not cover any of these topics:
 * Criteria API -- because I prefer Querydsl instead.
 * Locking, concurrency, validation, transactions and other features not affected by
 the *opinionated* approach.
+* High performance -- we mention performance, and the advices should not affect it negatively,
+but I don't focus on high-performance tricks in particular.
 
 We may mention some of them here and there, but there will be little focus on these. Most of them
 are covered elsewhere anyway. Let's talk about some of the books available in this segment.
