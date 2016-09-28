@@ -447,12 +447,25 @@ I> `@IdClass` annotations.
 
 ## Alternative "view" entities
 
+If we want to solve painful read/update scenario (assuming we know the ID of the entity) and we
+need to work with only some attributes of the entity how about mapping it so? We will leave full
+mapping in some "master" class and create another entity that gives us partial view of the
+selected attributes. I'll use name *entity view* for such a class.
+
+D> I cannot find anything about multiple mappings for the same table in [[JPspec](#bib-jpspec)]
+D> and most searches on the internet deal with the inheritance -- which is not our case. Closest
+D> to our case is [this question](https://forum.hibernate.org/viewtopic.php?f=1&t=1009403) from
+D> Hibernate forums that also deals with some of the limitations -- we will cover those and more.
+D> For this reason I doubt there is a settled name for this "pattern" so I dared to bring forth
+D> the name *entity view* as it indeed is a partial view of all the attributes.
 
 %% another problem (merge) is solved by using multiple @Entity "views" on the same table
 %% TODO: If using multiple entity "views" for a single table, can we disable generation for the
 %% duplicates?
 
-%% Naming sidebox
+D> ### What if I auto-generate schema?
+D>
+D> TODO
 
 Entity view does not allow to select entities by the omitted foreign keys. So we cannot load all
 `DogBasicView` instances for a collie and do something common with them. This doesn't seem to be
@@ -466,10 +479,17 @@ Especially for single-instance load/update scenarios this seems to be the most p
 need to touch it we have to deal with it using the main entity.)
 * We can use persistence context naturally.
 
-Because of the missing foreign key these views are unusable when we want to show a table with
-dogs and their breeds (I'm not counting subquery in the `IN` clause although it can be viable
-in some cases). For tables DTOs and things like constructor projection seem to be the answer,
-however cumbersome -- at least if you absolutely need to stay JPA compliant.
+Because of the missing foreign keys these entity views are unusable when we want to show a table
+of results from joined query (e.g. dogs and their breeds). While we could use a subquery in an
+`IN` clause for filtering we still need a `JOIN` to actually get the data. For displaying tables
+DTOs and things like constructor projection seem to be the right answer, however cumbersome.
+But if we fetch some data only for reading (e.g. to view them) it is recommended to bypass the
+persistence context anyway, especially for performance reasons. And we're not talking about some
+marginal optimization, we're talking about common sense and a significant waste of
+resources.[^read-to-dto]
+
+[^read-to-dto]: See [[HPJP](#bib-hpjp)], introduction of the chapter *Fetching* in part *JPA and
+Hibernate*.
 
 
 ## What to do?
@@ -481,6 +501,8 @@ With current state of standard there are following options available:
 but it can also change with upgrade. It is simply not guaranteed by the JPA standard.
 * Select only the columns you're interested in. This is very cumbersome for read/update scenarios
 of a single entity and bearable but still inconvenient for selecting of lists for tables, etc.
+* Use entity views, that is map the same table with multiple classes based on the use case you want
+to cover. This is very practical for read/update scenarios when you can fetch by entity's ID.
 
 In any of these cases you can also use dual mapping -- mapping both the foreign key value and the
 relationship as an object. When mapping more attributes for a single column we have to designate

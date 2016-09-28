@@ -108,7 +108,7 @@ in Criteria API.[^capiq]
 
 [^capiq]: We will, however, prefer more expressive Querydsl that generates JPQL.
 
-Q> ## What is a bulk update?
+Q> ### What is a bulk update?
 Q>
 Q> A bulk update (or delete) is an update (or delete) of multiple entities based on a `WHERE`
 Q> condition. When we specify the entity by its ID, it's not really a bulk update. If we omit
