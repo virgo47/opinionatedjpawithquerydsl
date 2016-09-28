@@ -28,8 +28,8 @@ W> that Jira project lets me wonder where all the JPA developers/specifiers are.
 [^eeinact]: The whole Java EE 8 is kind of dormant as of 2016.
 
 To get full control over the fetching -- and to do it without any high-tech solution -- we have to
-drop the relation and map row foreign key instead. Before we go on, we will discuss the important
-addition of the `ON` keyword in *JPA 2.1*.
+drop the relationship mapping and map row foreign key instead. Before we go on, we will discuss the
+important addition of the `ON` keyword in *JPA 2.1*.
 
 
 ## Why do we need `ON` anyway?
@@ -181,7 +181,7 @@ attribute, but without redesigning JPA we cannot benefit it in our queries anywa
 tackle the problem of missing metadata on the plain FK-typed attribute later in this chapter.
 
 
-## Loading the relation from the entity
+## Loading the relationship from the entity
 
 Queries are typically executed in the context out of the object itself -- in a repository or DAO,
 you name it. There is no problem to get hold of `EntityManager` at these places. But if you want
@@ -306,7 +306,7 @@ preserves current query mechanics, and actually is least intrusive of them all.
 
 Finally, the JPA specification could mandate `LAZY` -- this is something where Hibernate seems
 quite reliable out of the box without any configuration hassle. On the other hand, I saw many
-questions asking how to make this relation lazy in Hibernate, so it probably is not universally
+questions asking how to make this relationship lazy in Hibernate, so it probably is not universally
 true. Promoting `LAZY` from a hint to a guaranteed thing would require JPA providers to use some
 bytecode magic (which is not clean from Java language perspective), but it would also end a lot of
 debates how to do it right.

@@ -125,7 +125,7 @@ read books like *Clean Code*... probably because it was before they were written
     tip 25 *How to Balance Resources* is tackling exactly this. Personally I'd say this book is
     more essential than *Clean Code* but both should be read in any case.
 
-Closing his chapter *Mapping to Relation Databases* Martin Fowler wrote:
+Closing his chapter *Mapping to Relational Databases* Martin Fowler wrote:
 
 {icon=quote-right}
 G> Object-relational mapping is a fact of life for most people, so it’s no surprise

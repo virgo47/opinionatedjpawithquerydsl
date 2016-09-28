@@ -155,7 +155,7 @@ is much more disruptive and also costly.
 [^flushmode]: See [[JPspec](#bib-jpspec)], section 3.10.8.
 
 
-## You can't escape SQL and relation model {#cant-escape-sql}
+## You can't escape SQL and relational model {#cant-escape-sql}
 
 Somewhere under cover there is SQL lurking and we better know how it works. We will tackle this
 topic with more passion in the second part of the book -- for now we will just demonstrate that
@@ -364,7 +364,7 @@ don't have any experience with it, but I don't expect radical paradigm shift as 
 ORM to access RDBMS (although it supports also No-SQL solutions). Knowing Groovy I'm sure it brings
 some fun into the mix, but it still is ORM.
 
-I often use core Groovy [support for relation databases](http://www.groovy-lang.org/databases.html)
+I often use core Groovy [support for relational databases](http://www.groovy-lang.org/databases.html)
 and I really like it. It is no ORM, but it makes working with database really easy compared to
 JDBC. I readily use it to automate data population as it is much more expressive than SQL
 statements -- you mostly just use syntax based on Groovy Maps. With little support code you create

@@ -346,9 +346,9 @@ is not available in the `users` module.
 
 Sure, we can argue whether we have the entities split into modules properly -- for instance, is
 `Role` really a concept belonging to `User` without considering permissions? However after moving
-`Role` to the `permissions` module, we would have problem with `@ManyToMany` relation named `roles`
-on the `User` class -- which is naturally the owning side of the relationship -- as it would go
-against module dependency.
+`Role` to the `permissions` module, we would have problem with `@ManyToMany` relationship named
+`roles` on the `User` class -- which is naturally the owning side of the relationship -- as it
+would go against module dependency.
 
 When the cycle occurs it may also indicate that one of the modules is too big. In our case we
 used `User` in the `permission` module, but it is not really necessary in the entities directly.

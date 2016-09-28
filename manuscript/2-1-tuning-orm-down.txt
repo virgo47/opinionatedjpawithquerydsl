@@ -77,8 +77,8 @@ JPQL update and possibly remove all dogs from the second-level cache? How ORM is
 Why JPA doesn't provide better fetch control for finds? I want to work with this `Dog` object now,
 I'm not interested in its relations, just wrap those FK values into otherwise empty entity objects
 (like references) and let me do my stuff! How I wished I could just map raw FK value instead of
-relation... actually, you can, but while you are able to load such related object explicitly
-(find by id), you can't join on that relationship.
+related object... actually, you can, but while you are able to load such related object explicitly
+(find by id), you can't join on a relationship defined so.
 
 If you use EclipseLink you can do it, but that means you can't switch to other JPA 2.1 providers
 reliably, not to mention that dropping the mapping is by no means a minor detour from standard
