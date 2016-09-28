@@ -1,62 +1,55 @@
 # List of acronyms {#acronyms}
 
-The main goal of this list is to unambiguously expand the acronym. Definitions are taken from
-Google or Wikipedia. Some acronyms are probably very obvious but I mention them anyway.
-
-* **API** -- *application programming interface* -- a set of functions and procedures that allow
-the creation of applications which access the features or data of an operating system,
-application, or other service; in Java typically the set of interfaces (in general, including
-public part of the classes) of a particular service, library, etc.
-* BLOB
-* CLOB
-* CPU
-* CQRS
-* CRUD
-* DB
-* DBA
-* DCI
-* DDD
-* DDL
-* DML
-* DRY
-* DSL
-* DTO
-* EE
-* EJB
-* EM
-* EMF
-* E-R
-* FK
-* GC
-* GORM
-* HTTP
-* ID
-* IDE
-* JAR
-* JDBC
-* JPA
-* JPQL
-* JSR
-* JTA
-* JVM
-* LOB
-* OO
-* OOP
-* **ORM** (also O/RM, or O/R mapping) -- *object-relational mapping* -- a programming technique for
-converting data between incompatible type systems in object-oriented programming languages.
-* OSGi
-* OSIV
-* OSS
-* OWASP
-* PK
-* POM
-* QL
-* RDBMS
-* SpEL
-* SQL
-* SRP
-* SVN
-* UI
-* URL
-* WAR
-* XML
+* API -- application programming interface
+* BLOB -- binary large object
+* CLOB -- character large object
+* CPU -- central processing unit (processor)
+* CQRS -- command query responsibility segregation (pattern)
+* CRUD -- create, read, update and delete
+* DB -- database
+* DBA -- database administrator
+* DCI -- data, context and interaction (pattern)
+* DDD -- domain-driven design
+* DDL -- data definition language or data description language (e.g. `CREATE` statements)
+* DML -- data manipulation language (e.g. `SELECT` and `UPDATE` statements)
+* DRY -- don't repeat yourself (principle)
+* DSL -- domain-specific language
+* DTO -- data transfer object
+* EE -- enterprise edition (typically meaning Java EE or older J2EE)
+* EJB -- Enterprise JavaBean
+* EM -- entity manager (or class `EntityManager`)
+* EMF -- entity manager factory (or class `EntityManagerFactory`)
+* E-R -- entity-relationship (model)
+* FK -- foreign key
+* GC -- garbage collection (or collector, from context)
+* GORM -- Grails Object Relational Mapper
+* HTTP -- Hypertext Transfer Protocol
+* ID -- identifier
+* IDE -- integrated development environment
+* JAR -- Java Archive
+* JDBC -- Java Database Connectivity
+* JPA -- Java Persistence API
+* JPQL -- Java Persistence Query Language
+* JSR -- Java Specification Requests
+* JTA -- Java Transaction API
+* JVM -- Java virtual machine
+* LOB -- large object
+* OO -- object-oriented
+* OOP -- object-oriented programming
+* ORM (also O/RM, or O/R mapping) -- object-relational mapping
+* OSGi -- Open Service Gateway Initiative
+* OSIV -- open session in view (antipattern)
+* OSS -- open-source software
+* OWASP -- Open Web Application Security Project
+* PK -- primary key
+* POM -- Project Object Model (in Maven)
+* QL -- query language (in general)
+* RDBMS -- relational database management system
+* SpEL -- Spring Expression Language
+* SQL -- Structured Query Language
+* SRP -- single responsibility principle
+* SVN -- Subversion
+* UI -- user interface
+* URL -- Uniform Resource Locator
+* WAR -- Web application ARchive
+* XML -- Extensible Markup Language

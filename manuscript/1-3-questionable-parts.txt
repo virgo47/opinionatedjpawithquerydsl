@@ -337,7 +337,7 @@ D> ### Flush and clear?!
 D>
 D> It is generally not recommended to call `flush()` or `clear()` explicitly as it does not follow
 D> *unit of work* pattern and often also hurts the performance. You may read about this (and other)
-D> anti-pattern in [this article](http://www.developerfusion.com/article/84945/flush-and-clear-or-mapping-antipatterns/)
+D> antipattern in [this article](http://www.developerfusion.com/article/84945/flush-and-clear-or-mapping-antipatterns/)
 D> (section *Anti-pattern: Flush and Clear*). But even that section mentions flush/clear as
 D> useful when processing a big batch. Maybe JPA should have some cleaner abstraction for this,
 D> but these are not typical scenarios and flush/clear is there when we need it.

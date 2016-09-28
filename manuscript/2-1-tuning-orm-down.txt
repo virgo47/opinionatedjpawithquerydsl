@@ -110,7 +110,7 @@ Responsibility Segregation* ([CQRS](http://martinfowler.com/bliki/CQRS.html)) or
 and interaction* ([DCI](https://en.wikipedia.org/wiki/Data,_context_and_interaction)), both of them
 usable with object-oriented languages, but not necessarily for every problem.
 
-Back to domain, though. One anti-pattern often mentioned in relation to ORM/JPA is called
+Back to domain, though. One antipattern often mentioned in relation to ORM/JPA is called
 [Anemic domain model](http://www.martinfowler.com/bliki/AnemicDomainModel.html). Let's quote
 master Martin Fowler a bit again:
 
@@ -187,7 +187,7 @@ Most typical enterprise applications can keep persistence context short -- and w
 ORM got mainstream a lot of people complained about lazy load exceptions (like the Hibernate famous
 `LazyInitializationException`) but this results from misusing ORM. Programmers solved it with
 making the session (persistence context) longer and introduced *Open Session In View* (OSIV)
-pattern. This is now widely considered anti-pattern and there are many good reasons for that.
+pattern. This is now widely considered antipattern and there are many good reasons for that.
 
 Using OSIV allowed to keep back-end and front-end programmers separated (with all the disadvantages
 when two minds do what one mind can do as well), dealing only with some

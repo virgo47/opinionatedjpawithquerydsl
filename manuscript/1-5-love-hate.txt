@@ -119,7 +119,7 @@ opens the *tin* with a *tin opener* -- an interaction of three objects. Why do w
 storing themselves then? It still may be perfectly valid pattern -- as I said real life is not
 always a good answer to our modelling needs -- but it is often overused. While in real-life human
 does it, we often have various *helper* objects for behaviour, often ending with *-er*. While I see
-why this is considered anti-pattern, I personally dislike the generalization of rules like
+why this is considered antipattern, I personally dislike the generalization of rules like
 *objects (classes) ending with -er are evil*. Sure, they let me think -- but *TinOpener* ends with
 "-er" too and it's perfectly valid (even real-life!) object.
 
