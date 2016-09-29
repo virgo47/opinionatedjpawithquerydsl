@@ -14,8 +14,8 @@ To actually finish something, I want to do this in the 1st edition:
     * Caching Considerations (100%) REVIEW
     * Love and Hate for ORM (100%) FINAL
 * Opinionated JPA
-    * ORM tuned down (90%) - finish When to tune down and when not?
-    * No further steps without Querydsl (40%)
+    * ORM tuned down (100%)
+    * No further steps without Querydsl (100%)
     * Troubles with *to-one* relationships (80%)
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
     * Removing `@ManyToOne` altogether (not JPA compliant) (100%) NEEDS REVIEW
@@ -28,8 +28,7 @@ To actually finish something, I want to do this in the 1st edition:
 %%    * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
 %%        * https://dzone.com/articles/opensessioninview-antipattern (OSIV antipattern)
 %%        * https://vladmihalcea.com/2016/05/30/the-open-session-in-view-anti-pattern
-    * Modularity, if you must
-        * https://virgo47.wordpress.com/2015/05/05/jpa-modularity-denied/
+    * Modularity, if you must (100%)
 * Common Problems
 
 %%    * Object identity, easy problem, recommended always the same way
@@ -47,6 +46,7 @@ To actually finish something, I want to do this in the 1st edition:
 %%			|| obj != null && getClass().isAssignableFrom(obj.getClass())
 %%			&& Objects.equals(getId(), ((BaseObject<?>) obj).getId());
 %%	}
+%% TODO: Can I load detached entity without projection? Is this true? http://stackoverflow.com/a/15632564/658826
 
     * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
     do it when you need to fetch from *to-many* as well (famous N+1 select problem)
