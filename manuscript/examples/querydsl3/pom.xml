@@ -10,7 +10,7 @@
   <version>1.0.0-SNAPSHOT</version>
 
   <properties>
-    <hibernate.version>5.1.0.Final</hibernate.version>
+    <hibernate.version>5.2.2.Final</hibernate.version>
     <eclipselink.version>2.6.2</eclipselink.version>
     <querydsl.version>3.7.2</querydsl.version>
     <h2.version>1.4.190</h2.version>
