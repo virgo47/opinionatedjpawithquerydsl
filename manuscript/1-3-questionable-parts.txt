@@ -9,13 +9,13 @@ suffer more than if you accepted it.
 
 You can't just stay on the JPA level, even for cases where ORM works well for you. There are
 some details you should know about the provider you use. For instance, let's say you have an entity
-with auto-generated identifier based on IDENTITY (or AUTO_INCREMENT) column. You call `persist`
+with auto-generated identifier based on `IDENTITY` (or `AUTO_INCREMENT`) column. You call `persist`
 on it and later you want to use its ID somewhere -- perhaps just to log the entity creation.
-And it doesn't work, because you're using
-EclipseLink and you didn't call `flush` to actually execute that INSERT. Without it the provider
-cannot know what value for ID it should use. Maybe your usage of ID value was not the right
-*ORM way*, maybe you should have use the whole entity somewhere, but the point is that if you do
-the same with Hibernate, it would work. You simply cannot assume that the ID is set.[^demoid]
+And it doesn't work, because you're using EclipseLink
+and you didn't call `em.flush()` to actually execute that `INSERT`. Without it the provider
+cannot know what value for ID it should use. Maybe your usage of the ID value was not the right
+*ORM way*, maybe you should have used the whole entity instead, but the point is that if you do
+the same with Hibernate it just works. You simply cannot assume that the ID is set.[^demoid]
 
 [^demoid]: You can see this demonstrated in `examples/querydsl-basic` if you run:
     `mvn test-compile exec:java -Dexec.mainClass="tests.GeneratedIdSettingDemo"`
@@ -23,8 +23,8 @@ the same with Hibernate, it would work. You simply cannot assume that the ID is 
 
 ## Lazy on basic and *to-one* fields {#lazy-problems}
 
-While you can map these fields as lazy, the behaviour is actually not guaranteed according
-to the JPA specification ([[JPspec](#bib-jpspec)]). Its section 2.2, page 25, states:
+While you can map these fields as lazy the behaviour is actually not guaranteed according
+to the JPA specification [[JPspec](#bib-jpspec)]. Its section 2.2, page 25, states:
 
 {icon=quote-right}
 G> If property access is used and lazy fetching is specified, portable applications should not
@@ -376,15 +376,16 @@ enough, it will call it with age column set to `NULL`.
 Good thing is that whatever mechanism to get the ID value is used you get the consistent sequence
 of insert and update. But why? Is it necessary?[^jpa-gotchas]
 
-[^jpa-gotchas]: You can check video with more [JPA Gotchas](https://youtu.be/XGiKJzZWnCA). Note
-that many are related to the use of Hibernate and not necessarily general for other JPA providers.
+[^jpa-gotchas]: You can check video with this and more [JPA Gotchas](https://youtu.be/XGiKJzZWnCA).
+    Note that many are related to the use of Hibernate and not necessarily general for other
+    JPA providers.
 
 There is a reason I'm talking about Hibernate, as you might have guessed. EclipseLink simply
 reconciles it all to the single `INSERT` during the `commit()`. If it is absolutely necessary
-to insert into the database in some state (maybe for some strange constraints reasons) and update
-afterwards you have to "push" it with an explicit `flush()` thrown somewhere in between. That is
-probably the only reliable way how to do it if you don't rely on the behaviour of a particular
-JPA provider.[^demoinsup]
+to insert the entity into the database in a particular state (maybe for some strange constraints
+reasons) and update afterwards you have to "push" it with an explicit `flush()` placed somewhere
+in between. That is probably the only reliable way how to do it if you don't want to rely on the
+behaviour of a particular JPA provider.[^demoinsup]
 
 [^demoinsup]: You can try it yourself when you watch the console output while debugging and
     stepping through the class `tests.PersistAndSetDemo` from `querydsl-basic` module.
