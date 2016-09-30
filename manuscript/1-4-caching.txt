@@ -15,7 +15,7 @@ round-trips to the database. But caching has consequences.
     in [[PJPA2](#bib-projpa2)] too, but *in-memory cache* is used more often there.
 
 
-## Caching considerations {#caching-considerations}
+## Caching control
 
 [[JPspec](#bib-jpspec)] doesn't say much about caching. It says how to configure it -- starting
 with `shared-cache-mode` in your `persistence.xml`. But I'd probably study caching documentation
