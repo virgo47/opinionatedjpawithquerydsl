@@ -74,6 +74,7 @@ touched columns instead of marking the whole entity as "dirty".
 
 To be concrete, EclipseLink out of the box updates only modified attributes/columns, while
 Hibernate updates all of them except for ID which is part of the `WHERE` clause.[^el-hib-upd]
+There is a Hibernate specific annotation `@DynamicUpdate` that changes this behaviour.
 We may even argue what is better and when. If you load an object in some state, change a single
 column and then commit the transaction, do we really want to follow the changes per attribute or do
 we expect the whole object to be "transferred" into the database as-is at the moment of the commit?
@@ -342,6 +343,10 @@ D> antipattern in [this article](http://www.developerfusion.com/article/84945/fl
 D> (section *Anti-pattern: Flush and Clear*). But even that section mentions flush/clear as
 D> useful when processing a big batch. Maybe JPA should have some cleaner abstraction for this,
 D> but these are not typical scenarios and flush/clear is there when we need it.
+D>
+D> In this case it's better to use flush and clear instead of just flush, as without clearing
+D> every next flush has to do more and more dirty checking, even if you think you don't have to
+D> mind the growing size of the persistence context.
 
 
 ## Other entity manager gotchas
