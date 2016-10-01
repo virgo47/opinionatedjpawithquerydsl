@@ -275,76 +275,6 @@ The cost may be alleviated by a cache somewhat, but you just trade CPU/network c
 -- even if you don't need most of the loaded data at all (maybe ever).
 
 
-## Use DTO and select columns manually
-
-While we cannot control `em.find(...)` much, we can try to select only the columns we are
-interested in using a query. Let's try it:
-
-{title="Selecting specific columns", lang=java}
-~~~
-Tuple tuple = new JPAQuery<QDog>(em)
-  .select(QDog.dog.id, QDog.dog.name, QDog.dog.breed.id)
-  .from(QDog.dog)
-  .where(QDog.dog.id.eq(1))
-  .fetchOne();
-~~~
-
-[Our demo code](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/many-to-one-eager/src/test/java/tests/SingleEntityReadSelectedColumns.java)
-returns Querydsl `Tuple` but it can also return a DTO using the constructor expression. We're
-selecting a single entity, but it works the same way for lists as well. I included an expression
-returning value of the column `breed_id`, we have to use an association path -- and that raises
-questions. Let's see what SQL is generated for this query.
-
-{title="EclipseLink query for a Dog with breed_id", lang=text}
-~~~
-SELECT t0.ID, t0.NAME, t1.ID FROM DOG t0, BREED t1
-  WHERE ((t0.ID = ?) AND (t1.ID = t0.BREED_ID))
-~~~
-
-EclipseLink does exactly what the JPQL says -- but is this the best way?
-
-{title="Hibernate query for a Dog with breed_id", lang=text}
-~~~
-select dog0_.id as col_0_0_, dog0_.name as col_1_0_, dog0_.breed_id as col_2_0_
-from Dog dog0_ where dog0_.id=?
-~~~
-
-Now this is cool -- and exactly what I expect from a smart ORM. Of course the `breed_id` is
-directly on the `Dog` table, there is absolutely no need to join `Breed` just for its ID.
-
-This seems usable and it definitely does not trigger any cascading eager fetch, unless we include
-entity expression in the `select`, e.g. `QDog.dog.breed` could ruin the party as it loads the whole
-content of the `Breed` entity and if it contains any *to-one* it may get loose. The downside of
-this approach is obvious -- we have to name all the attributes (columns) we need and it may get
-tedious if we have wide tables.
-
-I really did not enjoy doing it for 60+ columns and that's when you start thinking about code
-generation or other kind of framework. If you don't have to, you don't want to complicate your code
-with such ideas, so if you are sure you can rely on your ORM with lazy load even for *to-one* then
-do that. If you can't you have to decide when to use the ORM as-is, probably relying on the
-second-level cache to offset the performance hit caused by triggered loads, and when to explicitly
-cherry-pick columns you want to work with.
-
-Mentioning cache, we also have to realize that listing columns will not use an entity cache, but it
-may use query cache. We're getting closer to traditional SQL, just with JPQL shape. If persistence
-context contains unflushed changes and flush mode is set to `COMMIT` query will not see any changes
-either. Typically though, flash mode `AUTO` is used which flushes pending changes before executing
-queries.
-
-Finally, there is one more bothersome aspect of this solution. In a typical CRUD scenario you get
-a new version of an entity from presentation layer and you want to save the changes to the
-database. There are two basic ways how to do it:
-
-* You may merge the whole entity using JPA. This is simple from programmer's perspective but it
-means that presentation layer may change any and all attributes (columns). This is usable only for
-the most primitive use cases.
-* You can load the old version of the entity by its ID -- and here you don't want to bother with
-a select specifying all the columns. You may select only the columns you need to execute various
-checks or you need to preserve their value (in this case these are probably not even part of a DTO
-coming from the presentation layer) -- this sounds reasonable. After that you may merge the entity
-using JPA just as in the first case, but it is always more involved than using `em.find` to get the
-old state of that entity.
-
 ## Dual relationship mapping
 
 When I say *dual mapping* I mean mapping of the relationship both as an object and foreign key
@@ -401,7 +331,7 @@ database. With EclipseLink we have to force it if we need the ID -- calling `set
 would otherwise set dog's FK to the breed to `null`. Hibernate is rather eager with `INSERT`s which
 is convenient for this scenario.
 
-Reverse case -- with `breed` as the persisted field and `breedId` as the readonly one -- is less
+The reverse case -- with `breed` as the persisted field and `breedId` as the readonly one -- is less
 useful and I cannot find any reasons to use it instead of the traditional JPA relationship mapping.
 You can get foreign key value anytime calling `breed.getId()`.
 
@@ -422,16 +352,16 @@ the `breed` mapping we can construct JPA compliant JPQL queries without waiting 
 version of JPA -- if they bring the option of joining root entities at all, that is. But currently
 dual mapping also means that we can only avoid the fetch cascade if we:
 
-* rely on `LAZY` hint -- not guaranteed by JPA, but if provided by a provider, you can consider
-it solved;
-* or query the entity with all the columns named explicitly (e.g. include `breedId`, skip `breed`)
--- this, however, cripples the caching (if you use it), you don't get attached entity *and* (above
-all) it is annoying to code.
+* Rely on `LAZY` hint -- not guaranteed by JPA, but if provided by a provider, you can consider
+it solved.
+* Or we query the entity with all the columns named explicitly (e.g. include `breedId`, but skip
+`breed`) -- this, however, cripples the caching (if you use it), you don't get attached entity
+*and* (above all) it is annoying to code. We will talk more about this in the following sections.
 
 So, dual mapping is an interesting tool but does not allow us to avoid all the eager problems.
 
-I> There is something similar to this "dual mapping" mentioned in the
-I> [[JPspec](#bib-jpspec)]. It relates to mapping of relations that are part of the primary key
+I> Something similar to the dual mapping is mentioned in the [[JPspec](#bib-jpspec)].
+I> It relates to mapping of relations that are part of the primary key
 I> and involves `@MapsId`. The specification describes this in the section *2.4.1* and examples
 I> therein, also see *11.1.39*. For instance, instead of combined `@Id` and `@OneToOne` mapping
 I> when primary key is also a foreign key to some master entity you may want to have `@Id` as a
@@ -445,11 +375,115 @@ I> actually why I never saw this annotation before I started working on this boo
 I> `@IdClass` annotations.
 
 
-## Alternative "view" entities
+## Using projections for fetching
+
+While we cannot control `em.find(...)` much, we can try to select only the columns we are
+interested in using a query. The result handling when we "project" selected columns into an object
+is called the *projection*. Querydsl can project results using a constructor or bean accessors,
+both applicable to entity objects or DTOs.[^qdsl-result-handling]
+
+[^qdsl-result-handling]: http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#result_handling
+
+D> Just as we should only fetch rows we want (the right "lenght" of the result set) we should
+D> also pick only the necessary columns (the right "width" of the result set). For some cases the
+D> difference may not be noticeable and it may be convenient to find the attribute in the result
+D> should we need it in the future, but it lowers the performance as mentioned in many resources,
+D> among others also in the recent [[HPJP](#bib-hpjp)], chapter on *Fetching*.
+D>
+D> Using projection helps on more fronts actually. Not only you save the bandwidth but unit of work
+D> does not manage these results either which means no dirty checking at the end of the transaction.
+D> So when we have pure reading operations -- especially when paginating over entities, displaying
+D> only particular columns, it makes sense to use projections.
+
+Let's try it:
+
+{title="Selecting specific columns", lang=java}
+~~~
+Tuple tuple = new JPAQuery<QDog>(em)
+  .select(QDog.dog.id, QDog.dog.name, QDog.dog.breed.id)
+  .from(QDog.dog)
+  .where(QDog.dog.id.eq(1))
+  .fetchOne();
+~~~
+
+[Our demo code](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/many-to-one-eager/src/test/java/tests/SingleEntityReadSelectedColumns.java)
+returns Querydsl `Tuple` but it can also return a DTO using the constructor expression. We're
+selecting a single entity, but it works the same way for lists as well. I included an expression
+returning value of the column `breed_id`, we have to use an association path -- and that raises
+questions. Let's see what SQL is generated for this query.
+
+{title="EclipseLink query for a Dog with breed_id", lang=text}
+~~~
+SELECT t0.ID, t0.NAME, t1.ID FROM DOG t0, BREED t1
+  WHERE ((t0.ID = ?) AND (t1.ID = t0.BREED_ID))
+~~~
+
+EclipseLink does exactly what the JPQL says -- but is this the best way?
+
+{title="Hibernate query for a Dog with breed_id", lang=text}
+~~~
+select dog0_.id as col_0_0_, dog0_.name as col_1_0_, dog0_.breed_id as col_2_0_
+from Dog dog0_ where dog0_.id=?
+~~~
+
+Now this is cool -- and exactly what I expect from a smart ORM. Of course the `breed_id` is
+directly on the `Dog` table, there is absolutely no need to join `Breed` just for its ID. I'd
+actually use the *dual mapping* described previously and select `QDog.dog.breedId` directly which
+avoids join with any provider.
+
+This seems usable and it definitely does not trigger any cascading eager fetch, unless we include
+entity expression in the `select`, e.g. Using `QDog.dog.breed` could ruin the party as it loads the
+whole content of the `Breed` entity and if it contains any *to-one* it may get loose. The downside
+of this approach is obvious -- we have to name all the attributes (columns) we need and it may get
+tedious if we have wide tables.
+
+D> Not only we have to name it in the `select(...)` clause, we also have to prepare the constructor
+D> for it perhaps in a separate DTO. In the constructor you have to assign all the parameters to
+D> the fields, etc. Some of it may be generated but you still have to deal with a lot of
+D> boilerplate code. For update scenarios there may be a better solution (read about [entity
+D> views](#entity-views) lower), but for reading this is still the recommended solution --
+D> especially if you don't want to cripple your performance for no good reason.
+
+I really did not enjoy doing it for 60+ columns and that's when you start thinking about code
+generation or other kind of framework. If you don't have to, you don't want to complicate your code
+with such ideas, so if you are sure you can rely on your ORM with lazy load even for *to-one* then
+do that. If you can't you have to decide when to use the ORM as-is, probably relying on the
+second-level cache to offset the performance hit caused by triggered loads, and when to explicitly
+cherry-pick columns you want to work with.
+
+Mentioning cache, we also have to realize that listing columns will not use an entity cache, but it
+may use query cache. We're getting closer to traditional SQL, just with JPQL shape. If persistence
+context contains unflushed changes and flush mode is set to `COMMIT` query will not see any changes
+either. Typically though, flash mode `AUTO` is used which flushes pending changes before executing
+queries.
+
+
+## Read and update scenario
+
+Finally, there is one more bothersome aspect of this solution. In a typical CRUD scenario you get
+a set of new attribute values from the presentation layer and you want to save the changes to the
+database. The presentation layer may send it as a DTO object or a detached entity (which
+effectively works as a DTO at the moment). At that moment we typically never have the original
+entity hThere are two basic ways how to do it:
+
+* You may merge the whole entity using JPA. This is simple from programmer's perspective but it
+means that presentation layer may change any and all attributes (columns). This is usable only for
+the most primitive use cases.
+* You can load the old version of the entity by its ID -- and here you don't want to bother with
+a select specifying all the columns. You may select only the columns you need to execute various
+checks or you need to preserve their value (in this case these are probably not even part of a DTO
+coming from the presentation layer) -- this sounds reasonable. After that you may merge the entity
+using JPA just as in the first case, but it is always more involved than using `em.find` to get the
+old state of that entity.
+
+%% mention entity views
+
+
+## Alternative entity "views" {#entity-views}
 
 If we want to solve painful read/update scenario (assuming we know the ID of the entity) and we
-need to work with only some attributes of the entity how about mapping it so? We will leave full
-mapping in some "master" class and create another entity that gives us partial view of the
+need to work with only some attributes of the entity we can try to map only those. We will leave
+full mapping in some "master" class and create another entity that gives us partial view of the
 selected attributes. I'll use name *entity view* for such a class.
 
 D> I cannot find anything about multiple mappings for the same table in [[JPspec](#bib-jpspec)]
@@ -459,9 +493,46 @@ D> Hibernate forums that also deals with some of the limitations -- we will cove
 D> For this reason I doubt there is a settled name for this "pattern" so I dared to bring forth
 D> the name *entity view* as it indeed is a partial view of all the attributes.
 
+The full `Dog` mapping looks like this:
+
+~~~
+@Entity
+public class Dog {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
+
+  private String name;
+
+  @ManyToOne
+  private Breed breed;
+...
+~~~
+
+We will create alternative view of this entity named `DogBasicView` (naming sure is hard):
+
+~~~
+@Entity
+@Table(name = "Dog")
+public class DogBasicView {
+  @Id
+  @Column(updatable = false)
+  private Integer id;
+
+  private String name;
+~~~
+
+The difference is we didn't map the breed because, presumably, we don't want to touch it in some
+"Edit dog's basic attributes" form. In real life it doesn't have to be just a name, it can plenty
+of attributes without just some you don't need.
+
 %% another problem (merge) is solved by using multiple @Entity "views" on the same table
 %% TODO: If using multiple entity "views" for a single table, can we disable generation for the
 %% duplicates?
+
+%% TODO: mention the separate lifecycle of the view and master, both may go to cache, etc.
+
+%% TODO: compare with projections, mention the crucial difference (this involves EM)
 
 D> ### What if I auto-generate schema?
 D>
