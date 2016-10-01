@@ -458,25 +458,40 @@ either. Typically though, flash mode `AUTO` is used which flushes pending change
 queries.
 
 
-## Read and update scenario
+## Entity update scenario
 
-Finally, there is one more bothersome aspect of this solution. In a typical CRUD scenario you get
-a set of new attribute values from the presentation layer and you want to save the changes to the
-database. The presentation layer may send it as a DTO object or a detached entity (which
-effectively works as a DTO at the moment). At that moment we typically never have the original
-entity hThere are two basic ways how to do it:
+Most applications need to update entities as well -- and projections are not very useful in this
+case. There is a simple and a complex way how to update an entity:
 
-* You may merge the whole entity using JPA. This is simple from programmer's perspective but it
-means that presentation layer may change any and all attributes (columns). This is usable only for
-the most primitive use cases.
-* You can load the old version of the entity by its ID -- and here you don't want to bother with
-a select specifying all the columns. You may select only the columns you need to execute various
-checks or you need to preserve their value (in this case these are probably not even part of a DTO
-coming from the presentation layer) -- this sounds reasonable. After that you may merge the entity
-using JPA just as in the first case, but it is always more involved than using `em.find` to get the
-old state of that entity.
+* In the simple case we take whatever came to the service layer (or its equivalent) and simply
+push it to the database. We can use `merge` or JPQL (Querydsl) update clauses for this.
+* In many cases complex business rules requires us to consult the current state of the entity first
+and apply the changes in it in a more subtle way than JPA `merge` does. In this case we have to
+read the entity, change what needs to be changed and let JPA to update it. Alternatively, we may
+read just the selection of the columns (projection) and execute an update clause.
 
-%% mention entity views
+If the business rules don't require it and performance is not an issue I'd recommend using merge
+as it's very easy to understand and does everything for us. It executes `SELECT` and `UPDATE` for
+us and we don't have to care about details. For a single entity update in some typical CRUD-based
+information system this may be perfect solution that doesn't involve convoluted code.
+
+If we need to read the entity first I'd first go for `em.find(id)` applying the changes from an
+incoming DTO to it, complying to all the necessary business rules. This also involves one `SELECT`
+and one `UPDATE`, except that the select may trigger some additional finds across *to-one*
+relationships even if we don't need them in this update scenario. The whole select stage can be
+much faster if we use the second-level cache, as it avoids one round-trip to the database
+completely.
+
+To avoid this we can read the information as a projection (or a `Tuple`) and later execute a
+surgical `UPDATE` clause. This is nicer to our database although we simply cannot get under the
+two roundtrips (read and update), unless we use some conversation scope in memory. This also avoids
+the interaction with the persistence context, hence takes less memory, avoids dirty checking at the
+end of the transaction, etc. The resulting code, naturally, is more complex, reflecting the
+complexity of the scenario.
+
+If you don't mind using the persistence context and you're fine with using `em.find(...)` and later
+implicit update at the end of transactions you may use *entity view* described in the next section
+to eliminate traversing *to-one* relationships you're not interested in.
 
 
 ## Alternative entity "views" {#entity-views}
@@ -526,29 +541,31 @@ The difference is we didn't map the breed because, presumably, we don't want to 
 "Edit dog's basic attributes" form. In real life it doesn't have to be just a name, it can plenty
 of attributes without just some you don't need.
 
-%% another problem (merge) is solved by using multiple @Entity "views" on the same table
-%% TODO: If using multiple entity "views" for a single table, can we disable generation for the
-%% duplicates?
+Now if we read `DogBasicView`, change it and wait for the end of the transaction only the columns
+in the entity view will be modified. We have a guarantee that `UPDATE` will not mention any
+unmapped columns. That means that you can use various entity views for various update scenarios.
+Such an entity view should result in much less code as you don't have to name any columns in a
+projection (and the related constructor), you simply map them in a particular entity view.
 
-%% TODO: mention the separate lifecycle of the view and master, both may go to cache, etc.
+Using entity view for pure reading is sub-optimal compared to projections as mentioned previously
+(memory, dirty-checking, ...) but for straightforward update scenarios where original state of the
+entity is still important as well, e.g. for validation and access permission purposes, impact on
+the persistence context may be within your tolerance. Using projection and explicit update instead
+can be an overkill making the code unnecessarily complicated.
 
-%% TODO: compare with projections, mention the crucial difference (this involves EM)
+There are couple of points you have to keep in your mind though:
 
-D> ### What if I auto-generate schema?
-D>
-D> TODO
+* Never combine various "views" of the same entity in the same persistence context. They all live
+their own life and you cannot expect that `dogBasic.setName(...)` will affect the state of a
+different entity instance of different type `Dog` even though they both represent the same dog
+in the database.
+* Our `DogBasicView` will have its own space not only in the "first-level cache" (persistence
+context) but also in the second-level cache. I'd be very careful about caching an entity with
+couple of different classes representing the same table. (Read: I'd not cache it at all, but
+that's my personal taste. You definitely want to check how the caching works in such situations.)
 
-Entity view does not allow to select entities by the omitted foreign keys. So we cannot load all
-`DogBasicView` instances for a collie and do something common with them. This doesn't seem to be
-practical limitation for update scenario though. We would either use bulk update/delete mechanism,
-circumventing the persistence context, or we would load the entity view by its ID, change
-attributes of our interest and let the persistence context perform the update.
 
-Especially for single-instance load/update scenarios this seems to be the most practical solution:
-
-* We avoided problems with eager *to-one* when we don't want to touch that relationship. (If we
-need to touch it we have to deal with it using the main entity.)
-* We can use persistence context naturally.
+### Using entity views in `JOIN`s
 
 Because of the missing foreign keys these entity views are unusable when we want to show a table
 of results from joined query (e.g. dogs and their breeds). While we could use a subquery in an
@@ -561,6 +578,15 @@ resources.[^read-to-dto]
 
 [^read-to-dto]: See [[HPJP](#bib-hpjp)], introduction of the chapter *Fetching* in part *JPA and
 Hibernate*.
+
+If we have raw foreign key values mapped in the entity view we can use non-standard approach
+supported by all major JPA providers -- we will discuss this in the next chapter. However, for
+pure reads you really should prefer projections.
+
+
+### Entity views and auto-generated schema
+
+%% TODO
 
 
 ## What to do?
