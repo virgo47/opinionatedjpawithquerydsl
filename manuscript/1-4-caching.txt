@@ -45,15 +45,19 @@ T> as fast as you can, but you avoided a lot of problems, like stale data on the
 T> change them in the database directly or distributed caches when you scale your application
 T> while still using a single database server (until sufficient).
 
-Probably the most important question to answer is: Is your application the sole user of
-a particular database? If yes, you may safely use the cache without much thinking (or defaults,
-which may be no cache as well). This does not mean that is a good idea. If you start tuning it
-be prepared for a walk that may be not that easy.
+Probably the most important question to consider is: Is your application the sole user of
+a particular database? Is it running in a single process? If yes, you may safely use the cache. But
+I'd not "just use the defaults" of the JPA provider -- which may be no cache as well. It's
+not a good idea to use caching without any thought at all. I prefer not to use it until I feel the
+need. When you start using the cache and tuning it be prepared for a walk that may be not as easy
+as it seems.
 
-Still, entity cache returning you entities by ID really quickly is a good idea because
-it makes the problem of eager-loads of *to-one* relationships less serious. It doesn't fix
-it though as all those entities are part of your current persistence context whether you want them
-or not. We already mentioned that units of work bigger than necessary are not for free.
+Entity cache returning you entities by ID really quickly sounds like a good idea because
+it makes the problem of eager-loads of *to-one* relationships less serious. E.g. when we load a dog
+we may get its breed quickly from the cache. It doesn't fix the problem though as all the
+additional entities are part of your current persistence context whether you want them or not.
+E.g. we want to update a single attribute of a dog and we are not interested in its breed. We
+already mentioned that units of work bigger than necessary are not for free.
 
 T> ### When JPA is not the only one caching
 T>
@@ -181,9 +185,11 @@ In the code it may look automagical, but it must be explicit somewhere -- your s
 well known to all the people who may encounter it in any way (even without knowing).
 
 You always trade something for something -- with caching it's typically memory for speed. Memory
-can slow you down too, but in general we have plenty of it nowadays. If you distribute you enter
-different world altogether and I'd think twice before going there. You must feel the need for it
-and you must measure what you got (because you'll definitely get complexity).
+can slow you down too, but in general we have plenty of it nowadays. While you are in a single
+process a JPA provider can typically manage the data consistency. If you have a distributed
+architecture you enter a different world altogether and I'd think twice before going there. You
+must feel the need for it and you must measure what you got -- because you'll definitely get
+complexity and you have to think about consistency much more.
 
 Don't mix freely caching on multiple levels. Database cache is mostly transparent to us, but
 when you mix two declarative caches you often make matters worse. Especially when you cache
