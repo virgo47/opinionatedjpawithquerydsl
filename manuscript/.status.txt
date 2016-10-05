@@ -11,12 +11,12 @@ To actually finish something, I want to do this in the 1st edition:
     * Good Parts (100%) FINAL
     * Missing Parts (100%) FINAL
     * Questionable Parts (100%) FINAL
-    * Caching Considerations (100%) REVIEW
+    * Caching Considerations (100%) FINAL
     * Love and Hate for ORM (100%) FINAL
 * Opinionated JPA
     * ORM tuned down (100%)
     * No further steps without Querydsl (100%)
-    * Troubles with *to-one* relationships (80%)
+    * Troubles with *to-one* relationships (100%) NEEDS REVIEW
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
     * Removing `@ManyToOne` altogether (not JPA compliant) (100%) NEEDS REVIEW
 %% Second edition:

@@ -586,7 +586,61 @@ pure reads you really should prefer projections.
 
 ### Entity views and auto-generated schema
 
-%% TODO
+In most cases we don't have to think about schema generation but what if we do? What if we have
+lines like this in our `persistence.xml`?
+
+{lang=xml}
+~~~
+<property name="javax.persistence.schema-generation.database.action" value="create"/>
+~~~
+
+We utilized the property standardized in the *JPA 2.1* and we expect the JPA provider will generate
+schema in the database for us. This is particularly handy when we run various tests or short demos.
+Now what happens when we declare two entities for the same table in `persistence.xml`?
+
+{lang=xml}
+~~~
+<persistence-unit ...>
+  ...
+  <class>modeltoone.Dog</class>
+  <class>modeltoone.DogBasicView</class>
+  ...
+~~~
+
+When we run any demo using this persistence unit we can check the log and see the `CREATE`
+statements it uses. With EclipseLink there will be a single one for our `Dog`:
+
+~~~
+CREATE TABLE DOG (ID INTEGER IDENTITY NOT NULL, NAME VARCHAR, BREED_ID INTEGER, PRIMARY KEY (ID))
+~~~
+
+And it contains all the necessary columns. But if we switch the order in `persistence.xml`
+EclipseLink generates the table based on `DogBasicView` and it will miss the `breed_id` column.
+Hibernate scans for classes even in SE environment and if you want to try the effect of the order
+of `<class>` elements in `persistence.xml` you also have to include this:
+
+{lang=xml}
+~~~
+<exclude-unlisted-classes>true</exclude-unlisted-classes>
+~~~
+
+But the order does not affect Hibernate, it somehow picks the "widest" class for the table and
+creates the table based on it. It works this way without putting classes in the XML as well. What
+happens if the main `Dog` entity does not have all the columns mapped and one of the entity views
+has additional column? Let's say `DogWithColor` has a `color` column that is not present in `Dog`
+class.
+
+This is not a good situation -- neither EclipseLink nor Hibernate can deal with it. EclipseLink
+generates the table based on whatever entity is first in the list and Hibernate picks some
+candidate. I'm not exactly sure about Hibernate's algorithm as it's not an alphabetical order
+either, somehow it seems to find the best candidate in my limited test cases. But it does not union
+all the columns from all the entities for the same table and that means it has to choose between
+the `Dog` and the `DogWithColor` -- and that means some columns will not be generated.
+
+W> When using entity views it is recommended that the master class for an entity contains complete
+W> mapping and neither view contains any "non-master" attributes. This may not be a problem when
+W> the schema is not generated but I believe it is a good style to have a canonical mapping in
+W> one of the classes.
 
 
 ## What to do?

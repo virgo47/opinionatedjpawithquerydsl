@@ -1,8 +1,8 @@
 package tests;
 
 import modeltoone.Breed;
-import modeltoone.Dog;
 import modeltoone.DogBasicView;
+import modeltoone.Dog;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

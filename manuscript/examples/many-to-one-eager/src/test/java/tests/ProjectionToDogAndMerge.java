@@ -4,7 +4,6 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import modeltoone.Breed;
 import modeltoone.Dog;
-import modeltoone.DogBasicView;
 import modeltoone.QDog;
 
 import javax.persistence.EntityManager;
@@ -14,7 +13,7 @@ import javax.persistence.Persistence;
 public class ProjectionToDogAndMerge {
 
   public static void main(String[] args) {
-    run("demo-el");
+//    run("demo-el");
     run("demo-hib");
   }
 
