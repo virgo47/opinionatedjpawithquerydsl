@@ -2,7 +2,7 @@
 
 To use ORM/JPA really well you need to know a lot about it, about the provider, its settings,
 about caching mechanisms and so on. And you should not be oblivious to SQL either. I've never
-worked on a system where ORM/JPA was used to its full extent and everybody was really happy with
+worked on a system where ORM/JPA was used and at the same time everybody was really happy with
 the result. The system got slower, [DBAs](https://en.wikipedia.org/wiki/Database_administrator)
 asked why we produce crappy SQLs and so on. We fought with ORM drawbacks before we could benefit
 from the features. It all comes down to inherent complexity of ORM. Any pro can instantly blame

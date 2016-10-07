@@ -28,7 +28,6 @@ To actually finish something, I want to do this in the 1st edition:
 %%    * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
     * Modularity, if you must (100%)
 * Common Problems
-
 %%    * Object identity, easy problem, recommended always the same way
 %%        * Composite `@Id` or `@IdClass`?
 %%        * Equals object or id in queries? TODO - does it matter? tests with popular ORMs
@@ -45,18 +44,15 @@ To actually finish something, I want to do this in the 1st edition:
 %%			&& Objects.equals(getId(), ((BaseObject<?>) obj).getId());
 %%	}
 %% TODO: Can I load detached entity without projection? Is this true? http://stackoverflow.com/a/15632564/658826
-
     * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
     do it when you need to fetch from *to-many* as well (famous N+1 select problem)
         * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
     * Mapping enums (0%) -- using integer DB values, dual mappings (setter sets the other part),
     conversions, reverse conversion
-
 %%    * Injecting EMF for better control (integration/standalone scenarios, not typical for webapps/simple services)
 %%        * Always try to keep create/close in one try/finally block
 %%        * Multiple transactions ("system/infrastructure" around business)
 %%    * Embeddable limitations (0%)
-
     * Advanced Querydsl (15%)
 * Appendices
     * H2 Database (50%)
