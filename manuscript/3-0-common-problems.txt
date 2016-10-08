@@ -1,1 +1,11 @@
 -# Common problems {#part-common-problems}
+
+After the previous part this one will be more relaxed. We will talk about couple of typical
+problems related to the use of ORM/JPA, some of them stemming from the underlying relational
+model. We will try to load our data in an appropriate manner, avoiding executing many unnecessary
+statements or adding superfluous joins where possible.
+
+Finally we will wrap it all with more advanced Querydsl topics.
+
+Unlike in the previous part there is no recommended order of the chapters and you can read any
+of them as you like.

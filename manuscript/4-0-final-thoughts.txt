@@ -11,10 +11,19 @@ domains. But from my experience ORM gets unwieldy for larger domains, especially
 domain-driven design (which I admit never saw in proper practice). Even *the* DDD proponent, Eric
 Evans, lately admitted that proper DDD may be easier with systems where context boundaries are not
 only logical, but also physical -- like microservices. I agree, because implicit is never as solid
-as explicit, as I often stressed in this book. (We may as well agree that many implicit and
-automagic solutions make our live actually easier. But they must be supported by knowledge. When
-people maintaining the system change and new ones don't understand those implicit parts all the
-benefits are gone.)
+as explicit, as I often stressed in this book.
+
+We may as well agree that many implicit and automagic solutions make our live actually easier.
+But they must be supported by knowledge. When people maintaining the system change and new ones
+don't understand those implicit parts all the benefits are gone.
+
+D> ORM as a companion for rich domain models is an idea firmly rooted in the 2000s although it
+D> had been boiling for some time already. [[DDD](#bib-ddd)] book is an undisputed milestone in
+D> the area of domain modelling in software. Early 2000s were also very rigid with J2EE
+D> "design-by-committee" standard and just a couple of alternatives. Later explosion of approaches
+D> offered many more options like [event sourcing](http://martinfowler.com/eaaDev/EventSourcing.html)
+D> or [CQRS](http://martinfowler.com/bliki/CQRS.html). In some of these architectures ORM may not
+D> provide enough benefits. 
 
 If we take the ORM shortcut for simple case it may still happen that the simple problem gets more
 complex, application grows a lot and we will suddenly have to live with a lot of ORM investment
@@ -23,11 +32,11 @@ know that I would rather use some other solution instead, I'd think couple of ti
 possibility of this small project/product becoming big.
 
 Do I prefer JPA or concrete ORM provider? For many years the answer was pretty clear -- I always
-strove to stay within JPA realm. Accidentally, though, I went down the path with EclipseLink[^hib51x]
-and its capability to `JOIN` with entity roots -- which I believe would be an incredible addition
-for the *JPA 2.2*. The more I work with JPA the less I believe in easy transition from one provider
-to another -- except for simple cases. The more complex queries the more I'd try to find some
-alternative. Maybe the first step would be staying with ORM and utilizing the full power of a
+strove to stay within JPA realm. Accidentally, though, I went down the path with EclipseLink
+and its capability to `JOIN` with entity roots[^hib51x] -- which I believe would be an incredible
+addition for the *JPA 2.2*. The more I work with JPA the less I believe in easy transition from one
+provider to another -- except for simple cases. The more complex queries the more I'd try to find
+some alternative. Maybe the first step would be staying with ORM and utilizing the full power of a
 single provider -- whatever the provider is. That means checking the bugs on their issue tracking
 system when you encounter one, reporting new ones and so on.
 
