@@ -7,7 +7,7 @@
 
 {#bib-hpjp}
 [HPJP] Vlad Mihalcea. *High Performance Java Persistence*, Leanpub, 2016.
-https://leanpub.com/high-performance-java-persistence
+[Book site](https://leanpub.com/high-performance-java-persistence)
 
 {#bib-jaa}
 [JAA] Kirk Knoernschild. *Java Application Architecture: Modularity Patterns with Examples Using
@@ -15,7 +15,7 @@ OSGi*, Prentice Hall, 2012.
 
 {#bib-jpspec}
 [JPspec] Java Persistence 2.1 Expert Group. *JSR 338: JavaTM Persistence API, Version 2.1*, Oracle,
-2013. http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html
+2013. [Download](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
 
 {#bib-poeaa}
 [PoEAA] Martin Fowler. *Patterns of Enterprise Application Architecture*, Addison-Wesley, 2002.
@@ -26,6 +26,10 @@ OSGi*, Prentice Hall, 2012.
 {#bib-sdata}
 [SData] Mark Pollack, Oliver Gierke, Thomas Risberg, Jon Brisbin, and Michael Hunger.
 *Spring Data*, O’Reilly Media, Inc., 2012.
+
+{#bib-sqlpe}
+[SQLPE] Markus Winand. *SQL Performance Explained*, 2012.
+[Book site](http://sql-performance-explained.com/)
 
 
 ## Online articles, blogs {#resources-blogs}

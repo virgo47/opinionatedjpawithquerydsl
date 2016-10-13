@@ -1,7 +1,27 @@
 # Avoid N+1 select {#ch-avoid-n-plus-1}
 
+While performance tuning is not the main goal of this book we should follow some elementary
+performance common sense. If we can avoid an unnecessary query we should do so. With ORM/JPA
+we can generate a lot of needless queries without even realizing. In this chapter we will cover
+the most pronounced problem called *N+1 select*.
+
+{icon=book}
+G> ### SQL Performance Explained
+G>
+G> I can highly recommend this incredible book ([[SQLPE](#bib-sqlpe)]) which explains indexes,
+G> joins, execution plans and many other aspects of queries (including data modification) in just
+G> under 200 pages. This not only is a true gem in this area, it can be also obtained as PDF from
+G> [its site](http://sql-performance-explained.com) for 10 Eur or so. It mentions N+1 problem
+G> as well.
+
+
+## Anatomy of N+1 select
+
+
+
+
 ## Paginating with *to-many* {#to-many-paginating}
 
-As mentioned previously we [can't escape SQL](#cant-escape-sql) underneath.
+I mentioned previously that we [can't escape SQL](#cant-escape-sql) underneath.
 
 TODO bigger example, some table picture, then solution
