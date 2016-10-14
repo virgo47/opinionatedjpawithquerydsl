@@ -44,3 +44,42 @@ TODO
 I mentioned previously that we [can't escape SQL](#cant-escape-sql) underneath.
 
 TODO bigger example, some table picture, then solution
+
+Possible pure SQL solution where we only paginate over the table we need to -- but this requires
+subquery in from:
+
+~~~
+-- situation
+select * from owner;
+ID  	NAME  
+1	Adam
+2	Charlie
+3	Joe
+4	Mike
+(4 rows, 1 ms)
+
+select * from dog where owner_id is not null;
+ID  	NAME  	BREED  	OWNER_ID  
+3	Alan	null	1
+4	Beastie	null	1
+5	Cessna	null	1
+6	Rex	null	3
+7	Lessie	null	4
+8	Dunco	null	4
+(6 rows, 0 ms)
+
+-- good
+select * from (select * from owner limit 2 offset 2) o left join dog d on o.id=d.owner_id ;
+ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID  
+3	Joe	6	Rex	null	3
+4	Mike	7	Lessie	null	4
+4	Mike	8	Dunco	null	4
+(3 rows, 0 ms)
+
+-- wrong
+select * from owner o left join dog d on o.id=d.owner_id limit 2 offset 2;
+ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID  
+1	Adam	5	Cessna	null	1
+2	Charlie	null	null	null	null
+~~~
+
