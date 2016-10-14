@@ -17,7 +17,26 @@ G> as well.
 
 ## Anatomy of N+1 select
 
+I'd prefer to call this problem 1+N because it mostly starts with one query that returns N rows
+and induces N additional queries. While addition is commutative -- hence 1+N is the same like N+1
+-- I'll stick to *N+1* as usually used in literature. The typical scenarios when the N+1 problem
+appears are:
 
+* Query for N entities that have eager *to-one* relationship -- or more of them -- and the provider
+is not smart enough to use joins.
+* Query for N entities that have eager *to-many* relationship and the provider is either not smart
+enough to use the join (again) or it is not possible to use it for other reasons like pagination.
+We will cover paginating of entities with *to-many* [later in this chapter](#to-many-paginating).
+* Query for N entities later with lazy relationship that is triggered later, e.g. in the view as
+usual with open-session-in-view (OSIV) pattern.
+
+There are probably more scenarios, but these are the most typical ones. First let's look at the
+eager examples.
+
+
+### Eager *to-one* without joins
+
+TODO
 
 
 ## Paginating with *to-many* {#to-many-paginating}
