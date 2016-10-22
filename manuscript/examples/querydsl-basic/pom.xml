@@ -84,7 +84,7 @@
         </executions>
       </plugin>
 
-      <!-- To generate metamodel for type-safe Criteria API -->
+      <!-- To generate metamodel for type-safe Criteria API, not needed for Querydsl -->
       <plugin>
         <groupId>org.bsc.maven</groupId>
         <artifactId>maven-processor-plugin</artifactId>
@@ -121,6 +121,7 @@
         </dependencies>
       </plugin>
 
+      <!-- Maven plugin for running examples, not needed for Querydsl or Criteria metamodel -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>

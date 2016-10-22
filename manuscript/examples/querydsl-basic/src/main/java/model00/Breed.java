@@ -12,6 +12,8 @@ public class Breed {
 
   private String name;
 
+  // I don't like this reverse relationship here as I don't believe it's breed's responsibility
+  // to care about the dogs in that breed (in other contexts it may make sense, of course)
   @OneToMany(mappedBy = "breed")
   private Set<Dog> dogs;
 

@@ -1,5 +1,7 @@
 # Project example {#app-project-example}
 
+%% Reference documentation, show entity example and generated class perhaps?
+
 TODO
 
 ## Querydsl annotation processor

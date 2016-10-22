@@ -36,6 +36,72 @@ eager examples.
 
 ### Eager *to-one* without joins
 
+If you recall our [simple example with `@ManyToOne`](#many-to-one-simple-example) from the chapter
+[Troubles with *to-one* relationships](#ch-to-one-troubles) you know that *to-one* relationships
+may trigger additional fetching. With EclipseLink, for instance, when your query returns three dogs
+there will be three additional `em.find` calls to get their breeds by ID. These may result in
+DB queries or they can be found in the cache -- depends on your setting -- and this all must be
+taken into consideration. Hibernate, on the other hand, produces the join for breeds right away.
+
+In any case there may be more *to-one* relationships that may trigger additional fetches, unless
+these are marked as lazy and respected by your JPA provider (not guaranteed). Let's reuse the data
+[from the Querydsl chapter](#func-and-oper) -- here they are again:
+
+{title="Content of **Breed** table", width="narrow"}
+| id | name |
+|----|------|
+| 1 | collie |
+| 2 | german shepherd |
+| 3 | retriever |
+
+{title="Content of **Dog** table (id is not important)", width="narrow"}
+| name | age | breed_id |
+|------|-----|----------|
+| Lassie | 7 | 1 (collie) |
+| Rex | 6 | 2 (german shepherd) |
+| Ben | 4 | 2 (german shepherd) |
+| Mixer | 3 | `NULL` (unknown breed) |
+
+Now let's list all the dogs like this:
+
+~~~
+List<Dog> dogs = new JPAQuery<>(em)
+  .select(QDog.dog)
+  .from(QDog.dog)
+  .fetch();
+~~~
+
+We get four dogs of two different breeds (one dog is "breed-less") but what happened on the SQL
+level? EclipseLink does this:
+
+~~~
+SELECT ID, AGE, breed_id, NAME FROM DOG
+SELECT ID, NAME FROM BREED WHERE (ID = ?)
+SELECT ID, NAME FROM BREED WHERE (ID = ?)
+~~~
+
+And that virtually classifies as N+1 problem, although the N may be lower than the count of
+selected rows thanks to the persistence context. Hibernate makes more sense here:
+
+~~~
+select dog0_.id as id1_1_, dog0_.age as age2_1_,
+  dog0_.breed_id as breed_id3_1_, dog0_.name as name4_1_ from Dog dog0_
+~~~
+
+Of course, we can write query with the same join in the first place. It doesn't take advantage
+of any cached results but at least we say exactly what we want. With any further *to-one*
+relationships you may want to use lazy fetch for the data you don't need (and you know you can
+rely on `LAZY`) or try some other technique described in [Troubles with *to-one*
+relationships](#ch-to-one-troubles) (entity views come to mind, but projections are even better).
+
+
+### Eager *to-many* relationships
+
+TODO: where does this make sense?
+
+
+### Lazy relationships triggered later
+
 TODO
 
 
@@ -83,3 +149,4 @@ ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID
 2	Charlie	null	null	null	null
 ~~~
 
+TODO: what happens with relationships marked as EAGER?

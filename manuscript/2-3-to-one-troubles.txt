@@ -4,7 +4,7 @@ Now we can get back to the topics I foreshadowed in the introduction to this opi
 We will show an example of `@ManyToOne` mapping and we will analyze our options how to load
 an entity with such a relationship when we are not interested in its target relation.
 
-## Simple example of `@ManyToOne`
+## Simple example of `@ManyToOne` {#many-to-one-simple-example}
 
 We will continue experimenting on dogs in the demonstration of *to-one* mapping. The code is
 available in a GitHub sub-project [many-to-one-eager](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/manuscript/examples/many-to-one-eager).
