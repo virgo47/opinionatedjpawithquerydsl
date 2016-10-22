@@ -337,7 +337,7 @@ I'm sure that an entity is in a query just once I may use default alias. It real
 have a strict and clean strategy of how to use the aliases and local variables pointing at them.
 
 
-## Functions and operations
+## Functions and operations {#func-and-oper}
 
 Let's see what data we will work on in the next sections so we can understand the returned results.
 
@@ -396,7 +396,7 @@ List<Tuple> dogsAndNameLengths = new JPAQuery<>(em)
 
 This returns `[[Lassie, 6], [Rex, 3], [Ben, 3], [Mixer (unknown breed), 21]]`. *JPA 2.1* allows
 any function using the `FUNCTION` construct. We will cover this [later](#qdsl-function-template)
-in the [advanced chapter]({#ch-advanced-querydsl}) on Querydsl.
+in the [advanced chapter](#ch-advanced-querydsl) on Querydsl.
 
 
 ### Aggregate functions {#querydsl-aggregation}
