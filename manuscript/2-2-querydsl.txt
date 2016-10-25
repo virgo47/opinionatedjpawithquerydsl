@@ -752,7 +752,7 @@ EclipseLink with something like `b.getDogs().size()` or other meaningful collect
 It seems `toString()` isn't meaningful enough for EclipseLink.
 
 W> While writing this example I got a really hard time to make it act consistently for both
-W> Hibernate and EclipseLink and, actually, even to make it load those dogs at all. This was caused
+W> Hibernate and EclipseLink and even to make it load those dogs at all. This was caused
 W> by using the same `EntityManager` I used for data preparation (although it was after commit).
 W> I had to clear (or reopen) the entity manager and also evict the second-level cache for
 W> EclipseLink (Hibernate doesn't use it out of the box).

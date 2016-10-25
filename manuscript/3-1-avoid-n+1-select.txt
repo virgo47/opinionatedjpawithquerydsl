@@ -38,31 +38,64 @@ eager examples.
 
 If you recall our [simple example with `@ManyToOne`](#many-to-one-simple-example) from the chapter
 [Troubles with *to-one* relationships](#ch-to-one-troubles) you know that *to-one* relationships
-may trigger additional fetching. With EclipseLink, for instance, when your query returns three dogs
-there will be three additional `em.find` calls to get their breeds by ID. These may result in
-DB queries or they can be found in the cache -- depends on your setting -- and this all must be
-taken into consideration. Hibernate, on the other hand, produces the join for breeds right away.
+may trigger additional fetching. These may result in DB queries or they can be found in the
+cache -- depends on your setting -- and this all must be taken into consideration.
 
-In any case there may be more *to-one* relationships that may trigger additional fetches, unless
-these are marked as lazy and respected by your JPA provider (not guaranteed). Let's reuse the data
-[from the Querydsl chapter](#func-and-oper) -- here they are again:
+For the next sections let's use the following data for dogs and their owners:
 
-{title="Content of **Breed** table", width="narrow"}
+{title="Content of **Owner** table", width="narrow"}
 | id | name |
 |----|------|
-| 1 | collie |
-| 2 | german shepherd |
-| 3 | retriever |
+| 1 | Adam |
+| 2 | Charlie |
+| 3 | Joe |
+| 4 | Mike |
 
-{title="Content of **Dog** table (id is not important)", width="narrow"}
-| name | age | breed_id |
-|------|-----|----------|
-| Lassie | 7 | 1 (collie) |
-| Rex | 6 | 2 (german shepherd) |
-| Ben | 4 | 2 (german shepherd) |
-| Mixer | 3 | `NULL` (unknown breed) |
+{title="Content of **Dog** table", width="narrow"}
+| id | name | owner_id |
+|----|------|-----|----------|
+| 1 | Alan | 1 (Adam) |
+| 2 | Beastie | 1 (Adam) |
+| 3 | Cessna | 1 (Adam) |
+| 4 | Rex | 3 (Joe) |
+| 5 | Lessie | 4 (Mike) |
+| 6 | Dunco | 4 (Mike) |
+| 7 | Goro | `NULL` |
 
-Now let's list all the dogs like this:
+Our mapping for the `Dog` looks like this:
+
+~~~
+@Entity
+public class Dog {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
+
+  private String name;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "owner_id")
+  private Owner owner;
+~~~
+
+And for the `Owner`:
+
+~~~
+@Entity
+public class Owner implements Serializable {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
+
+  private String name;
+
+  @OneToMany(mappedBy = "owner")
+  private Set<Dog> dogs;
+~~~
+
+Now let's list all the dogs with this code:
 
 ~~~
 List<Dog> dogs = new JPAQuery<>(em)
@@ -71,28 +104,29 @@ List<Dog> dogs = new JPAQuery<>(em)
   .fetch();
 ~~~
 
-We get four dogs of two different breeds (one dog is "breed-less") but what happened on the SQL
-level? EclipseLink does this:
+We get seven dogs for three different owners (one dog is not owned) but what happened on the SQL
+level? Both Hibernate and EclipseLink do something like this (output from EclipseLink):
 
 ~~~
-SELECT ID, AGE, breed_id, NAME FROM DOG
-SELECT ID, NAME FROM BREED WHERE (ID = ?)
-SELECT ID, NAME FROM BREED WHERE (ID = ?)
+SELECT ID, NAME, OWNER_ID FROM DOG
+SELECT ID, NAME FROM OWNER WHERE (ID = 1)
+SELECT ID, NAME FROM OWNER WHERE (ID = 3)
+SELECT ID, NAME FROM OWNER WHERE (ID = 4)
 ~~~
 
-And that virtually classifies as N+1 problem, although the N may be lower than the count of
-selected rows thanks to the persistence context. Hibernate makes more sense here:
+That classifies as N+1 problem, although the N may be lower than the count of
+selected rows thanks to the persistence context. 
 
-~~~
-select dog0_.id as id1_1_, dog0_.age as age2_1_,
-  dog0_.breed_id as breed_id3_1_, dog0_.name as name4_1_ from Dog dog0_
-~~~
+TODO: EclipseLink can be coerced with `@JoinFetch(JoinFetchType.OUTER)` (worked for me),
+Hibernate with `@Fetch(FetchMode.JOIN)` (surprisingly didn't work).
 
 Of course, we can write query with the same join in the first place. It doesn't take advantage
 of any cached results but at least we say exactly what we want. With any further *to-one*
 relationships you may want to use lazy fetch for the data you don't need (and you know you can
 rely on `LAZY`) or try some other technique described in [Troubles with *to-one*
 relationships](#ch-to-one-troubles) (entity views come to mind, but projections are even better).
+
+TODO: example of a correct query with explicit join
 
 
 ### Eager *to-many* relationships
@@ -115,23 +149,7 @@ Possible pure SQL solution where we only paginate over the table we need to -- b
 subquery in from:
 
 ~~~
--- situation
-select * from owner;
-ID  	NAME  
-1	Adam
-2	Charlie
-3	Joe
-4	Mike
-(4 rows, 1 ms)
 
-select * from dog where owner_id is not null;
-ID  	NAME  	BREED  	OWNER_ID  
-3	Alan	null	1
-4	Beastie	null	1
-5	Cessna	null	1
-6	Rex	null	3
-7	Lessie	null	4
-8	Dunco	null	4
 (6 rows, 0 ms)
 
 -- good

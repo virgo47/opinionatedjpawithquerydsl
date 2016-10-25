@@ -1,15 +1,15 @@
 package tests;
 
 import com.querydsl.jpa.impl.JPAQuery;
-import model00.Dog;
-import model00.QDog;
+import nplusone.DogLazy;
+import nplusone.QDogLazy;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
 
-public class ManyToOneNPlusOneProblem {
+public class ManyToOneLazyNPlusOneProblem {
 
   public static void main(String[] args) {
     run("demo-el");
@@ -20,17 +20,18 @@ public class ManyToOneNPlusOneProblem {
     EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName);
     try {
       EntityManager em = emf.createEntityManager();
-      Subqueries.prepareData(em);
+      NPlusOne.prepareData(em);
 
       // to get any caching out of the picture
       emf.getCache().evictAll();
       em.clear();
 
-      List<Dog> dogs = new JPAQuery<>(em)
-        .select(QDog.dog)
-        .from(QDog.dog)
+      List<DogLazy> dogs = new JPAQuery<>(em)
+        .select(QDogLazy.dogLazy)
+        .from(QDogLazy.dogLazy)
         .fetch();
-      System.out.println("dogs = " + dogs);
+      System.out.println("\nAfter selects if LAZY not honoured");
+      System.out.println("\ndogs = " + dogs);
 
       em.close();
     } finally {

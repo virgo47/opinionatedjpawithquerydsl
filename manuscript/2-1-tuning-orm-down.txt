@@ -54,10 +54,15 @@ loads for `@ManyToOne` and `@OneToOne` (commonly named *to-one* in this book as 
 noticed) relationships. I don't mind *to-many* relations, they have their twists, but at least
 their lazy works. But *to-one* typically triggers find by id. If you have a `Dog` that has an
 `owner` (type `Person`) and is of specific `Breed` you must load these two things along with a dog.
-Maybe they will be joined by the JPA provider (Hibernate does it), maybe not (EclipseLink), maybe
+Maybe they will be joined by the JPA provider, maybe not[^to-one-joined], maybe
 they are already in second-level cache and will be "loaded" nearly "for free". All these options
 should be seriously considered, analyzed and proved before you can say that you know what is going
 on in your application.
+
+[^to-one-joined]: Hibernate sometimes does it out of the box and sometimes does not do it even
+    when the relationship is marked with its proprietary annotation as `@Fetch(FetchMode.JOIN)`.
+    EclipseLink does not do it by default, but can be persuaded with its own annotation
+    `@JoinFetch(JoinFetchType.OUTER)`.    
 
 And it just starts there, because `Person` has an `Address` which -- in case of a rich system --
 may further point to `District`, `County`, `State` and so on. Once I wanted to change something
