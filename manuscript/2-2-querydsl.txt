@@ -218,8 +218,8 @@ this from day zero. It's also very easy to find responses on the
 [mailing-list](https://groups.google.com/forum/#!forum/querydsl), very often provided directly
 by Querydsl developers. This makes any lack of documentation easy to overcome.
 
-Finally, you're adding another dependency to the project, which may be a problem for some. For us
-it is well compensated with the code clarity Querydsl gave us.
+Finally, you're adding another dependency to the project, which may be a problem for some. For the
+teams I worked with it was well compensated by the code clarity Querydsl gave us.
 
 
 ## Be explicit with aliases

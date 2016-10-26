@@ -12,12 +12,12 @@ W> and got caught by the irony of me saying "JPA is hard and complex".
 W>
 W> Sure there is "nobody's fault but mine" part to it. I experimented trying to fight JPA. I tried
 W> to get us from the quagmire of that ORM Vietnam and got us into another quagmire, still in ORM
-W> war, obviously -- but now out of specification fences. There is no real problem for us as we
-W> cannot switch to Hibernate with the project easily anyway (for Hibernate real bugs for a
+W> war, obviously -- but now out of specification fences. This was no real problem for our team as
+W> we couldn't switch to Hibernate with the project easily anyway (for real Hibernate bugs for a
 W> change), but when using ORM on Java I always voted for JPA way (well, since *JPA 2.0* at least).
 W> In the meantime Hibernate joined the "crowd" supporting entity joins with its 5.1.0 release
 W> (February of 2016), so this solution is not an obstacle when migrating between major
-W> JPA providers.
+W> JPA providers anymore.
 W>
 W> The solution -- or a pattern if you will -- is interesting enough to be presented and with
 W> backing of major providers also readily available. I'd just be more happy if the option for
