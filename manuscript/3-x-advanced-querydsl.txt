@@ -105,6 +105,7 @@ How to coerce with `java.util` types? How to mix `LocalDate` and `LocalDateTime`
 ## Query object
 
 TODO: aliases as fields, mention metadata possibilities, alias thread-safety
+TODO: check if PathBuilder is better in getting fields than reflection on Qclass
 
 
 ## Result transformation {#querydsl-transformations}
