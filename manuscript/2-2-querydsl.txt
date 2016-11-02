@@ -356,7 +356,7 @@ Let's see what data we will work on in the next sections so we can understand th
 | Ben | 4 | 2 (german shepherd) |
 | Mixer | 3 | `NULL` (unknown breed) |
 
-The following examples can be found on GitHub in [FunctionsAndOperations.java](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/src/test/java/tests/FunctionsAndOperations.java)).
+The following examples can be found on GitHub in [FunctionsAndOperations.java](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/src/test/java/tests/FunctionsAndOperations.java).
 
 When we want to write some operation we simply follow the fluent API. You can write `QDog.dog.age.`
 and hit auto-complete -- this offers us all the possible operations and functions we can use on the
