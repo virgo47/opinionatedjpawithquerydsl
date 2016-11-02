@@ -1,10 +1,5 @@
 package nplusone;
 
-import org.eclipse.persistence.annotations.JoinFetch;
-import org.eclipse.persistence.annotations.JoinFetchType;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 
 @Entity
@@ -18,8 +13,8 @@ public class Dog {
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "owner_id")
-  @Fetch(FetchMode.JOIN)
-  @JoinFetch(JoinFetchType.OUTER)
+//  @Fetch(FetchMode.JOIN) // for Hibernate
+//  @JoinFetch(JoinFetchType.OUTER) // for EclipseLink
   private Owner owner;
 
   public Integer getId() {

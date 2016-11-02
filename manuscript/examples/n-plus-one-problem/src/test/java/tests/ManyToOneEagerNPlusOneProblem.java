@@ -22,20 +22,44 @@ public class ManyToOneEagerNPlusOneProblem {
       EntityManager em = emf.createEntityManager();
       NPlusOne.prepareData(em);
 
-      // to get any caching out of the picture
-      emf.getCache().evictAll();
-      em.clear();
-
-      List<Dog> dogs = new JPAQuery<>(em)
-        .select(QDog.dog)
-        .from(QDog.dog)
-        .fetch();
-      System.out.println("\nALL SELECTS HAPPENED");
-      System.out.println("\ndogs = " + dogs);
+      queryForDogs(em);
+      queryForDogsWithJoin(em);
 
       em.close();
     } finally {
       emf.close();
     }
+  }
+
+  private static void queryForDogs(EntityManager em) {
+    System.out.println("\nQuery without join");
+    NPlusOne.clear(em);
+
+    List<Dog> dogs = new JPAQuery<>(em)
+      .select(QDog.dog)
+      .from(QDog.dog)
+      .fetch();
+
+    System.out.println("\nALL SELECTS HAPPENED");
+    System.out.println("\ndogs = " + dogs);
+  }
+
+  private static void queryForDogsWithJoin(EntityManager em) {
+    System.out.println("\nQuery with join");
+    NPlusOne.clear(em);
+
+    List<Dog> dogs = new JPAQuery<>(em)
+      .select(QDog.dog)
+      .from(QDog.dog)
+      .leftJoin(QDog.dog.owner).fetchJoin() // fetchJoin necessary
+      // fails on EclipseLink with: identification variable must be defined for a JOIN expression
+//      .leftJoin(QDog.dog.owner)
+//      .leftJoin(QDog.dog.owner, QDog.dog) // with alias, joins, but does not really fetch
+      // fetchJoin and alias, against spec, but tolerated by both Hibernate and EclipseLink
+//      .leftJoin(QDog.dog.owner).fetchJoin()
+      .fetch();
+
+    System.out.println("\nALL SELECTS HAPPENED");
+    System.out.println("\ndogs = " + dogs);
   }
 }

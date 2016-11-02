@@ -115,18 +115,94 @@ SELECT ID, NAME FROM OWNER WHERE (ID = 4)
 ~~~
 
 That classifies as N+1 problem, although the N may be lower than the count of
-selected rows thanks to the persistence context. 
+selected rows thanks to the persistence context. JPA providers may be persuaded to use `JOIN`
+to fetch the information but this is beyond the current version of JPA specification. EclipseLink
+offers `@JoinFetch(JoinFetchType.OUTER)` and Hibernate has `@Fetch(FetchMode.JOIN)` (also uses
+outer select). In a related [demo](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/src/test/java/tests/Pagination.java)
+I tried both and to my surprise EclipseLink obeyed but Hibernate did not -- which went against my
+previous experiences that Hibernate tries to optimize queries better in general.
 
-TODO: EclipseLink can be coerced with `@JoinFetch(JoinFetchType.OUTER)` (worked for me),
-Hibernate with `@Fetch(FetchMode.JOIN)` (surprisingly didn't work).
+Now, what if we don't need any data for owner? You may try to use lazy fetch for the data you
+don't need *if you know you can rely on `LAZY`* or try some other technique described in
+[Troubles with *to-one* relationships](#ch-to-one-troubles). Here *entity views* come to mind, but
+projections may be even better.
 
-Of course, we can write query with the same join in the first place. It doesn't take advantage
-of any cached results but at least we say exactly what we want. With any further *to-one*
-relationships you may want to use lazy fetch for the data you don't need (and you know you can
-rely on `LAZY`) or try some other technique described in [Troubles with *to-one*
-relationships](#ch-to-one-troubles) (entity views come to mind, but projections are even better).
+Anytime I wanted to load dogs with their owners I'd go for explicit `JOIN`. Let's see how to
+do that properly. Even though we don't use the owners in select it is not sufficient construct
+query like this:
 
-TODO: example of a correct query with explicit join
+~~~
+List<Dog> dogs = new JPAQuery<>(em)
+  .select(QDog.dog)
+  .from(QDog.dog)
+  .leftJoin(QDog.dog.owner)
+  .fetch();
+~~~
+
+This results in an invalid JPQL query:
+
+~~~
+select dog
+from Dog dog
+  left join dog.owner
+~~~
+
+While this runs on Hibernate, it fails on EclipseLink with a syntax error: *An identification
+variable must be defined for a JOIN expression.* This, indeed, is necessary according to the
+specification and we must add an alias like so:
+
+~~~
+List<Dog> dogs = new JPAQuery<>(em)
+  .select(QDog.dog)
+  .from(QDog.dog)
+  .leftJoin(QDog.dog.owner, QOwner.owner)
+  .fetch();
+~~~
+
+This results in a valid JPQL query:
+
+~~~
+select dog
+from Dog dog
+  left join dog.owner as owner
+~~~
+
+But without using it in `select` -- which we don't want because we don't want the list of
+`Tuple`s -- we end up with a query with our join, but the data for owners is still not fetched
+and N additional queries are executed just like before. Had we used it in the select it would be
+fetched, of course.
+
+The right way to do it if we insist on the result typed as `List<Dog>` is this:
+
+~~~
+List<Dog> dogs = new JPAQuery<>(em)
+  .select(QDog.dog)
+  .from(QDog.dog)
+  .leftJoin(QDog.dog.owner).fetchJoin()
+  .fetch();
+~~~
+
+This results in a valid and correct JPQL query:
+
+~~~
+select dog
+from Dog dog
+  left join fetch dog.owner
+~~~
+
+Notice we haven't used alias this time and looking at BNF[^bnf] notation from
+[[JPspec](#bib-jpspec)], section *4.4.5 Joins* I believe `identification_variable` is allowed
+only for `join` and not for `fetch_join` rules. Nonetheless, both Hibernate and EclipseLink
+tolerate this.
+
+[^bnf] (Backus–Naur form)[https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form)
+
+W> Note that `JOIN` query doesn't take advantage of any results in entity cache because now you
+W> don't access them by ID. But at least we say exactly what we want. We still have to mind any
+W> "downstream" *to-one* relationships on the joined entity. For the most precise and efficient
+W> results I can, again, only recommend using projections, albeit being least ORM-ish. This means
+W> using the data you need in the `SELECT` clause and skipping `FETCH` clauses in the resulting
+W> JPQL.
 
 
 ### Eager *to-many* relationships
@@ -154,7 +230,7 @@ subquery in from:
 
 -- good
 select * from (select * from owner limit 2 offset 2) o left join dog d on o.id=d.owner_id ;
-ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID  
+ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID
 3	Joe	6	Rex	null	3
 4	Mike	7	Lessie	null	4
 4	Mike	8	Dunco	null	4
@@ -162,7 +238,7 @@ ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID
 
 -- wrong
 select * from owner o left join dog d on o.id=d.owner_id limit 2 offset 2;
-ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID  
+ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID
 1	Adam	5	Cessna	null	1
 2	Charlie	null	null	null	null
 ~~~

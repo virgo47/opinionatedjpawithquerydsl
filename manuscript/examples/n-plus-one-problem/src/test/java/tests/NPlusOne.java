@@ -44,4 +44,10 @@ class NPlusOne {
     em.flush();
     return dog;
   }
+
+  static void clear(EntityManager em) {
+    // to get any caching out of the picture
+    em.getEntityManagerFactory().getCache().evictAll();
+    em.clear();
+  }
 }
