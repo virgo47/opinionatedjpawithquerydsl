@@ -530,7 +530,8 @@ List<Breed> result = new JPAQuery<>(em)
   .from(QBreed.breed)
   .leftJoin(QDog.dog).on(QBreed.breed.eq(QDog.dog.breed))
   .where(QDog.dog.isNull())
-  // needed for isNotNull, not for isNull as those lines are unique
+  // distinct would be needed for isNotNull (breeds with many dogs)
+  // not really necessary for isNull as those lines are unique
   .distinct()
   .fetch();
 ~~~
@@ -538,8 +539,7 @@ List<Breed> result = new JPAQuery<>(em)
 Alas, it fails on Hibernate (5.2.2) with `InvalidWithClauseException: with clause can only
 reference columns in the driving table`. It seems to be an open bug mentioned in [this
 StackOverflow answer](http://stackoverflow.com/a/26527967/658826) -- and the suggested solution
-of using plain keys instead of objects indeed work (we'll elaborate on this in the next two
-chapters):
+of using plain keys instead of objects indeed work:
 
 ~~~
 // the rest is the same
@@ -554,8 +554,24 @@ one marked with updatable `false`:
 private Integer breedId;
 ~~~
 
-Neither of the previous joins is *JPA 2.1* compliant as it uses entity join. There is, however,
-another JPA query that works:
+You may be tempted to avoid this mapping and do explicit equals on keys like this:
+
+~~~
+// the rest is the same
+.leftJoin(QDog.dog).on(QBreed.breed.id.eq(QDog.dog.breed.id))
+~~~
+
+But this has its own issues. EclipseLink joins the breed twice, second time using implicit join
+after left join which is a construct that many databases don't really like (H2 or SQL Server, to
+name just those where I noticed this quite often) and it fails on JDBC/SQL level. Hibernate also
+generates the superfluous join to the breed but at least orders them more safely. Still, if you use
+EclipseLink simply don't add explicit IDs to your paths and if you're using Hibernate at least know
+it's not efficient join-wise and also is not really portable across JPA providers.
+
+W> Neither of the previous joins is *JPA 2.1* compliant as it uses entity join, that is join to
+W> *root entity* and not to *association path* -- we'll elaborate on this in the next two chapters.
+
+There is another JPA query that works and also arguably reads most naturally:
 
 ~~~
 List<Breed> result = new JPAQuery<>(em)
@@ -566,15 +582,18 @@ List<Breed> result = new JPAQuery<>(em)
 ~~~
 
 Internally this generates subquery with count or (not) exists anyway, there is no way around it.
-But for this to work we also have to add the mapping to `Breed`:
+But for this to work we also have to add the mapping to `Breed` which was not necessary for the
+previous non-JPA joins:
 
 ~~~
 @OneToMany(mappedBy = "breed")
 private Set<Dog> dogs;
 ~~~
 
-This may be rather superfluous for some cases (why should breed know the list of dogs?) but it
-should not hurt. We somehow foreshadowed themes from the following chapters on various mapping
+This mapping may be rather superfluous for some cases (why should breed know the list of dogs?) but
+it should not hurt.
+
+We somehow foreshadowed themes from the following chapters on various mapping
 problems but we're not done with subqueries (or Querydsl) just yet. Let's now try to find dogs
 that are older than average -- but this time for each breed:
 
@@ -595,6 +614,17 @@ Notice the use of `innerDog` alias which is very important. Had you used `QDog.d
 it would have returned the same results like `dogsOlderThanAverage` above. This query returns only
 Rex, because only german shepherds have more than a single dog -- and a single (or no) dog can't be
 older than average.
+
+I> While some correlated subqueries can be replaced with `JOIN` easily, for others it does not make
+I> sense. Programmers -- especially our breed used to imperative style -- can imagine correlated
+I> subquery as a loop that executes the inner query every time. Database still may execute it
+I> differently and except for performance tuning it does not really matter.
+I>
+I> In pure SQL we could write a query that could be joined and matched, but it may also mean
+I> that big parts of this "inner query" would be executed in waste and never actually joined to the
+I> "outer query" whose scope may be limited by a `WHERE` clause, for instance. In JPA we cannot
+I> even consider a subquery in `FROM` clause so we're naturally lead to correlated subquery for
+I> such problems.
 
 This section is not about going deep into subquery theory (I'm not the right person for it in the
 first place), but to demonstrate how easy and readable it is to write subqueries with Querydsl
