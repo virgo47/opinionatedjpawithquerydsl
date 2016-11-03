@@ -190,12 +190,11 @@ from Dog dog
   left join fetch dog.owner
 ~~~
 
-Notice we haven't used alias this time and looking at BNF[^bnf] notation from
+Notice we haven't used alias this time and looking at BNF
+((Backus–Naur form)[https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form)) notation from
 [[JPspec](#bib-jpspec)], section *4.4.5 Joins* I believe `identification_variable` is allowed
 only for `join` and not for `fetch_join` rules. Nonetheless, both Hibernate and EclipseLink
 tolerate this.
-
-[^bnf] (Backus–Naur form)[https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form)
 
 W> Note that `JOIN` query doesn't take advantage of any results in entity cache because now you
 W> don't access them by ID. But at least we say exactly what we want. We still have to mind any
