@@ -13,6 +13,8 @@
     <class>nplusone.Dog</class>
     <class>nplusone.OwnerLazy</class>
     <class>nplusone.DogLazy</class>
+    <class>nplusone.OwnerEager</class>
+    <class>nplusone.DogEager</class>
 
     <shared-cache-mode>NONE</shared-cache-mode>
 

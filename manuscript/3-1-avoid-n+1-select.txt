@@ -118,7 +118,7 @@ That classifies as N+1 problem, although the N may be lower than the count of
 selected rows thanks to the persistence context. JPA providers may be persuaded to use `JOIN`
 to fetch the information but this is beyond the current version of JPA specification. EclipseLink
 offers `@JoinFetch(JoinFetchType.OUTER)` and Hibernate has `@Fetch(FetchMode.JOIN)` (also uses
-outer select). In a related [demo](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/src/test/java/tests/Pagination.java)
+outer select). In a related [demo](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/n-plus-one-problem/src/test/java/tests/ManyToOneEagerNPlusOneProblem.java)
 I tried both and to my surprise EclipseLink obeyed but Hibernate did not -- which went against my
 previous experiences that Hibernate tries to optimize queries better in general.
 
@@ -206,12 +206,113 @@ W> JPQL.
 
 ### Eager *to-many* relationships
 
-TODO: where does this make sense?
+Using `EAGER` on collections by default is rather risky. I'd personally not use it and use explicit
+joins when needed instead. In our [example](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/n-plus-one-problem/src/test/java/tests/OneToManyEagerNPlusOneProblem.java)
+we will use `OwnerEager` entity that uses the same table like `Owner` (hence the same prepared
+data) but maps `dogs` collection as:
+
+~~~
+@OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+private Set<DogEager> dogs;
+~~~
+
+Now we run the following code:
+
+~~~
+List<OwnerEager> owners = new JPAQuery<>(em)
+  .select(QOwnerEager.ownerEager)
+  .from(QOwnerEager.ownerEager)
+  .fetch();
+System.out.println("\nowners = " + owners);
+for (OwnerEager owner : owners) {
+  System.out.println(owner.getName() + "'s dogs = " + owner.getDogs());
+}
+~~~
+
+SQL produced at the point `fetch()` is executed is (output from EclipseLink, Hibernate is similar):
+
+~~~
+SELECT ID, NAME FROM Owner
+SELECT ID, NAME, owner_id FROM Dog WHERE (owner_id = ?)
+SELECT ID, NAME, owner_id FROM Dog WHERE (owner_id = ?)
+SELECT ID, NAME, owner_id FROM Dog WHERE (owner_id = ?)
+SELECT ID, NAME, owner_id FROM Dog WHERE (owner_id = ?)
+~~~
+
+And output of the subsequent print statements (manually wrapped):
+
+~~~
+owners = [Person{id=1, name=Adam}, Person{id=2, name=Charlie},
+ Person{id=3, name=Joe}, Person{id=4, name=Mike}]
+Adam's dogs = [Dog{id=1, name='Alan', owner.id=1}, Dog{id=2,
+ name='Beastie', owner.id=1}, Dog{id=3, name='Cessna', owner.id=1}]
+Charlie's dogs = []
+Joe's dogs = [Dog{id=4, name='Rex', owner.id=3}]
+Mike's dogs = [Dog{id=5, name='Lessie', owner.id=4},
+ Dog{id=6, name='Dunco', owner.id=4}]
+~~~
+
+Everything is OK, except it can all be done in a single query. Had we added a single fetch join
+line in the query we would have had it in a single go:
+
+~~~
+List<OwnerEager> owners = new JPAQuery<>(em)
+  .select(QOwnerEager.ownerEager)
+  .from(QOwnerEager.ownerEager)
+  .leftJoin(QOwnerEager.ownerEager.dogs).fetchJoin()
+  .fetch();
+~~~
+
+Join reaches for the data -- notice we have to use `leftJoin` if the collection may be empty -- and
+`fetchJoin` takes care of putting them in the collection. This is probably the best what we can
+explicitly do with eager collection mapping in place. Resulting SQL (here EclipseLink):
+
+~~~
+SELECT t1.ID, t1.NAME, t0.ID, t0.NAME, t0.owner_id
+ FROM {oj Owner t1 LEFT OUTER JOIN Dog t0 ON (t0.owner_id = t1.ID)}
+~~~
+
+W> Problem with joins across *to-many* relationship is that they change the "shape" of the
+W> resulting relation (or "table" if you will) in *both* directions and many lines of the driving
+W> table (owners in our examples) can be repeated. This makes simple pagination with `LIMIT` and
+W> `OFFSET` clauses impossible.
+W>
+W> From the correctness point this is not a problem for non-join query that first paginates on
+W> owners properly and then loads the dogs for N owners on the page. But this still is a
+W> performance problem and we will tackle it in the section [Paginating with
+W> *to-many*](#to-many-paginating) lower.
+
+In general, if eager fetch on collection is not executed using a join on the background it is not
+worth it. We can get the same N+1 behavior with lazy loads although it may require some explicit
+code to actually fetch the collection when you want -- e.g. in the service layer instead of later
+in presentation layer with persistence context already not available.
+
+There is one crucial difference between N+1 across *to-one* and *to-many* relationships. In case
+of *to-one* JPA provider may utilize entity cache as the ID of the needed entity is already
+available. In case of *to-many*, on the other hand, we have to execute actual select. This may
+use query cache -- but setting that one appropriately is definitely more tricky than the entity
+cache. Without caches this difference is blurred away and the only difference is that for *to-one*
+we're accessing rows in DB by its primary key, while for *to-many* we're using the foreign key. PK
+is virtually always indexed, FK not necessarily so -- but I guess it should be when we're using
+this access pattern.
+
+Perhaps there are some settings or custom annotations that make JPA provider perform the join, but
+it must be smart enough not to use it when limit/offset is in play. As this capability is not
+available in JPA -- and because I believe eager collections are even worse than eager to-one --
+we will not delve into it any more.
 
 
 ### Lazy relationships triggered later
 
-TODO
+Lazy fetch is a reasonable default for mapping collections -- and it is default according to the
+specification. Because collection can be implemented in a custom way all JPA providers offer lazy
+behavior without the need for any bytecode magic.
+
+
+
+I> EclipseLink and `toString()` -- is it a "business" method or not? We're used to
+I> `toString` output as defined in `AbstractCollection`, but `Set` does not imply any particular
+I> format.
 
 
 ## Paginating with *to-many* {#to-many-paginating}
@@ -219,6 +320,7 @@ TODO
 I mentioned previously that we [can't escape SQL](#cant-escape-sql) underneath.
 
 TODO bigger example, some table picture, then solution
+TODO mention ORDER, of course :-)
 
 Possible pure SQL solution where we only paginate over the table we need to -- but this requires
 subquery in from:

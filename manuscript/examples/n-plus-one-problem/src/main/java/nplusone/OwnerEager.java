@@ -4,8 +4,10 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
+/** Owner variant with eager collection for dogs. */
 @Entity
-public class Owner implements Serializable {
+@Table(name = "Owner")
+public class OwnerEager implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,8 +15,8 @@ public class Owner implements Serializable {
 
   private String name;
 
-  @OneToMany(mappedBy = "owner")
-  private Set<Dog> dogs;
+  @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+  private Set<DogEager> dogs;
 
   public Integer getId() {
     return id;
@@ -32,7 +34,7 @@ public class Owner implements Serializable {
     this.name = name;
   }
 
-  public Set<Dog> getDogs() {
+  public Set<DogEager> getDogs() {
     return dogs;
   }
 
