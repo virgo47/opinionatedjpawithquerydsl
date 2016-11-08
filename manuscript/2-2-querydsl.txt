@@ -172,6 +172,7 @@ use `QDog.dog` as the value, or here I introduced new query variable and named i
 name will appear in generated JPQL that looks a little bit different from the JPQL in example
 above:
 
+{lang=sql}
 ~~~
 select d1 from Dog d1 where d1.name like ?1 escape '!'
 ~~~

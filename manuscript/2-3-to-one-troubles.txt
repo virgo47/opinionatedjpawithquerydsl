@@ -85,12 +85,24 @@ scenario. And we're just finding the dog by its ID -- we know it's 1:
 Dog dog = em.find(Dog.class, 1);
 ~~~
 
-What happens at this line? Let's see the console for Hibernate:
+What happens at this line? Let's see the console for Hibernate (manually wrapped):
 
 {title="Hibernate find dog by id", lang=text}
 ~~~
-Hibernate: select dog0_.id as id1_1_0_, dog0_.breed_id as breed_id3_1_0_, dog0_.name as name2_1_0_, breed1_.id as id1_0_1_, breed1_.derivedFrom_id as derivedF3_0_1_, breed1_.name as name2_0_1_, breed2_.id as id1_0_2_, breed2_.derivedFrom_id as derivedF3_0_2_, breed2_.name as name2_0_2_ from Dog dog0_ left outer join Breed breed1_ on dog0_.breed_id=breed1_.id left outer join Breed breed2_ on breed1_.derivedFrom_id=breed2_.id where dog0_.id=?
-Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_, breed0_.name as name2_0_0_, breed1_.id as id1_0_1_, breed1_.derivedFrom_id as derivedF3_0_1_, breed1_.name as name2_0_1_ from Breed breed0_ left outer join Breed breed1_ on breed0_.derivedFrom_id=breed1_.id where breed0_.id=?
+Hibernate: select dog0_.id as id1_1_0_, dog0_.breed_id as breed_id3_1_0_,
+  dog0_.name as name2_1_0_, breed1_.id as id1_0_1_, breed1_.derivedFrom_id
+  as derivedF3_0_1_, breed1_.name as name2_0_1_, breed2_.id as id1_0_2_,
+  breed2_.derivedFrom_id as derivedF3_0_2_, breed2_.name as name2_0_2_
+ from Dog dog0_
+ left outer join Breed breed1_ on dog0_.breed_id=breed1_.id
+ left outer join Breed breed2_ on breed1_.derivedFrom_id=breed2_.id
+ where dog0_.id=?
+Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as
+  derivedF3_0_0_, breed0_.name as name2_0_0_, breed1_.id as id1_0_1_,
+  breed1_.derivedFrom_id as derivedF3_0_1_, breed1_.name as name2_0_1_
+ from Breed breed0_
+ left outer join Breed breed1_ on breed0_.derivedFrom_id=breed1_.id
+ where breed0_.id=?
 ~~~
 
 Two selects that load a dog and all three breeds -- not that bad. If you know traverse up the breed
@@ -103,13 +115,13 @@ Let's look at EclipseLink now:
 
 {title="EclipseLink find dog by id", lang=text}
 ~~~
-[EL Fine]: sql: 2016-03-22 18:08:19.28--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, BREED_ID FROM DOG WHERE (ID = ?)
+SELECT ID, NAME, BREED_ID FROM DOG WHERE (ID = ?)
 	bind => [1]
-[EL Fine]: sql: 2016-03-22 18:08:19.281--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
 	bind => [3]
-[EL Fine]: sql: 2016-03-22 18:08:19.282--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
 	bind => [2]
-[EL Fine]: sql: 2016-03-22 18:08:19.282--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
 	bind => [1]
 ~~~
 
@@ -163,13 +175,13 @@ impression that it should work like this. Let's migrate to EclipseLink then:
 {title="EclipseLink lazy find and traversing", lang=text}
 ~~~
 find
-[EL Fine]: sql: 2016-03-23 14:45:29.349--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, BREED_ID FROM DOG WHERE (ID = ?)
+SELECT ID, NAME, BREED_ID FROM DOG WHERE (ID = ?)
 	bind => [1]
-[EL Fine]: sql: 2016-03-23 14:45:29.35--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
 	bind => [3]
-[EL Fine]: sql: 2016-03-23 14:45:29.35--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
 	bind => [2]
-[EL Fine]: sql: 2016-03-23 14:45:29.35--ServerSession(12313413)--Connection(13918250)--Thread(Thread[main,5,main])--SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
+SELECT ID, NAME, DERIVEDFROM_ID FROM BREED WHERE (ID = ?)
 	bind => [1]
 
 traversing
@@ -610,8 +622,10 @@ Now what happens when we declare two entities for the same table in `persistence
 When we run any demo using this persistence unit we can check the log and see the `CREATE`
 statements it uses. With EclipseLink there will be a single one for our `Dog`:
 
+{lang=sql}
 ~~~
-CREATE TABLE DOG (ID INTEGER IDENTITY NOT NULL, NAME VARCHAR, BREED_ID INTEGER, PRIMARY KEY (ID))
+CREATE TABLE DOG (ID INTEGER IDENTITY NOT NULL, NAME VARCHAR,
+ BREED_ID INTEGER, PRIMARY KEY (ID))
 ~~~
 
 And it contains all the necessary columns. But if we switch the order in `persistence.xml`

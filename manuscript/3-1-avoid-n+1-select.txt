@@ -18,8 +18,8 @@ G> as well.
 ## Anatomy of N+1 select
 
 I'd prefer to call this problem 1+N because it mostly starts with one query that returns N rows
-and induces N additional queries. While addition is commutative -- hence 1+N is the same like N+1
--- I'll stick to *N+1* as usually used in literature. The typical scenarios when the N+1 problem
+and induces up to N additional queries. While addition is commutative, hence 1+N is the same like
+N+1, I'll stick to *N+1* as usually used in literature. The typical scenarios when the N+1 problem
 appears are:
 
 * Query for N entities that have eager *to-one* relationship -- or more of them -- and the provider
@@ -27,14 +27,14 @@ is not smart enough to use joins.
 * Query for N entities that have eager *to-many* relationship and the provider is either not smart
 enough to use the join (again) or it is not possible to use it for other reasons like pagination.
 We will cover paginating of entities with *to-many* [later in this chapter](#to-many-paginating).
-* Query for N entities later with lazy relationship that is triggered later, e.g. in the view as
+* Query for N entities with lazy relationship that is triggered later, e.g. in the view as
 usual with open-session-in-view (OSIV) pattern.
 
 There are probably more scenarios, but these are the most typical ones. First let's look at the
 eager examples.
 
 
-### Eager *to-one* without joins
+## Eager *to-one* without joins
 
 If you recall our [simple example with `@ManyToOne`](#many-to-one-simple-example) from the chapter
 [Troubles with *to-one* relationships](#ch-to-one-troubles) you know that *to-one* relationships
@@ -107,6 +107,7 @@ List<Dog> dogs = new JPAQuery<>(em)
 We get seven dogs for three different owners (one dog is not owned) but what happened on the SQL
 level? Both Hibernate and EclipseLink do something like this (output from EclipseLink):
 
+{lang=sql}
 ~~~
 SELECT ID, NAME, OWNER_ID FROM DOG
 SELECT ID, NAME FROM OWNER WHERE (ID = 1)
@@ -141,6 +142,7 @@ List<Dog> dogs = new JPAQuery<>(em)
 
 This results in an invalid JPQL query:
 
+{lang=sql}
 ~~~
 select dog
 from Dog dog
@@ -161,6 +163,7 @@ List<Dog> dogs = new JPAQuery<>(em)
 
 This results in a valid JPQL query:
 
+{lang=sql}
 ~~~
 select dog
 from Dog dog
@@ -184,6 +187,7 @@ List<Dog> dogs = new JPAQuery<>(em)
 
 This results in a valid and correct JPQL query:
 
+{lang=sql}
 ~~~
 select dog
 from Dog dog
@@ -191,7 +195,7 @@ from Dog dog
 ~~~
 
 Notice we haven't used alias this time and looking at BNF
-((Backus–Naur form)[https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form)) notation from
+([Backus–Naur form](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form)) notation from
 [[JPspec](#bib-jpspec)], section *4.4.5 Joins* I believe `identification_variable` is allowed
 only for `join` and not for `fetch_join` rules. Nonetheless, both Hibernate and EclipseLink
 tolerate this.
@@ -204,7 +208,7 @@ W> using the data you need in the `SELECT` clause and skipping `FETCH` clauses i
 W> JPQL.
 
 
-### Eager *to-many* relationships
+## Eager *to-many* relationships
 
 Using `EAGER` on collections by default is rather risky. I'd personally not use it and use explicit
 joins when needed instead. In our [example](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/n-plus-one-problem/src/test/java/tests/OneToManyEagerNPlusOneProblem.java)
@@ -231,6 +235,7 @@ for (OwnerEager owner : owners) {
 
 SQL produced at the point `fetch()` is executed is (output from EclipseLink, Hibernate is similar):
 
+{lang=sql}
 ~~~
 SELECT ID, NAME FROM Owner
 SELECT ID, NAME, owner_id FROM Dog WHERE (owner_id = ?)
@@ -241,6 +246,7 @@ SELECT ID, NAME, owner_id FROM Dog WHERE (owner_id = ?)
 
 And output of the subsequent print statements (manually wrapped):
 
+{lang=text}
 ~~~
 owners = [Person{id=1, name=Adam}, Person{id=2, name=Charlie},
  Person{id=3, name=Joe}, Person{id=4, name=Mike}]
@@ -267,6 +273,7 @@ Join reaches for the data -- notice we have to use `leftJoin` if the collection 
 `fetchJoin` takes care of putting them in the collection. This is probably the best what we can
 explicitly do with eager collection mapping in place. Resulting SQL (here EclipseLink):
 
+{lang=sql}
 ~~~
 SELECT t1.ID, t1.NAME, t0.ID, t0.NAME, t0.owner_id
  FROM {oj Owner t1 LEFT OUTER JOIN Dog t0 ON (t0.owner_id = t1.ID)}
@@ -302,7 +309,7 @@ available in JPA -- and because I believe eager collections are even worse than 
 we will not delve into it any more.
 
 
-### Lazy relationships triggered later
+## Lazy relationships triggered later
 
 Lazy fetch is a reasonable default for mapping collections -- and it is default according to the
 specification. Because collection can be implemented in a custom way all JPA providers offer lazy
@@ -343,5 +350,3 @@ ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID
 1	Adam	5	Cessna	null	1
 2	Charlie	null	null	null	null
 ~~~
-
-TODO: what happens with relationships marked as EAGER?

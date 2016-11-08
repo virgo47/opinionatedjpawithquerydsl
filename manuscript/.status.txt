@@ -25,7 +25,7 @@ To actually finish something, I want to do this in the 1st edition:
 %% Also on cascade: https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types/
 %% (describes cascading in general for various *To*, including dangerous REMOVE on @ManyToMany that
 %% often does not do what we want (actually does more and removes not only link, but also target).
-%%    * Transaction boundary and lazy load (be explicit, I cannot stress it enough)
+%%    * Transaction boundary and lazy load (be explicit, I cannot stress it enough), OSIV
     * Modularity, if you must (100%)
 * Common Problems
 %%    * Object identity, easy problem, recommended always the same way
@@ -44,7 +44,7 @@ To actually finish something, I want to do this in the 1st edition:
 %%			&& Objects.equals(getId(), ((BaseObject<?>) obj).getId());
 %%	}
 %% TODO: Can I load detached entity without projection? Is this true? http://stackoverflow.com/a/15632564/658826
-    * Pagination with *to-many* (0%) -- how to paginate when *to-many* is just in where clause and how to
+    * Pagination with *to-many* (50%) -- how to paginate when *to-many* is just in where clause and how to
     do it when you need to fetch from *to-many* as well (famous N+1 select problem)
         * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
     * Mapping enums (0%) -- using integer DB values, dual mappings (setter sets the other part),
