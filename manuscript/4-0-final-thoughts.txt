@@ -8,10 +8,11 @@ Would I use JPA or ORM again? Voluntarily? Yes -- especially for simple cases. T
 -- and a problem too. Firstly, ORM ideas were developed mostly to help us with rich domain models.
 Using it for simple systems and domains you pay the cost of a technology intended for complex
 domains. But from my experience ORM gets unwieldy for larger domains, especially if you don't use
-domain-driven design (which I admit never saw in proper practice). Even *the* DDD proponent, Eric
+domain-driven design (which, I admit, I haven't seen in proper practice yet). Even *the* DDD
+proponent, Eric
 Evans, lately admitted that proper DDD may be easier with systems where context boundaries are not
-only logical, but also physical -- like microservices. I agree, because implicit is never as solid
-as explicit, as I often stressed in this book.
+only logical, but also physical -- like microservices. I agree, because *implicit* is never as
+solid as *explicit*, as I often stressed in this book.
 
 We may as well agree that many implicit and automagic solutions make our live actually easier.
 But they must be supported by knowledge. When people maintaining the system change and new ones

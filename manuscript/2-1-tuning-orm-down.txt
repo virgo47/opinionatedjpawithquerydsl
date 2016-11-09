@@ -191,7 +191,7 @@ we are explicit with our service contracts and don't let presentation layer to i
 Most typical enterprise applications can keep persistence context short -- and we should. When
 ORM got mainstream a lot of people complained about lazy load exceptions (like the Hibernate famous
 `LazyInitializationException`) but this results from misusing ORM. Programmers solved it with
-making the session (persistence context) longer and introduced *Open Session In View* (OSIV)
+making the session (persistence context) longer and introduced *Open Session in View* (OSIV)
 pattern. This is now widely considered antipattern and there are many good reasons for that.
 
 Using OSIV allowed to keep back-end and front-end programmers separated (with all the disadvantages

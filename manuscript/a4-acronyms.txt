@@ -38,7 +38,7 @@
 * OOP -- object-oriented programming
 * ORM (also O/RM, or O/R mapping) -- object-relational mapping
 * OSGi -- Open Service Gateway Initiative
-* OSIV -- open session in view (antipattern)
+* OSIV -- Open Session in View (antipattern)
 * OSS -- open-source software
 * OWASP -- Open Web Application Security Project
 * PK -- primary key

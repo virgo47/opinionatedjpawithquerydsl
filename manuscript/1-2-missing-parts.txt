@@ -85,7 +85,7 @@ and very flexible -- this effectively closes the gap for functions you can use.
 
 ## Other missing parts
 
-The best way how to find corner cases that are not supported in the specification ([JPspec](#bib-jpspec))
+The best way how to find corner cases that are not supported in the specification [[JPspec](#bib-jpspec)]
 is simply to search for "not supported" string. Some of these are related to embeddables, some are
 pretty natural (e.g. *"applying setMaxResults or setFirstResult to a query involving fetch joins
 over collections is undefined"*).[^paging]

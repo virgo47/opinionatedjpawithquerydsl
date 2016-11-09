@@ -8,7 +8,7 @@ the most pronounced problem called *N+1 select*.
 {icon=book}
 G> ### SQL Performance Explained
 G>
-G> I can highly recommend this incredible book ([[SQLPE](#bib-sqlpe)]) which explains indexes,
+G> I can highly recommend this incredible book [[SQLPE](#bib-sqlpe)] which explains indexes,
 G> joins, execution plans and many other aspects of queries (including data modification) in just
 G> under 200 pages. This not only is a true gem in this area, it can be also obtained as PDF from
 G> [its site](http://sql-performance-explained.com) for 10 Eur or so. It mentions N+1 problem
@@ -28,7 +28,7 @@ is not smart enough to use joins.
 enough to use the join (again) or it is not possible to use it for other reasons like pagination.
 We will cover paginating of entities with *to-many* [later in this chapter](#to-many-paginating).
 * Query for N entities with lazy relationship that is triggered later, e.g. in the view as
-usual with open-session-in-view (OSIV) pattern.
+usual with the Open Session in View (OSIV) pattern.
 
 There are probably more scenarios, but these are the most typical ones. First let's look at the
 eager examples.
@@ -200,7 +200,8 @@ Notice we haven't used alias this time and looking at BNF
 only for `join` and not for `fetch_join` rules. Nonetheless, both Hibernate and EclipseLink
 tolerate this.
 
-W> Note that `JOIN` query doesn't take advantage of any results in entity cache because now you
+W> Note that the `JOIN` query doesn't take the advantage of any results in entity cache because
+W> now you
 W> don't access them by ID. But at least we say exactly what we want. We still have to mind any
 W> "downstream" *to-one* relationships on the joined entity. For the most precise and efficient
 W> results I can, again, only recommend using projections, albeit being least ORM-ish. This means
@@ -312,8 +313,8 @@ we will not delve into it any more.
 ## Lazy relationships triggered later
 
 Lazy fetch is a reasonable default for mapping collections -- and it is default according to the
-specification. Because collection can be implemented in a custom way all JPA providers offer lazy
-behavior without the need for any bytecode magic.
+specification. Because a collection can be implemented in a custom way all JPA providers offer lazy
+behaviour without the need for any bytecode magic.
 
 Mapping on the `Owner` is natural:
 
@@ -384,7 +385,7 @@ to load the same data.
 * We know what data are needed and the responsibility for their loading is split between backend
 layer and presentation layer.
 * To allow presentation layer to load the data we need to keep persistence context open longer.
-This leads to infamous [Open session in view](http://stackoverflow.com/tags/open-session-in-view/info)
+This leads to the infamous [Open Session in View](http://stackoverflow.com/tags/open-session-in-view/info)
 (OSIV) pattern, or rather an antipattern.
 
 W> Using OSIV may lead to situations that for some simple cases the changes are needed only at the
@@ -670,3 +671,11 @@ presentation layer.
 In the second query we don't have to load the actual results anymore, the query is needed only for
 fetching the data in *to-many* relationship. But we fetch all of it for all the items on the page
 currently being displayed.
+
+
+## Wrapping up N+1 problem
+
+TODO:
+- know what you want to fetch and be explicit about it
+- use constant number of queries, not N
+- avoid OSIV/lazy load at the presentation layer, because it is extremely sloppy
