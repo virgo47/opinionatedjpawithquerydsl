@@ -170,7 +170,7 @@ and `LIMIT` clauses.[^pagstand]
     database vendors agreed to implement it.
 
 Let's have a model situation with the following owners (and their dogs): Adam (with dogs Alan,
-Beastie and Cessna), Charlie (no dog), Joe (with Rex) and Mike (with Lassie and Dunco). If you
+Beastie and Cessna), Charlie (no dog), Joe (with Rex and Lassie) and Mike (with Dunco). If you
 query for the first two owners ordered by name -- pagination without order doesn't make sense --
 you'll get Adam and Charlie. However, imagine you want to display names of their dogs in each row.
 If you join dogs too, you'll just get Adam twice, courtesy of his many dogs. You may select without

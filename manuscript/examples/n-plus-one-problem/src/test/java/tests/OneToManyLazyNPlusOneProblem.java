@@ -30,6 +30,7 @@ public class OneToManyLazyNPlusOneProblem {
       System.out.println("\nowners = " + owners);
       for (Owner owner : owners) {
         // EclipseLink prints "{IndirectSet: not instantiated}" and does not load yet
+        // we need to iterate the collection, or at least call something like size/isEmpty, etc.
         // Hibernate prints actual content after loading the collection
         System.out.println(owner.getName() + "'s dogs = " + owner.getDogs());
       }

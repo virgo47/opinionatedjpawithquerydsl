@@ -19,7 +19,7 @@ class NPlusOne {
     dog(em, "Beastie", adam);
     dog(em, "Cessna", adam);
     dog(em, "Rex", joe);
-    dog(em, "Lessie", mike);
+    dog(em, "Lassie", joe);
     dog(em, "Dunco", mike);
     dog(em, "Goro", null);
 

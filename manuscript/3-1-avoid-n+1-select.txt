@@ -58,7 +58,7 @@ For the next sections let's use the following data for dogs and their owners:
 | 2 | Beastie | 1 (Adam) |
 | 3 | Cessna | 1 (Adam) |
 | 4 | Rex | 3 (Joe) |
-| 5 | Lessie | 4 (Mike) |
+| 5 | Lassie | 3 (Joe) |
 | 6 | Dunco | 4 (Mike) |
 | 7 | Goro | `NULL` |
 
@@ -253,9 +253,9 @@ owners = [Person{id=1, name=Adam}, Person{id=2, name=Charlie},
 Adam's dogs = [Dog{id=1, name='Alan', owner.id=1}, Dog{id=2,
  name='Beastie', owner.id=1}, Dog{id=3, name='Cessna', owner.id=1}]
 Charlie's dogs = []
-Joe's dogs = [Dog{id=4, name='Rex', owner.id=3}]
-Mike's dogs = [Dog{id=5, name='Lessie', owner.id=4},
- Dog{id=6, name='Dunco', owner.id=4}]
+Joe's dogs = [Dog{id=4, name='Rex', owner.id=3},
+ Dog{id=5, name='Lassie', owner.id=3}]
+Mike's dogs = [Dog{id=6, name='Dunco', owner.id=4}]
 ~~~
 
 Everything is OK, except it can all be done in a single query. Had we added a single fetch join
@@ -315,38 +315,358 @@ Lazy fetch is a reasonable default for mapping collections -- and it is default 
 specification. Because collection can be implemented in a custom way all JPA providers offer lazy
 behavior without the need for any bytecode magic.
 
+Mapping on the `Owner` is natural:
 
+~~~
+@OneToMany(mappedBy = "owner")
+private Set<Dog> dogs;
+~~~
 
-I> EclipseLink and `toString()` -- is it a "business" method or not? We're used to
-I> `toString` output as defined in `AbstractCollection`, but `Set` does not imply any particular
-I> format.
+Now we run the code very similar to the previous section (entity classes are different, but
+they work on the same tables):
+
+~~~
+List<Owner> owners = new JPAQuery<>(em)
+  .select(QOwner.owner)
+  .from(QOwner.owner)
+  .fetch();
+System.out.println("\nowners = " + owners);
+for (Owner owner : owners) {
+  System.out.println(owner.getName() + "'s dogs = " + owner.getDogs());
+}
+~~~
+
+EclipseLink produces the following output (mixing SQL and standard output):
+
+{lang=text}
+~~~
+SELECT ID, NAME FROM OWNER
+owners = [Person{id=1, name=Adam}, Person{id=2, name=Charlie},
+ Person{id=3, name=Joe}, Person{id=4, name=Mike}]
+Adam's dogs = {IndirectSet: not instantiated}
+Charlie's dogs = {IndirectSet: not instantiated}
+Joe's dogs = {IndirectSet: not instantiated}
+Mike's dogs = {IndirectSet: not instantiated}
+~~~
+
+Is that all? This may seem a bit disturbing and leads us to the question: What should `toString`
+on the lazy collection do?
+
+I> EclipseLink does not load lazy collections when `toString()` is called. Is it a "business"
+I> method or not? We're used to `toString` output as defined in `AbstractCollection`, but `Set`
+I> does not imply any particular format. So we have to call something "real" on the collection.
+I> Even `isEmpty()` or `size()` without using the result would be sufficient to load the collection.
+
+Hibernate treats `toString` differently and prints the content as expected:
+
+{lang=text}
+~~~
+Hibernate: select owner0_.id as id1_1_, owner0_.name as name2_1_
+ from Owner owner0_
+owners = [Person{id=1, name=Adam}, Person{id=2, name=Charlie},
+ Person{id=3, name=Joe}, Person{id=4, name=Mike}]
+Hibernate: select dogs0_.owner_id as owner_id3_0_0_,
+  dogs0_.id as id1_0_0_, ...
+ from Dog dogs0_ where dogs0_.owner_id=?
+Adam's dogs = [Dog{id=1, name='Alan', owner.id=1}, Dog{id=2,
+ name='Beastie', owner.id=1}, Dog{id=3, name='Cessna', owner.id=1}]
+...and more for other owners
+~~~
+
+This `toString` triggers the lazy load process, just like other methods that do the same for
+EclipseLink. This means N+1 problem, of course. Lazy load is supposed to prevent loading the data
+that is not needed -- sometimes we say that the best queries are the ones we don't have to perform.
+But what if want to display a table of owners and list of their dogs in each row? Postponing the
+load into the view is the worst thing we can do for couple of reasons:
+
+* We actually don't gain anything, we're still stuck with N+1 problem while there are better ways
+to load the same data.
+* We know what data are needed and the responsibility for their loading is split between backend
+layer and presentation layer.
+* To allow presentation layer to load the data we need to keep persistence context open longer.
+This leads to infamous [Open session in view](http://stackoverflow.com/tags/open-session-in-view/info)
+(OSIV) pattern, or rather an antipattern.
+
+W> Using OSIV may lead to situations that for some simple cases the changes are needed only at the
+W> presentation layer. While this may sound appealing it is, in fact, rather appalling. Not only we
+W> need more queries and your site may not scale well, especially for pages with more items per
+W> page. It also opens holes in the contract between the persistence and service layer, leading to
+W> all kinds of mysterious bugs, e.g. unexpected updates of objects for which no actual code for
+W> update exists.
+W>
+W> This is the price for pulling attached entity objects up to the presentation layer. This is not
+W> about utilizing lazy load to avoid some queries anymore -- this is the consequence of being lazy
+W> when designing the system. This kind of laziness is not pushing the progress forward. (And yes,
+W> I've been there and I've sinned too.)
+
+When we need the data in the collection we should use join just like we used it for an eager
+collection -- there is actually no difference if we use the join explicitly. But as we demonstrated
+previously there is the issue with paginating. And that's what we're going to talk about next.
 
 
 ## Paginating with *to-many* {#to-many-paginating}
 
-I mentioned previously that we [can't escape SQL](#cant-escape-sql) underneath.
+I mentioned previously that we [can't escape SQL](#cant-escape-sql) underneath. If we join another
+table across *to-many* relationship we change the number of fetched rows and with that we cannot
+paginate reliably. We can demonstrate this with SQL or even with Querydsl (that is JPQL).
 
-TODO bigger example, some table picture, then solution
-TODO mention ORDER, of course :-)
+We will try to obtain owners and their dogs ordered by owner's name. We will set `offset` to 1 and
+`limit` to 2 which should return Charlie and Joe. I realize that offset that is not multiple of
+limit (that is a page size) does not make best sense, but I want these two particular items for
+the following reasons:
 
-Possible pure SQL solution where we only paginate over the table we need to -- but this requires
-subquery in from:
+* I want to draw from the middle of our owner list, not the beginning or the end.
+* I want to see the effect of Charlie's empty collection.
+* I want to see how Joe's two dogs affect the results.
+
+With our limited data this `limit` (2) and `offset` (1) demonstrates all that.
+
+We already saw that both eager and lazy collection allows us to query the master table and let
+N other queries pull the data:
 
 ~~~
-
-(6 rows, 0 ms)
-
--- good
-select * from (select * from owner limit 2 offset 2) o left join dog d on o.id=d.owner_id ;
-ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID
-3	Joe	6	Rex	null	3
-4	Mike	7	Lessie	null	4
-4	Mike	8	Dunco	null	4
-(3 rows, 0 ms)
-
--- wrong
-select * from owner o left join dog d on o.id=d.owner_id limit 2 offset 2;
-ID  	NAME  	ID  	NAME  	BREED  	OWNER_ID
-1	Adam	5	Cessna	null	1
-2	Charlie	null	null	null	null
+List<Owner> owners = new JPAQuery<>(em)
+  .select(QOwner.owner)
+  .from(QOwner.owner)
+  .orderBy(QOwner.owner.name.asc())
+  .offset(1)
+  .limit(2)
+  .fetch();
+for (Owner owner : owners) {
+  owner.getDogs().isEmpty(); // to assure lazy load even on EclipseLink
+  System.out.println(owner.getName() + "'s dogs = " + owner.getDogs());
+}
 ~~~
+
+T> Notice the `orderBy` method added to the query -- pagination without order does not make any
+T> sense. Even if it seems to work in some "natural" order it is not guaranteed to do so in the
+T> future. Never forget to add order to the results that are paginated, even if it's order by some
+T> technical column like primary key, although columns with business meaning are better for order.
+
+
+### Join leads to incorrect results
+
+We can't fix the N+1 problem with `JOIN FETCH` anymore:
+
+~~~
+List<Owner> owners = new JPAQuery<>(em)
+  .select(QOwner.owner)
+  .from(QOwner.owner)
+  .leftJoin(QOwner.owner.dogs).fetchJoin()
+  .orderBy(o.name.asc(), d.name.asc())
+  .offset(1)
+  .limit(2)
+  .fetch();
+~~~
+
+With the same print loop this produces:
+
+{lang=text}
+~~~
+Adam's dogs = {[Dog{id=1, name='Alan', owner.id=1}, Dog{id=2, ...
+Adam's dogs = {[Dog{id=1, name='Alan', owner.id=1}, Dog{id=2, ...
+~~~
+
+The same happens if we want to be explicit. Here we even use "raw" versions of entities, ad-hoc
+join (to root entity) and explicit `ON`:
+
+~~~
+QOwnerRaw o = QOwnerRaw.ownerRaw;
+QDogRaw d = QDogRaw.dogRaw;
+List<Tuple> results = new JPAQuery<>(em)
+  .select(o, d)
+  .from(o)
+  .leftJoin(d).on(d.ownerId.eq(o.id))
+  .orderBy(o.name.asc(), d.name.asc())
+  .offset(1)
+  .limit(2)
+  .fetch();
+for (Tuple row : results) {
+  DogRaw dog = row.get(d);
+  System.out.println(row.get(o).getName() + ", " + (dog != null ? dog.getName() : null));
+}
+~~~
+
+Now we had to change the print loop and we put the results into tuple:
+
+{lang=text}
+~~~
+Adam, Beastie
+Adam, Cessna
+~~~
+
+We could just `select(o)` but it would still two rows of Adam. Ok, how does the whole result set
+looks like and what are we selecting with our limit/offset?
+
+| owner | dog |
+|-------|-----|
+| Adam | Alan |
+| **Adam** | **Beastie** |
+| **Adam** | **Cessna** |
+| Charlie | null |
+| Joe | Lassie |
+| Joe | Rex |
+| Mike | Dunco |
+
+This makes it more obvious. Offset and limit are not smart and they don't care about what we want
+to paginate. With values 1 and 2 respectively they will give us lines 2 and 3 of whatever result we
+apply it to. And that is very important.
+
+
+### Using native SQL
+
+Is it even possible to paginate with a single query? Yes, but we have to use subquery in a `FROM`
+or `JOIN` clause, neither of which is available in JPQL (as of *JPA 2.1*). We can try native query:
+
+~~~
+// select * would be enough for EclipseLink
+// Hibernate would complains about duplicated sql alias
+Query nativeQuery = em.createNativeQuery(
+  "SELECT o.name AS oname, d.name AS dname" +
+    " FROM (SELECT * FROM owner LIMIT 2 OFFSET 1) o" +
+    " LEFT JOIN dog d ON o.id=d.owner_id");
+List<Object[]> resultList = nativeQuery.getResultList();
+
+System.out.println("resultList = " + resultList.stream()
+  .map(row -> Arrays.toString(row))
+  .collect(Collectors.toList()));
+~~~
+
+I> For EclipseLink `SELECT *` would be enough but Hibernate complains about duplicated sql alias
+I> as columns `ID` and `NAME` are named the same in both tables. Even `AS` parts are required by
+I> Hibernate.
+
+Returned `resultList` has three rows:
+
+{lang=text}
+~~~
+resultList = [[Charlie, null], [Joe, Rex], [Joe, Lassie]]
+~~~
+
+But all rows are related to our two selected owners. We got all the data in relational form,
+there is no other way, it's up to us to group the data as we need. For this we may want to add
+a transient `dogs` collection in our "raw" variant of the `Owner` class.
+
+
+### JPA/Querydsl solutions
+
+Because of current JPQL disabilities we cannot do it all in one go, but we can do it in a single
+additional query:
+
+1) Query with pagination is executed. This may return some data from the master table or perhaps
+only IDs of the rows. Order must be applied for pagination to work correctly. Any where conditions
+are applied here as well, more about it in a moment.
+2) Fetch the missing data limiting the results to the scope of the previous result. The concrete
+implementation of this step differs depending on the nature of the first query.
+
+Let's say the first query just returns IDs like this:
+
+~~~
+QOwnerRaw o = QOwnerRaw.ownerRaw;
+List<Integer> ownerIds = new JPAQuery<>(em)
+  .select(o.id)
+  .from(o)
+  .orderBy(o.name.asc())
+  // WHERE ad lib here
+  .offset(1)
+  .limit(2)
+  .fetch();
+~~~
+
+In this case we can get the final result like this:
+
+~~~
+QDogRaw d = QDogRaw.dogRaw;
+Map<OwnerRaw, List<DogRaw>> ownerDogs = new JPAQuery<>(em)
+  .select(o, d)
+  .from(o)
+  .leftJoin(d).on(d.ownerId.eq(o.id))
+  .where(o.id.in(ownerIds))
+  .orderBy(o.name.asc()) // use the same order as in select #1
+  .orderBy(d.name.desc()) // dogs in each list ordered DESC
+  // no limit/offset, where took care of it
+  .transform(groupBy(o).as(list(d)));
+System.out.println("ownerDogs = " + ownerDogs);
+~~~
+
+Using the same order like in the first query is essential, additional order are allowed. Important
+question is whether you need to join any *to-many* relationship for the first query as well. If we
+need to (e.g. for `WHERE` conditions) we have to use `DISTINCT` which means we also have to bring
+expression from `ORDER BY` into the `SELECT` clause. This is mandated by SQL, because `DISTINCT`
+must be applied before we can order the results. This complicates the first select:
+
+~~~
+List<Integer> ownerIds = new JPAQuery<>(em)
+  // If distinct is used SQL requires o.name here because it is used to
+  // order which happens after distinct. EclipseLink can handle this,
+  // Hibernate generated SQL fails. JPA spec is not specific on this.
+  .select(o.id, o.name)
+  // or perhaps just use o, that encompasses o.name
+  // .select(o)
+  .distinct() // needed if join across to-many is used to allow WHERE
+  .from(o)
+  .orderBy(o.name.asc())
+  // WHERE ad lib here
+  .offset(1)
+  .limit(2)
+  .fetch()
+  .stream()
+  .map(t -> t.get(o.id))
+  // .map(Owner::getId) // if .select(o) was used
+  .collect(Collectors.toList());
+~~~
+
+We could stop at `fetch` and deal with the `List<Tuple>` but that's not what we wanted hence the
+additional mapping to the list of IDs. The commented version using just `o` alias and more
+straightforward mapping to ID is probably better, but it still raises the question: Do we really
+need to join across *to-many* to add where conditions? Can't we work around it with subquery? For
+example, to get owners with some dogs we can do this with join across *to-many*:
+
+~~~
+QOwnerRaw o = QOwnerRaw.ownerRaw;
+QDogRaw d = QDogRaw.dogRaw;
+List<OwnerRaw> owners = new JPAQuery<>(em)
+  .select(o)
+  .distinct()
+  .from(o)
+  .leftJoin(d).on(d.ownerId.eq(o.id))
+  .where(d.isNotNull())
+  .orderBy(o.name.asc())
+  .offset(1)
+  .limit(2)
+  .fetch();
+~~~
+
+This skips Charlie and returns Joe and Mike. We can get the same without `JOIN` and `DISTINCT`:
+
+~~~
+QOwnerRaw o = QOwnerRaw.ownerRaw;
+QDogRaw d = QDogRaw.dogRaw;
+List<OwnerRaw> owners = new JPAQuery<>(em)
+  .select(o)
+  .from(o)
+  .where(new JPAQuery<>()
+    .select(d)
+    .from(d)
+    .where(d.ownerId.eq(o.id))
+    .exists())
+  .orderBy(o.name.asc())
+  .offset(1)
+  .limit(2)
+  .fetch();
+~~~
+
+Subquery reads a bit longer but if we wanted to select `o.id` directly it would save a lot of
+troubles we would encounter because of the `distinct/orderBy` combo.
+
+Personally I'm not a friend of the first select returning only IDs, although there may be scenarios
+when it's the best solution. Now we know we can filter list of owners by dog's attributes (that is
+across *to-many* relationship), either using subqueries or distinct clause, I'd suggest returning
+whole owners. We can safely join any *to-one* associations and return `Tuple` of many entities or
+we can enumerate all the desired columns and return custom DTO (projection). Projection would
+further relieve the persistence context if the data merely flow through the service layer to the
+presentation layer.
+
+In the second query we don't have to load the actual results anymore, the query is needed only for
+fetching the data in *to-many* relationship. But we fetch all of it for all the items on the page
+currently being displayed.

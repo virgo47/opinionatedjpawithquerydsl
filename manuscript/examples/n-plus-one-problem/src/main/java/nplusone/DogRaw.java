@@ -2,10 +2,10 @@ package nplusone;
 
 import javax.persistence.*;
 
-/** Dog used in eager collection in OwnerEager entity. Dog's to-one is default (i.e. eager). */
+/** Raw dog maps owner as the value of FK, that is ownerId. */
 @Entity
 @Table(name = "Dog")
-public class DogEager {
+public class DogRaw {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,9 +13,8 @@ public class DogEager {
 
   private String name;
 
-  @ManyToOne
-  @JoinColumn(name = "owner_id")
-  private OwnerEager owner;
+  @Column(name = "owner_id")
+  private Integer ownerId;
 
   public Integer getId() {
     return id;
@@ -33,19 +32,11 @@ public class DogEager {
     this.name = name;
   }
 
-  public OwnerEager getOwner() {
-    return owner;
-  }
-
-  public void setOwner(OwnerEager owner) {
-    this.owner = owner;
-  }
-
   @Override public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    DogEager dog = (DogEager) o;
+    DogRaw dog = (DogRaw) o;
 
     return id != null ? id.equals(dog.id) : dog.id == null;
 
@@ -60,7 +51,7 @@ public class DogEager {
     return "Dog{" +
       "id=" + id +
       ", name='" + name + '\'' +
-      ", owner.id=" + (owner != null ? owner.getId() : null) +
+      ", ownerId=" + ownerId +
       '}';
   }
 }
