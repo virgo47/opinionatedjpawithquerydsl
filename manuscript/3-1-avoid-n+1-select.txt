@@ -675,6 +675,16 @@ currently being displayed.
 
 ## Wrapping up N+1 problem
 
+N+1 problem can occur when the load of multiple (N) entities subsequently triggers load of their
+related data one by one. The relations may be *to-one* or *to-many* and there may be be multiple
+of these. I personally solve the plague of *to-one* getting out of control with raw FK values -- as
+proposed in the [chapter Removing *to-one* altogether](#ch-without-to-one).
+
+*To-many* relationships should be declared as lazy for most cases to avoid "loading the whole DB".
+They should still be loaded explicitly, that is with joins, when we need the data. Scenarios where
+conscious lazy load is appropriate are rather rare. Scenarios where people either don't know or
+are lazy to think are less rare and that's what leads to N+1 so often.
+
 TODO:
 - know what you want to fetch and be explicit about it
 - use constant number of queries, not N
