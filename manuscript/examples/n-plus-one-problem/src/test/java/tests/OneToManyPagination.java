@@ -36,6 +36,7 @@ public class OneToManyPagination {
       joinedAndDistinctPaginated(em);
       nativeQueryPagination(em);
       twoJoinsFirstIdsOnly(em);
+      relationshipFetcherPagination(em);
 
       em.close();
     } finally {
@@ -219,5 +220,45 @@ public class OneToManyPagination {
       // no limit/offset, where took care of it
       .transform(groupBy(o).as(list(d)));
     System.out.println("ownerDogs = " + ownerDogs);
+  }
+
+  private static void relationshipFetcherPagination(EntityManager em) {
+    NPlusOne.clear(em);
+
+    QOwnerRaw o = QOwnerRaw.ownerRaw;
+    List<OwnerRaw> owners = new JPAQuery<>(em)
+      .select(o)
+      .from(o)
+      .orderBy(o.name.asc())
+      .offset(1)
+      .limit(2)
+      .fetch();
+
+    QDogRaw d = QDogRaw.dogRaw;
+    List<OwnerWithDogs> ownersWithDogs = ToManyFetcher.forItems(owners)
+      .by(OwnerRaw::getId)
+      .from(d)
+      .joiningOn(d.ownerId)
+      .orderBy(d.name.desc())
+      .fetchAs(em, OwnerWithDogs::new);
+
+    System.out.println("ownersWithDogs = " + ownersWithDogs);
+  }
+
+  static class OwnerWithDogs {
+    public final OwnerRaw owner;
+    public final List<DogRaw> dogs;
+
+    OwnerWithDogs(OwnerRaw owner, List<DogRaw> dogs) {
+      this.owner = owner;
+      this.dogs = dogs;
+    }
+
+    @Override public String toString() {
+      return "OwnerWithDogs{" +
+        "owner=" + owner +
+        ", dogs=" + dogs +
+        '}';
+    }
   }
 }

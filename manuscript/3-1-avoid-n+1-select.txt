@@ -354,7 +354,7 @@ Is that all? This may seem a bit disturbing and leads us to the question: What s
 on the lazy collection do?
 
 I> EclipseLink does not load lazy collections when `toString()` is called. Is it a "business"
-I> method or not? We're used to `toString` output as defined in `AbstractCollection`, but `Set`
+I> method or not? We're used to the `toString` output as defined in `AbstractCollection`, but `Set`
 I> does not imply any particular format. So we have to call something "real" on the collection.
 I> Even `isEmpty()` or `size()` without using the result would be sufficient to load the collection.
 
@@ -673,19 +673,34 @@ fetching the data in *to-many* relationship. But we fetch all of it for all the 
 currently being displayed.
 
 
+### *To-many* relationship fetcher
+
+TODO To be very concrete we may try to construct a component that fetches needed data with minimum
+guidance. See ToManyFetcher and tests.OneToManyPagination#relationshipFetcherPagination
+
+
 ## Wrapping up N+1 problem
 
 N+1 problem can occur when the load of multiple (N) entities subsequently triggers load of their
 related data one by one. The relations may be *to-one* or *to-many* and there may be be multiple
-of these. I personally solve the plague of *to-one* getting out of control with raw FK values -- as
-proposed in the [chapter Removing *to-one* altogether](#ch-without-to-one).
+of these. The worst case is when the data loaded by up to N additional queries are not used at all.
+This happens often with *to-one* relationships which I personally solve with raw FK values -- as
+proposed in the [chapter Removing *to-one* altogether](#ch-without-to-one). *To-many* relationships
+should be declared as lazy for most cases to avoid "loading the whole DB".
 
-*To-many* relationships should be declared as lazy for most cases to avoid "loading the whole DB".
-They should still be loaded explicitly, that is with joins, when we need the data. Scenarios where
-conscious lazy load is appropriate are rather rare. Scenarios where people either don't know or
-are lazy to think are less rare and that's what leads to N+1 so often.
+Needed related data should be loaded explicitly, that is with joins, when we need the data.
+Scenarios where conscious lazy load is appropriate are rather rare. Scenarios where people either
+don't know or are lazy to think are less rare and that's what leads to N+1 so often. N queries
+are not necessary in most cases and don't scale very well with the page size.
 
-TODO:
-- know what you want to fetch and be explicit about it
-- use constant number of queries, not N
-- avoid OSIV/lazy load at the presentation layer, because it is extremely sloppy
+For data across *to-one* relationships there are rarely any negative implications when we join
+them. With *to-many* situation gets a little bit messy, especially if we need data across multiple
+such relationships. If we don't need pagination we may use join and then group the data
+appropriately, but with pagination we have to ensure that the driving query on the master entity
+is paginated correctly. With JPA/JPQL this is typically not possible in a single select and each
+*to-many* relationship requires an additional query -- but it is possible to keep query count
+constant and not driven by number of items.
+
+In any case, letting lazy loading doing the job we should do in cases when the data gets loaded
+anyway is sloppy. Using Open Session in View (OSIV) on top of it instead of having proper service
+layer contract is plain hazardous.
