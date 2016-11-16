@@ -675,8 +675,198 @@ currently being displayed.
 
 ### *To-many* relationship fetcher
 
-TODO To be very concrete we may try to construct a component that fetches needed data with minimum
-guidance. See ToManyFetcher and tests.OneToManyPagination#relationshipFetcherPagination
+To demonstrate how we can implement this fetching pattern I decided to build "quick and dirty"
+fluent API for the second query. It not only executes the fetch for the *to-many* relationship
+for all the items in the page, but it also merges them into a single object -- which is a kind of
+post-processing we glossed over.
+
+I'm not saying it can't be done better but I think if it looked like this it would be really
+useful:
+
+~~~
+QOwnerRaw o = QOwnerRaw.ownerRaw;
+List<OwnerRaw> owners = new JPAQuery<>(em)
+  .select(o)
+  .from(o)
+  .orderBy(o.name.asc())
+  .offset(1)
+  .limit(2)
+  .fetch();
+
+QDogRaw d = QDogRaw.dogRaw;
+List<OwnerRaw> ownersWithDogs = ToManyFetcher.forItems(owners)
+  .by(OwnerRaw::getId)
+  .from(d)
+  .joiningOn(d.ownerId)
+  .orderBy(d.name.desc())
+  .fetchAndCombine(em, OwnerRaw::setDogs);
+~~~
+
+This implies some transient dogs collection on the owner and existing setter:
+
+~~~
+@Transient
+private List<DogRaw> dogs;
+
+//...
+
+public void setDogs(List<DogRaw> dogs) {
+  this.dogs = dogs;
+}
+~~~
+
+Or we can combine both in some DTO like this (first query is still the same):
+
+~~~
+// first query up to QDogRaw d = ... here 
+List<OwnerWithDogs> ownersWithDogs = ToManyFetcher.forItems(owners)
+  .by(OwnerRaw::getId)
+  .from(d)
+  .joiningOn(d.ownerId)
+  .orderBy(d.name.desc())
+  .fetchAs(em, OwnerWithDogs::new);
+
+// elsewhere...
+public class OwnerWithDogs {
+  public final OwnerRaw owner;
+  public final List<DogRaw> dogs;
+
+  OwnerWithDogs(OwnerRaw owner, List<DogRaw> dogs) {
+    this.owner = owner;
+    this.dogs = dogs;
+  }
+}
+~~~
+
+Ok, now how to construct such an API? We can use paths of Querydsl -- although we don't use its
+type-safety capabilities for perfect result -- rather we go for something useful without putting
+too many parametrized type in the code. Also, in order to make it fluent with the need of adding
+additional parametrized types, I broke my personal rules about code nesting -- in this case the
+nesting of inner classes. Sorry for that, it's up to you to do it your way, this really is just
+a proof of concept:
+
+~~~
+import com.querydsl.core.types.*;
+import com.querydsl.core.types.dsl.*;
+import com.querydsl.jpa.impl.JPAQuery;
+
+import javax.persistence.EntityManager;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Collectors;
+
+import static com.querydsl.core.group.GroupBy.*;
+
+public class ToManyFetcher<T> {
+
+  private final List<T> rows;
+
+  private ToManyFetcher(List<T> rows) {
+    this.rows = rows;
+  }
+
+  public static <T> ToManyFetcher<T> forItems(List<T> rows) {
+    return new ToManyFetcher<>(rows);
+  }
+
+  public <PK> ToManyFetcherWithIdFunction<PK> by(Function<T, PK> idFunction) {
+    return new ToManyFetcherWithIdFunction<>(idFunction);
+  }
+
+  public class ToManyFetcherWithIdFunction<PK> {
+    private final Function<T, PK> idFunction;
+
+    public ToManyFetcherWithIdFunction(Function<T, PK> idFunction) {
+      this.idFunction = idFunction;
+    }
+
+    public <TMC> ToManyFetcherWithFrom<TMC> from(EntityPathBase<TMC> toManyEntityPathBase)
+    {
+      return new ToManyFetcherWithFrom<>(toManyEntityPathBase);
+    }
+
+    public class ToManyFetcherWithFrom<TMC> {
+      private EntityPathBase<TMC> toManyEntityPathBase;
+      private Path<PK> fkPath;
+      private OrderSpecifier orderSpecifier;
+
+      public ToManyFetcherWithFrom(EntityPathBase<TMC> toManyEntityPathBase)
+      {
+        this.toManyEntityPathBase = toManyEntityPathBase;
+      }
+
+      public ToManyFetcherWithFrom<TMC> joiningOn(Path<PK> fkPath) {
+        this.fkPath = fkPath;
+        return this;
+      }
+
+      public ToManyFetcherWithFrom<TMC> orderBy(OrderSpecifier orderSpecifier) {
+        this.orderSpecifier = orderSpecifier;
+        return this;
+      }
+
+      public <R> List<R> fetchAs(EntityManager em, BiFunction<T, List<TMC>, R> combineFunction) {
+        Map<PK, List<TMC>> toManyResults = getToManyMap(em);
+
+        return rows.stream()
+          .map(row -> combineFunction.apply(row,
+            toManyResults.getOrDefault(idFunction.apply(row), Collections.emptyList())))
+          .collect(Collectors.toList());
+      }
+
+      public List<T> fetchAndCombine(EntityManager em,
+        BiConsumer<T, List<TMC>> combiner)
+      {
+        Map<PK, List<TMC>> toManyResults = getToManyMap(em);
+
+        rows.forEach(row -> combiner.accept(row,
+          toManyResults.getOrDefault(idFunction.apply(row), Collections.emptyList())));
+
+        return rows;
+      }
+
+      private Map<PK, List<TMC>> getToManyMap(EntityManager em) {
+        List<PK> ids = rows.stream()
+          .map(idFunction)
+          .collect(Collectors.toList());
+        JPAQuery<TMC> tmcQuery = new JPAQuery<>(em)
+          .select(toManyEntityPathBase)
+          .from(toManyEntityPathBase)
+          .where(Expressions.booleanOperation(Ops.IN, fkPath, Expressions.constant(ids)));
+        if (orderSpecifier != null) {
+          tmcQuery.orderBy(orderSpecifier);
+        }
+        return tmcQuery
+          .transform(groupBy(fkPath).as(list(toManyEntityPathBase)));
+      }
+    }
+  }
+}
+~~~
+
+First we start with `ToManyFetcher` that preserves the type for the master entity (`OwnerRaw` in
+our example). I could also store `EntityManager` here -- it is eventually needed for query
+execution, but I chose to put it into the terminal operation (rather arbitrary decision here).
+Method `by` returns `ToManyFetcherWithIdFunction` to preserve the type of the master entity
+primary key (ID) and also to store the function that maps entity to it. For that we need to return
+different type. Next `from` preserves the type of `EntityPathBase` of the detail entity (that is
+entity Q-class) -- and again returns instance of another type that wraps all the accumulated
+knowledge.
+
+Further `joiningOn` and `orderBy` don't add any parametrized types so they just return `this`.
+While `orderBy` is optional, `joiningOn` is very important and we may construct API in a way that
+enforces its call -- which did not happen in my demo. Finally we can choose from two handy `fetch`
+operations depending on whether we want to combine the result on the master entity class (using
+a setter for instance) or in another type (like DAO).
+
+Java 8 is used nicely here, especially when the API is used. It can certainly be done without
+streams but using inner classes instead of lambdas would `by` and `fetch` calls arguably unwieldy.
+Trying to do it in a single type would require defining all the parametrized types at once --
+either explicitly using `<....>` notation or using a call with multiple arguments.
+
+I tried both and this second fluent approach is much better as the names of fluent calls introduce
+the parameter and make the code virtually self-documented. I hope this demonstrates how nicely we
+can use Querydsl API (and Java 8!) for recurring problems.
 
 
 ## Wrapping up N+1 problem

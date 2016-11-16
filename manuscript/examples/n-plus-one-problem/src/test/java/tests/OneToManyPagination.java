@@ -236,11 +236,13 @@ public class OneToManyPagination {
 
     QDogRaw d = QDogRaw.dogRaw;
     List<OwnerWithDogs> ownersWithDogs = ToManyFetcher.forItems(owners)
+//    List<OwnerRaw> ownersWithDogs = ToManyFetcher.forItems(owners) // to use transient dogs
       .by(OwnerRaw::getId)
       .from(d)
       .joiningOn(d.ownerId)
       .orderBy(d.name.desc())
       .fetchAs(em, OwnerWithDogs::new);
+//      .fetchAndCombine(em, OwnerRaw::setDogs); // to use transient dogs
 
     System.out.println("ownersWithDogs = " + ownersWithDogs);
   }

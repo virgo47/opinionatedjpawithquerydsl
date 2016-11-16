@@ -1,6 +1,5 @@
 package tests;
 
-
 import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Path;
@@ -12,6 +11,7 @@ import javax.persistence.EntityManager;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,7 +31,6 @@ public class ToManyFetcher<T> {
     return new ToManyFetcher<>(rows);
   }
 
-
   public <PK> ToManyFetcherWithIdFunction<PK> by(Function<T, PK> idFunction) {
     return new ToManyFetcherWithIdFunction<>(idFunction);
   }
@@ -49,7 +48,7 @@ public class ToManyFetcher<T> {
     }
 
     public class ToManyFetcherWithFrom<TMC> {
-      private EntityPathBase<TMC> toManyEntityPathBase;
+      private final EntityPathBase<TMC> toManyEntityPathBase;
       private Path<PK> fkPath;
       private OrderSpecifier orderSpecifier;
 
@@ -69,6 +68,26 @@ public class ToManyFetcher<T> {
       }
 
       public <R> List<R> fetchAs(EntityManager em, BiFunction<T, List<TMC>, R> combineFunction) {
+        Map<PK, List<TMC>> toManyResults = getToManyMap(em);
+
+        return rows.stream()
+          .map(row -> combineFunction.apply(row,
+            toManyResults.getOrDefault(idFunction.apply(row), Collections.emptyList())))
+          .collect(Collectors.toList());
+      }
+
+      public List<T> fetchAndCombine(EntityManager em,
+        BiConsumer<T, List<TMC>> combiner)
+      {
+        Map<PK, List<TMC>> toManyResults = getToManyMap(em);
+
+        rows.forEach(row -> combiner.accept(row,
+          toManyResults.getOrDefault(idFunction.apply(row), Collections.emptyList())));
+
+        return rows;
+      }
+
+      private Map<PK, List<TMC>> getToManyMap(EntityManager em) {
         List<PK> ids = rows.stream()
           .map(idFunction)
           .collect(Collectors.toList());
@@ -79,16 +98,9 @@ public class ToManyFetcher<T> {
         if (orderSpecifier != null) {
           tmcQuery.orderBy(orderSpecifier);
         }
-        Map<PK, List<TMC>> toManyResults = tmcQuery
+        return tmcQuery
           .transform(groupBy(fkPath).as(list(toManyEntityPathBase)));
-
-        return rows.stream()
-          .map(row -> combineFunction.apply(row,
-            toManyResults.getOrDefault(idFunction.apply(row), Collections.emptyList())))
-          .collect(Collectors.toList());
       }
-
-      // alternatively List<T> fetchAndCombine(em, BiConsumer<T, List<TMC>> combineFunction)
     }
   }
 }

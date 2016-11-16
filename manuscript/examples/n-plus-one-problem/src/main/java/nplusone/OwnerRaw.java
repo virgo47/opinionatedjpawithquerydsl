@@ -2,6 +2,7 @@ package nplusone;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Raw owner representation does not have mapped collection
@@ -16,6 +17,9 @@ public class OwnerRaw implements Serializable {
   private Integer id;
 
   private String name;
+
+  @Transient
+  private List<DogRaw> dogs;
 
   public Integer getId() {
     return id;
@@ -33,10 +37,19 @@ public class OwnerRaw implements Serializable {
     this.name = name;
   }
 
+  public List<DogRaw> getDogs() {
+    return dogs;
+  }
+
+  public void setDogs(List<DogRaw> dogs) {
+    this.dogs = dogs;
+  }
+
   @Override public String toString() {
     return "Person{" +
       "id=" + id +
       ", name=" + name +
+      ", dogs=" + dogs +
       '}';
   }
 }
