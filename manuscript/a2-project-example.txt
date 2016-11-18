@@ -1,10 +1,11 @@
 # Project example {#app-project-example}
 
+Setting up project with JPA, Querydsl and H2 as a database may seem daunting task for a newcomer,
+but it's not really that difficult. We will show how it works in Maven. I'm a fan of Gradle too,
+but -- unfortunately -- more a fan than an experienced user and "instant" solutions readily
+available for Maven are not yet prepared for Gradle.
+
 %% Reference documentation, show entity example and generated class perhaps?
-
-TODO
-
-## Querydsl annotation processor
 
 TODO
 
@@ -12,6 +13,6 @@ TODO
 
 TODO
 
-### Querydsl and Gradle
-
-TODO: Querydsl does not provide support (plugin) for Gradle directly.
+%% ### Querydsl and Gradle
+%%
+%% TODO: Querydsl does not provide support (plugin) for Gradle directly.
