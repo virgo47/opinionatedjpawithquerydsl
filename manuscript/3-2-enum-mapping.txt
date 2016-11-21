@@ -8,7 +8,7 @@ This chapter is based on my two blog posts.
 I adapted them for the book and our typical model of dogs and there is no need to read them.
 
 Before we embark on our journey we should mention that Java enums are not necessarily the best way
-to model various code lists and other enumerations. We will tackle this at the end of this chapter.
+to model various code lists and other enumerations. We will tackle this at the end of the chapter.
 
 Typical way how enumeration is stored in a DB is a numeric column mapped to enum. We all know
 that using `EnumType.ORDINAL` is one of those worse solutions as values returned by `ordinal()`
@@ -35,12 +35,12 @@ public enum Gender {
 ~~~
 
 And we have our entity that is mapping numeric column to our enum:
-	
+
 ~~~
 @Entity
 public class Dog {
   @Id private Integer id;
- 
+
 //..
   @Convert(converter = GenderConverter.class)
   @Column(name = "gender")
@@ -54,7 +54,7 @@ do now is to implement the converter:
 
 ~~~
 import javax.persistence.AttributeConverter;
- 
+
 /**
  * This is coupled too much to enum and we always have to change both classes in tandem.
  * That's a big STOP (and think) sign in any case.
@@ -111,7 +111,7 @@ public class SomeEntityTypeConverter implements AttributeConverter<SomeEntityTyp
     public Integer convertToDatabaseColumn(SomeEntityType someEntityType) {
         return someEntityType.getDbValue();
     }
- 
+
     @Override
     public SomeEntityType convertToEntityAttribute(Integer dbValue) {
         // this can still return null unless it throws IllegalArgumentException
@@ -155,34 +155,34 @@ Much better, we don't have to think about this class at all when we add values t
 30
 31
 32
-	
+
 public enum SomeEntityType {
     NORMAL(0),
     SPECIAL(1);
- 
+
     // ENUM -> DB VALUE CONVERSION
     // first part is easy and most programmers get here (Effective Java 101 after all)
     // fields are not final implicitly, but we better make them
     private final Integer dbValue;
- 
+
     private SomeEntityType(Integer dbValue) {
         this.dbValue = dbValue;
     }
- 
+
     public Integer getDbValue() {
         return dbValue;
     }
- 
+
     // DB VALUE -> ENUM CONVERSION
     // static reverse resolving:
     public static final Map<Integer, SomeEntityType> dbValues = new HashMap<>();
- 
+
     static {
         for (SomeEntityType value : values()) {
             dbValues.put(value.dbValue, value);
         }
     }
- 
+
     public static SomeEntityType fromDbValue(Integer dbValue) {
         // this returns null for invalid value, check for null and throw exception if you need it
         return dbValues.get(dbValue);
@@ -206,7 +206,7 @@ Let's say we want to have order in these things. We will require the method name
 9
 10
 11
-	
+
 /**
  * Declares this enum as converted into database, column value of type Y.
  *
@@ -252,7 +252,7 @@ Now to utilize all this we need a base class for AttributeConverter -- here it g
 26
 27
 28
-	
+
 /**
  * Base implementation for converting enums stored in DB.
  * Enums must implement {@link ConvertedEnum}.
@@ -264,19 +264,19 @@ public abstract class EnumAttributeConverter<X extends ConvertedEnum<Y>, Y>
     public final Y convertToDatabaseColumn(X x) {
         return x.toDbValue();
     }
- 
+
 // you can end here, or you can add handy stuff if necessary
     public X notNull(X x) {
         return notNull(x, null);
     }
- 
+
     public X notNull(X x, Y dbValue) {
         if (x == null) {
             throw new IllegalArgumentException("No enum constant" + (dbValue != null ? (" for DB value " + dbValue) : ""));
         }
         return x;
     }
- 
+
     public X withDefault(X x, X defaultValue) {
         return x != null ? x : defaultValue;
     }
@@ -289,7 +289,7 @@ As you can see, only convertToDatabaseColumn is mandatory here. Here is our conc
 4
 5
 6
-	
+
 public class SomeEntityTypeConverter extends EnumAttributeConverter<SomeEntityType, Integer> {
     @Override
     public SomeEntityType convertToEntityAttribute(Integer integer) {
@@ -311,7 +311,7 @@ Let's try to hack our converters first. We need to get the type information into
 2
 3
 4
-	
+
 public abstract class EnumAttributeConverter<X extends ConvertedEnum<Y>, Y>
     implements AttributeConverter<X, Y>
 {
@@ -322,7 +322,7 @@ And subclass would initialize it this way:
 2
 3
 4
-	
+
 public class SomeEntityTypeConverter extends EnumAttributeConverter<SomeEntityType, Integer> {
     {
         enumClass = SomeEntityType.class;
@@ -330,7 +330,7 @@ public class SomeEntityTypeConverter extends EnumAttributeConverter<SomeEntityTy
 
 But this is not enforced in any way! Rather use abstract method that must be implemented. In abstract converter:
 1
-	
+
 protected abstract Class<X> enumClass();
 
 And in concrete class:
@@ -340,7 +340,7 @@ And in concrete class:
 4
 5
 6
-	
+
 public class SomeEntityTypeConverter extends EnumAttributeConverter<SomeEntityType, Integer> {
     @Override
     protected Class<SomeEntityType> enumClass() {
@@ -358,7 +358,7 @@ But we're back to 3 lines of code (excluding @Override) and we didn't get to ugl
 7
 8
 9
-	
+
 @Override
 public X convertToEntityAttribute(Y dbValue) {
     try {
@@ -377,12 +377,12 @@ Maybe I missed something on the path, but this doesn't sound like good solution.
 5
 6
 7
-	
+
 // throws NoSuchMethodException
 // Method method = converter.getClass().getMethod("convertToDatabaseColumn", Integer.class);
 Method method = converter.getClass().getMethod("convertToDatabaseColumn", Object.class);
 System.out.println("method = " + method);
- 
+
 // prints:
 method = public java.lang.Object com.github.virgo47.enumconv._4evenmore.EnumAttributeConverter.convertToDatabaseColumn(java.lang.Object)
 
@@ -396,10 +396,10 @@ Anyway, let's look into that enum's static resolving. This is actually really us
 4
 5
 6
-	
+
 // static resolving:
 public static final ConvertedEnumResolver<SomeEntityType, Integer> resolver = new ConvertedEnumResolver<>(SomeEntityType.class);
- 
+
 public static SomeEntityType fromDbValue(Integer dbValue) {
     return resolver.get(dbValue);
 }
@@ -433,7 +433,7 @@ So we got rid of static initializer. But the code must be somewhere:
 26
 27
 28
-	
+
 /**
  * Helps reverse resolving of {@link ConvertedEnum} from a DB value back to enum instance.
  * Enums that can be resolved this way must have unified interface in order to obtain
@@ -443,17 +443,17 @@ So we got rid of static initializer. But the code must be somewhere:
  * @param <Y> type of DB value
  */
 public class ConvertedEnumResolver<T extends ConvertedEnum<Y>, Y> {
- 
+
     private final String classCanonicalName;
     private final Map<Y, T> dbValues = new HashMap<>();
- 
+
     public ConvertedEnumResolver(Class<T> enumClass) {
         classCanonicalName = enumClass.getCanonicalName();
         for (T t : enumClass.getEnumConstants()) {
             dbValues.put(t.toDbValue(), t);
         }
     }
- 
+
     public T get(Y dbValue) {
         T enumValue = dbValues.get(dbValue);
         if (enumValue == null) {
@@ -478,7 +478,7 @@ While not exactly on the topic of enum to value mapping (and back), we were demo
     You can always use vendor specific extensions. Hibernate has its Custom types and I'm sure EclipseLink doesn't fall behind.
     But there is also possibility to use mapping annotations on properties. That is put your @Id on the getter, or specify AccessType.PROPERTY. This allows you to convert anything to anything in getter/setter. I even used it to back Dates by long (or Long if nullable). This way various tools (like Sonar) didn't complain about silly mutable Date breaking the encapsulation when used directly in get/set methods, because it was not stored directly anymore. Hibernate used get/set for Date, and I had @Transient get/set for millis long available. I actually liked comparing millis more than before/after methods on Date, but that's another story. The same can be used for mapping enums -- just have JPA compatible type mapped for JPA and @Transient get/set with enum type. Most of the stuff about enum encapsulation and static resolving still applies.
 
-I hope you liked our tour around enums. If you knew or used this before, good for you. I'm surprised how many programmers don't try to design and refactor these little things where you don't even need to think in UML. 
+I hope you liked our tour around enums. If you knew or used this before, good for you. I'm surprised how many programmers don't try to design and refactor these little things where you don't even need to think in UML.
 
 ## second post
 
@@ -521,7 +521,7 @@ Those who know Java 8 know that the answer is indeed positive. Our new resolver 
 25
 26
 27
-	
+
 /**
  * Helps reverse resolving of enums from any value back to enum instance.
  * Resolver uses provided function that obtains value from enum instance.
@@ -532,17 +532,17 @@ Those who know Java 8 know that the answer is indeed positive. Our new resolver 
 public final class ReverseEnumResolver<T extends Enum, Y> {
     private final String classCanonicalName;
     private final Map<Y, T> valueMap = new HashMap<>();
- 
+
     public ReverseEnumResolver(Class<T> enumClass, Function<T, Y> toValueFunction) {
         classCanonicalName = enumClass.getCanonicalName();
         for (T t : enumClass.getEnumConstants()) {
             valueMap.put(toValueFunction.apply(t), t);
         }
     }
- 
+
     public T get(Y value) {
         T enumVal = valueMap.get(value);
- 
+
         if (enumVal == null) {
             throw new IllegalArgumentException("No enum constant for '" + value + "' in " + classCanonicalName);
         }
@@ -588,40 +588,40 @@ There is no conversion mentioned anymore. Just reverse resolving. So, our new en
 35
 36
 37
-	
+
 /** Now we don't need to implement any interface for the sake of conversion/reverse resolving itself. */
 public enum SomeEntityType {
     NORMAL(0, "norm"),
     SPECIAL(1, "spec");
- 
+
     private final Integer dbValue;
     private final String strValue;
- 
+
     private SomeEntityType(Integer dbValue, String strValue) {
         this.dbValue = dbValue;
         this.strValue = strValue;
     }
- 
+
     public Integer getDbValue() {
         return dbValue;
     }
- 
+
     public String getStrValue() {
         return strValue;
     }
- 
+
     // static resolving for DB values
     public static final ReverseEnumResolver<SomeEntityType, Integer> dbValueResolver =
         new ReverseEnumResolver<>(SomeEntityType.class, SomeEntityType::getDbValue);
- 
+
     public static SomeEntityType fromDbValue(Integer dbValue) {
         return dbValueResolver.get(dbValue);
     }
- 
+
     // static resolving for String values
     public static final ReverseEnumResolver<SomeEntityType, String> strResolver =
         new ReverseEnumResolver<>(SomeEntityType.class, SomeEntityType::getStrValue);
- 
+
     public static SomeEntityType fromStrValue(String value) {
         return strResolver.get(value);
     }
@@ -630,7 +630,7 @@ public enum SomeEntityType {
 Plus we demonstrated that you can use two different values (dbValue, strValue). Of course it works:
 1
 2
-	
+
 System.out.println("SomeEntityType.fromStrValue(\"norm\") = " + SomeEntityType.fromStrValue("norm"));
 System.out.println("SomeEntityType.fromDbValue(1) = " + SomeEntityType.fromDbValue(1));
 
