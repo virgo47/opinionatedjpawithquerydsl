@@ -42,7 +42,8 @@ public class ToManyFetcher<T> {
       this.idFunction = idFunction;
     }
 
-    public <TMC> ToManyFetcherWithFrom<TMC> from(EntityPathBase<TMC> toManyEntityPathBase)
+    public <TMC> ToManyFetcherWithFrom<TMC> from(
+      EntityPathBase<TMC> toManyEntityPathBase)
     {
       return new ToManyFetcherWithFrom<>(toManyEntityPathBase);
     }
@@ -67,12 +68,15 @@ public class ToManyFetcher<T> {
         return this;
       }
 
-      public <R> List<R> fetchAs(EntityManager em, BiFunction<T, List<TMC>, R> combineFunction) {
+      public <R> List<R> fetchAs(
+        EntityManager em, BiFunction<T, List<TMC>, R> combineFunction)
+      {
         Map<PK, List<TMC>> toManyResults = getToManyMap(em);
 
         return rows.stream()
           .map(row -> combineFunction.apply(row,
-            toManyResults.getOrDefault(idFunction.apply(row), Collections.emptyList())))
+            toManyResults.getOrDefault(
+              idFunction.apply(row), Collections.emptyList())))
           .collect(Collectors.toList());
       }
 
@@ -82,7 +86,8 @@ public class ToManyFetcher<T> {
         Map<PK, List<TMC>> toManyResults = getToManyMap(em);
 
         rows.forEach(row -> combiner.accept(row,
-          toManyResults.getOrDefault(idFunction.apply(row), Collections.emptyList())));
+          toManyResults.getOrDefault(
+            idFunction.apply(row), Collections.emptyList())));
 
         return rows;
       }
@@ -94,7 +99,8 @@ public class ToManyFetcher<T> {
         JPAQuery<TMC> tmcQuery = new JPAQuery<>(em)
           .select(toManyEntityPathBase)
           .from(toManyEntityPathBase)
-          .where(Expressions.booleanOperation(Ops.IN, fkPath, Expressions.constant(ids)));
+          .where(Expressions.booleanOperation(
+            Ops.IN, fkPath, Expressions.constant(ids)));
         if (orderSpecifier != null) {
           tmcQuery.orderBy(orderSpecifier);
         }
