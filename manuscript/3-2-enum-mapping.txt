@@ -56,8 +56,8 @@ do now is to implement the converter:
 import javax.persistence.AttributeConverter;
 
 /**
- * This is coupled too much to enum and we always have to change both classes in tandem.
- * That's a big STOP (and think) sign in any case.
+ * This is coupled too much to enum and you always have to change both
+ * classes in tandem. That's a big STOP (and think) sign in any case.
  */
 public class GenderConverter implements AttributeConverter<Gender, Integer> {
   @Override
@@ -103,96 +103,62 @@ We still need to implement `AttributeConverter` because it is kind of glue betwe
 class. But there is no reason to leave the actual mapping in this infrastructure class. So let's
 enhance the enum to keep the converter simple. Converter we want to see looks like this:
 
-%%%%%%%%%%%%%%%%%%%%%%% CONTINUE HERE
-
 ~~~
-public class SomeEntityTypeConverter implements AttributeConverter<SomeEntityType, Integer> {
-    @Override
-    public Integer convertToDatabaseColumn(SomeEntityType someEntityType) {
-        return someEntityType.getDbValue();
-    }
+public class GenderConverter implements AttributeConverter<Gender, Integer> {
+  @Override
+  public Integer convertToDatabaseColumn(Gender gender) {
+    return gender.getDbValue();
+  }
 
-    @Override
-    public SomeEntityType convertToEntityAttribute(Integer dbValue) {
-        // this can still return null unless it throws IllegalArgumentException
-        // which would be in line with enums static valueOf method
-        return SomeEntityType.fromDbValue(dbValue);
-    }
+  @Override
+  public Gender convertToEntityAttribute(Integer dbValue) {
+    // this can still return null unless it throws IllegalArgumentException
+    // which would be in line with enums static valueOf method
+    return Gender.fromDbValue(dbValue);
+  }
 }
 ~~~
 
+Much better, we don't have to think about this class at all when we add values to enum. The
+complexity is now here, but it's all tight in a single class:
 
-Much better, we don't have to think about this class at all when we add values to enum. The complexity is now here, but it's all tight in a single class:
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
+~~~
+public enum Gender {
+  MALE(0),
+  FEMALE(1),
+  OTHER(-1);
 
-public enum SomeEntityType {
-    NORMAL(0),
-    SPECIAL(1);
+  private final Integer dbValue;
 
-    // ENUM -> DB VALUE CONVERSION
-    // first part is easy and most programmers get here (Effective Java 101 after all)
-    // fields are not final implicitly, but we better make them
-    private final Integer dbValue;
+  Gender(Integer dbValue) {
+    this.dbValue = dbValue;
+  }
 
-    private SomeEntityType(Integer dbValue) {
-        this.dbValue = dbValue;
+  public Integer getDbValue() {
+    return dbValue;
+  }
+
+  public static final Map<Integer, Gender> dbValues = new HashMap<>();
+
+  static {
+    for (Gender value : values()) {
+      dbValues.put(value.dbValue, value);
     }
+  }
 
-    public Integer getDbValue() {
-        return dbValue;
-    }
-
-    // DB VALUE -> ENUM CONVERSION
-    // static reverse resolving:
-    public static final Map<Integer, SomeEntityType> dbValues = new HashMap<>();
-
-    static {
-        for (SomeEntityType value : values()) {
-            dbValues.put(value.dbValue, value);
-        }
-    }
-
-    public static SomeEntityType fromDbValue(Integer dbValue) {
-        // this returns null for invalid value, check for null and throw exception if you need it
-        return dbValues.get(dbValue);
-    }
+  public static Gender fromDbValue(Integer dbValue) {
+    // this returns null for invalid value,
+    // check for null and throw exception if you need it
+    return dbValues.get(dbValue);
+  }
 }
+~~~
 
 I saw also some half-solutions without the static reverse resolving, but I hope we all agree it goes into the enum. If it's two value enum, you may start with switch in fromDbValue, but that's just another thing to think about -- and one static map will not kill anyone. You can find this solution here on GitHub.
 
 Now this works, so let's imagine we need this for many enums. Can we find some common ground here? I think we can.
-Conversion microframework
+
+## Conversion microframework
 
 Let's say we want to have order in these things. We will require the method named toDbValue, etc. So our enums will implement interface ConvertedEnum:
 1
