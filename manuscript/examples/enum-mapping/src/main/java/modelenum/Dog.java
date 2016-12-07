@@ -32,11 +32,20 @@ public class Dog {
     this.name = name;
   }
 
+  public Gender getGender() {
+    return gender;
+  }
+
+  public void setGender(Gender gender) {
+    this.gender = gender;
+  }
+
   @Override
   public String toString() {
     return "Dog{" +
       "id=" + id +
       ", name='" + name + '\'' +
+      ", gender=" + gender +
       '}';
   }
 }

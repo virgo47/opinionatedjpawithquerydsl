@@ -1,9 +1,12 @@
 package modelenum;
 
+import support.ConvertedEnum;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public enum Gender {
+public enum Gender implements ConvertedEnum<Integer> {
+
   MALE(0),
   FEMALE(1),
   OTHER(-1);
@@ -14,7 +17,8 @@ public enum Gender {
     this.dbValue = dbValue;
   }
 
-  public Integer getDbValue() {
+  @Override
+  public Integer toDbValue() {
     return dbValue;
   }
 

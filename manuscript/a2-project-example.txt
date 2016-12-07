@@ -5,11 +5,14 @@ but it's not really that difficult. We will show how it works in Maven. I'm a fa
 but -- unfortunately -- more a fan than an experienced user and "instant" solutions readily
 available for Maven are not yet prepared for Gradle.
 
+## Querydsl and Maven {#querydsl-maven}
+
+
+
 %% Reference documentation, show entity example and generated class perhaps?
 
 TODO
 
-### Querydsl and Maven
 
 TODO
 

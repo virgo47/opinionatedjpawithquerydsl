@@ -1,17 +1,13 @@
 package modelenum;
 
-import javax.persistence.AttributeConverter;
+import support.EnumAttributeConverter;
 
-public class GenderConverter implements AttributeConverter<Gender, Integer> {
-  @Override
-  public Integer convertToDatabaseColumn(Gender gender) {
-    return gender.getDbValue();
-  }
+import javax.persistence.Converter;
 
+@Converter
+public class GenderConverter extends EnumAttributeConverter<Gender, Integer> {
   @Override
-  public Gender convertToEntityAttribute(Integer dbValue) {
-    // this can still return null unless it throws IllegalArgumentException
-    // which would be in line with enums static valueOf method
+  protected Gender fromDbValue(Integer dbValue) {
     return Gender.fromDbValue(dbValue);
   }
 }
