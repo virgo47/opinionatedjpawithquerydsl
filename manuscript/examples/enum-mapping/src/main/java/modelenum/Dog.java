@@ -12,7 +12,7 @@ public class Dog {
 
   private String name;
 
-  @Convert(converter = GenderConverter.class)
+  @Convert(converter = GenderConverterJava8.class)
   @Column(name = "gender")
   private Gender gender;
 

@@ -1,20 +1,19 @@
 package modelenum;
 
 import support.ConvertedEnum;
-
-import java.util.HashMap;
-import java.util.Map;
+import support.ReverseEnumResolver;
 
 public enum Gender implements ConvertedEnum<Integer> {
-
-  MALE(0),
-  FEMALE(1),
-  OTHER(-1);
+  MALE(0, "mal"),
+  FEMALE(1, "fem"),
+  OTHER(-1, "oth");
 
   private final Integer dbValue;
+  private final String code;
 
-  Gender(Integer dbValue) {
+  Gender(Integer dbValue, String code) {
     this.dbValue = dbValue;
+    this.code = code;
   }
 
   @Override
@@ -22,17 +21,23 @@ public enum Gender implements ConvertedEnum<Integer> {
     return dbValue;
   }
 
-  public static final Map<Integer, Gender> dbValues = new HashMap<>();
-
-  static {
-    for (Gender value : values()) {
-      dbValues.put(value.dbValue, value);
-    }
+  public String toCode() {
+    return code;
   }
 
+  // static resolving:
+  public static final ReverseEnumResolver<Gender, Integer> resolver =
+    new ReverseEnumResolver<>(Gender.class, Gender::toDbValue);
+
   public static Gender fromDbValue(Integer dbValue) {
-    // this returns null for invalid value,
-    // check for null and throw exception if you need it
-    return dbValues.get(dbValue);
+    return resolver.get(dbValue);
+  }
+
+  // static resolving to string:
+  public static final ReverseEnumResolver<Gender, String> strResolver =
+    new ReverseEnumResolver<>(Gender.class, Gender::toCode);
+
+  public static Gender fromCode(String code) {
+    return strResolver.get(code);
   }
 }

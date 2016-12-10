@@ -26,10 +26,12 @@ public class EnumConversionTest {
     dog.setName("Lassie");
     dog.setGender(Gender.FEMALE);
     em.persist(dog);
+    em.flush();
 
     dog = new Dog();
     dog.setName("Genderless");
     em.persist(dog);
+    em.flush();
 
     em.getTransaction().commit();
     em.close();

@@ -22,6 +22,9 @@ enum type -- one way or the other we will need to convert back and forth.
 We will map them as enum and demonstrate *JPA 2.1* converters in the process --
 `AttributeConverter<X,Y>` to be precise.
 
+Only the final version of the code as we get to it at the end of this chapter is included [in the
+repository](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/enum-mapping).
+
 
 ## Naive approach
 
@@ -163,9 +166,12 @@ public enum Gender {
 }
 ~~~
 
-I saw also some half-solutions without the static reverse resolving, but I hope we all agree it goes into the enum. If it's two value enum, you may start with switch in fromDbValue, but that's just another thing to think about -- and one static map will not kill anyone. You can find this solution here on GitHub.
+I saw also some half-solutions without the static reverse resolving, but I hope we all agree it
+goes into the enum. If it's two value enum, you may start with `switch` in `fromDbValue`, but
+that's just another thing to think about -- and one static map will not kill anyone.
 
-Now this works, so let's imagine we need this for many enums. Can we find some common ground here? I think we can.
+Now this works, so let's imagine we need this for many enums. Can we find some common ground here?
+I think we can.
 
 
 ## Conversion micro-framework
@@ -252,227 +258,219 @@ throw aforementioned `IllegalArgumentException`.
 
 And now the last push. What is repeating? And what we can do about it?
 
-It would be cool to have just a single converter class -- but this is impossible, because there is no way how to instruct the converter about its types. Especially method convertToEntityAttribute is immune to any approach because there is nothing during runtime that can tell you what the expected enum type would be. No reflection or anything helps here, so it seems.
-So we have to have separate AttributeConverter classes, but can we pull convertToEntityAttribute into our EnumAttributeConverter? Not easily really, but we'll try something.
-How about the static resolving? Can we get rid of that static initialization block? It is static, so it seems problematic -- but indeed, we can do something about it.
+It would be cool to have just a single converter class -- but this is impossible, because there is
+no way how to instruct the converter about its types. Especially method `convertToEntityAttribute`
+is immune to any approach because there is nothing during runtime that can tell you what the
+expected enum type would be. No reflection or anything helps here, so it seems.
 
-Let's try to hack our converters first. We need to get the type information into the instance of the superclass. It can be protected field like this:
-1
-2
-3
-4
+So we have to have separate `AttributeConverter` classes, but can we pull `convertToEntityAttribute`
+into our `EnumAttributeConverter`? Not easily really, but we'll try something.
 
+How about the static resolving? Can we get rid of that static initialization block in our enum? It
+is static, so it seems difficult to abstract it away -- but indeed, we can do something about it.
+
+Let's try to hack our converters first. We need to get the type information into the instance of
+the superclass. It can be protected field like this:
+
+~~~
 public abstract class EnumAttributeConverter<X extends ConvertedEnum<Y>, Y>
-    implements AttributeConverter<X, Y>
+  implements AttributeConverter<X, Y>
 {
-    protected Class<X> enumClass;
+  protected Class<X> enumClass;
+~~~
 
 And subclass would initialize it this way:
-1
-2
-3
-4
 
-public class SomeEntityTypeConverter extends EnumAttributeConverter<SomeEntityType, Integer> {
-    {
-        enumClass = SomeEntityType.class;
-    }
+~~~
+public class GenderConverter extends EnumAttributeConverter<Gender, Integer> {
+  {
+    enumClass = Gender.class;
+  }
+~~~
 
-But this is not enforced in any way! Rather use abstract method that must be implemented. In abstract converter:
-1
+But this is not enforced in any way! Rather use abstract method that must be implemented. In
+abstract converter:
 
+~~~
 protected abstract Class<X> enumClass();
+~~~
 
 And in concrete class:
-1
-2
-3
-4
-5
-6
 
-public class SomeEntityTypeConverter extends EnumAttributeConverter<SomeEntityType, Integer> {
-    @Override
-    protected Class<SomeEntityType> enumClass() {
-        return SomeEntityType.class;
-    }
+~~~
+public class GenderConverter extends EnumAttributeConverter<Gender, Integer> {
+  @Override
+  protected Class<Gender> enumClass() {
+    return Gender.class;
+  }
 }
+~~~
 
-But we're back to 3 lines of code (excluding @Override) and we didn't get to ugly unified convertToEntityAttribute:
-1
-2
-3
-4
-5
-6
-7
-8
-9
+But we're back to 3 lines of code (excluding `@Override`) and we didn't get to ugly unified
+`convertToEntityAttribute`:
 
+~~~
 @Override
 public X convertToEntityAttribute(Y dbValue) {
-    try {
-        Method method = enumClass().getMethod("fromDbValue", dbValue.getClass());
-        return (X) method.invoke(null, dbValue);
-    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-        throw new IllegalArgumentException("...this really doesn't make sense", e);
-    }
+  try {
+    Method method = enumClass().getMethod("fromDbValue", dbValue.getClass());
+    return (X) method.invoke(null, dbValue);
+  } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+    throw new IllegalArgumentException("...this really doesn't make sense", e);
+  }
 }
+~~~
 
-Maybe I missed something on the path, but this doesn't sound like good solution. It would be if it lead to unified converter class, but it is not. There may be one more problem with hunt for unified solution. While the concrete implementation contains methods that have concrete parameter and return types, unified abstract implementation don't. They can use the right types during runtime, but the method wouldn't tell you if you used reflection. Imagine JPA checking this. Right now I know that unified public final Y convertToDatabaseColumn(X x) {…} works with EclipseLink, but maybe we're asking for problems. Let's check it really:
-1
-2
-3
-4
-5
-6
-7
+Maybe I missed something on the path, but this doesn't sound like good solution. It would be if it
+lead to unified converter class, but it did not. There may be one more problem with hunt for
+unified solution. While the concrete implementation contains methods that have concrete parameter
+and return types, unified abstract implementation don't. They can use the right types during
+runtime, but the method wouldn't tell you if you used reflection. Imagine JPA checking this.
+Right now I know that unified `public final Y convertToDatabaseColumn(X x) {...}` works with
+EclipseLink, but maybe we're asking for problems. Let's check it really:
 
+~~~
 // throws NoSuchMethodException
 // Method method = converter.getClass().getMethod("convertToDatabaseColumn", Integer.class);
 Method method = converter.getClass().getMethod("convertToDatabaseColumn", Object.class);
 System.out.println("method = " + method);
+~~~
 
-// prints:
-method = public java.lang.Object com.github.virgo47.enumconv._4evenmore.EnumAttributeConverter.convertToDatabaseColumn(java.lang.Object)
+This prints:
 
-Great… so if something strictly matches the method types with column/enum types, we may have a misunderstanding. Sometimes too smart may be just that -- too smart. Check this overboard solution here on GitHub.
-Simplified static resolving
+{lang=text}
+~~~
+method = public java.lang.Object
+  EnumAttributeConverter.convertToDatabaseColumn(java.lang.Object)
+~~~
 
-Anyway, let's look into that enum's static resolving. This is actually really useful. Without further ado, this is how enum part may look like:
-1
-2
-3
-4
-5
-6
+If something strictly matches the method types with column/enum types, we may have
+a misunderstanding because our method claims it converts `Object` to `Object`. Sometimes too smart
+may be just that -- way too smart.
 
+
+## Simplified static resolving
+
+Anyway, let's look into that enum's static resolving. This is actually really useful. Without
+further ado, this is how enum part may look like:
+
+~~~
 // static resolving:
-public static final ConvertedEnumResolver<SomeEntityType, Integer> resolver = new ConvertedEnumResolver<>(SomeEntityType.class);
+public static final ConvertedEnumResolver<Gender, Integer> resolver =
+  new ConvertedEnumResolver<>(Gender.class);
 
-public static SomeEntityType fromDbValue(Integer dbValue) {
+public static Gender fromDbValue(Integer dbValue) {
     return resolver.get(dbValue);
 }
+~~~
 
-So we got rid of static initializer. But the code must be somewhere:
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
+So we got rid of the static map and static initializer. But the code must be somewhere:
+
+~~~
+package support;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Helps reverse resolving of {@link ConvertedEnum} from a DB value back to enum instance.
- * Enums that can be resolved this way must have unified interface in order to obtain
- * {@link ConvertedEnum#toDbValue()}.
+ * Helps reverse resolving of {@link ConvertedEnum} from a DB value back to
+ * enum instance. Enums that can be resolved this way must have unified
+ * interface in order to obtain {@link ConvertedEnum#toDbValue()}.
  *
  * @param <T> type of an enum
  * @param <Y> type of DB value
  */
 public class ConvertedEnumResolver<T extends ConvertedEnum<Y>, Y> {
 
-    private final String classCanonicalName;
-    private final Map<Y, T> dbValues = new HashMap<>();
+  private final String classCanonicalName;
+  private final Map<Y, T> dbValues = new HashMap<>();
 
-    public ConvertedEnumResolver(Class<T> enumClass) {
-        classCanonicalName = enumClass.getCanonicalName();
-        for (T t : enumClass.getEnumConstants()) {
-            dbValues.put(t.toDbValue(), t);
-        }
+  public ConvertedEnumResolver(Class<T> enumClass) {
+    classCanonicalName = enumClass.getCanonicalName();
+    for (T t : enumClass.getEnumConstants()) {
+      dbValues.put(t.toDbValue(), t);
     }
+  }
 
-    public T get(Y dbValue) {
-        T enumValue = dbValues.get(dbValue);
-        if (enumValue == null) {
-            throw new IllegalArgumentException("No enum constant for dbValue " + dbValue + " in " + classCanonicalName);
-        }
-        return enumValue;
+  public T get(Y dbValue) {
+    T enumValue = dbValues.get(dbValue);
+    if (enumValue == null) {
+      throw new IllegalArgumentException("No enum constant for dbValue " +
+        dbValue + " in " + classCanonicalName);
     }
+    return enumValue;
+  }
 }
+~~~
 
-And this I actually really like. Here I went for strict checking, throwing exception. Without it, or without needing/wanting the type name it could be even shorter. But you write this one once and save in each enum. Check the complete sources here on GitHub.
+And this I actually really like. Here I went for strict checking, throwing exception. Without it
+or without needing/wanting the type name it could be even shorter. But you write this one once and
+save in each enum.
 
-So there are three players in this “framework”:
+So there are three players in this "framework":
 
-    ConvertedEnum -- interface for your enums that are converted in this way.
-    ConvertedEnumResolver -- wraps the reverse mapping and saves you most of the static lines in each converted enum.
-    EnumAttributeConverter -- maybe the most questionable part here. It takes care of one direction of the conversion, just be aware of potential problems if something introspect the method types.
-
-Alternative conversions with entities
-
-While not exactly on the topic of enum to value mapping (and back), we were demonstrating this all in context of JPA 2.1. So I'd like to at least mention alternative solutions for older JPA versions.
-
-    You can always use vendor specific extensions. Hibernate has its Custom types and I'm sure EclipseLink doesn't fall behind.
-    But there is also possibility to use mapping annotations on properties. That is put your @Id on the getter, or specify AccessType.PROPERTY. This allows you to convert anything to anything in getter/setter. I even used it to back Dates by long (or Long if nullable). This way various tools (like Sonar) didn't complain about silly mutable Date breaking the encapsulation when used directly in get/set methods, because it was not stored directly anymore. Hibernate used get/set for Date, and I had @Transient get/set for millis long available. I actually liked comparing millis more than before/after methods on Date, but that's another story. The same can be used for mapping enums -- just have JPA compatible type mapped for JPA and @Transient get/set with enum type. Most of the stuff about enum encapsulation and static resolving still applies.
-
-I hope you liked our tour around enums. If you knew or used this before, good for you. I'm surprised how many programmers don't try to design and refactor these little things where you don't even need to think in UML.
+* `ConvertedEnum` -- interface for your enums that are converted in this way.
+* `ConvertedEnumResolver` -- wraps the reverse mapping and saves you most of the static lines
+in each converted enum.
+* `EnumAttributeConverter` -- implements both-way conversion in a unified way, we just need to
+implement its abstract `fromDbValue` method. Just be aware of potential problems if something
+introspect the method parameter and return types because these are "generified".
 
 
-## second post
+## Alternative conversions within entities
 
-Yeah, I know, I know -- it seems just like yesterday when I talked about this topic. I focused mostly on conversion to values and back in the context of JPA 2.1 converters. This time we'll focus on that part that helped us with “reverse resolution” -- that is you have the value (for instance an int, but not ordinal number, of course!) that represents particular enum instance -- and you want that enum instance. Mapping between these values and enum instances is a bijection, of course.
+So far we were demonstrating this all in the context of *JPA 2.1*. I'd like to at least mention
+alternative solutions for older JPA versions.
 
-Our solution (here on GitHub) works fine, but there are two limitations:
+T> You can always use vendor specific extensions. Hibernate has its Custom types and I'm sure
+T> EclipseLink doesn't fall behind. But there is also possibility to use accessors (getters and
+T> setters) to do the conversion.
 
-    ConvertedEnumResolver depends on the common interface ConvertedEnum our enums must implement, hence it is implicitly tied to the conversion framework.
-    If we need another representation (mapping) to different set of values we have to develop new resolver class.
+If you use `AccessType.FIELD` then the fields must be strictly in a supported type (that is some
+raw type, e.g. `Integer` for enum), but accessors can do the conversion. If you use
+`AccessType.PROPERTY` than the fields can be in your desired type and you can have two sets of
+accessors -- one for JPA and other working with the type you desire. You need to mark the latter
+as `@Transient` (or break get/set naming convention).
 
-Ok, the first one may not be a big deal. The second one is a real thing though. I realized this limitation before -- and few weeks later, here we are, with enum that has not only DB representation (int) but also some String representation for different purposes. New resolver class was developed… But was it really necessary?
+Long time ago we used this technique to back `Date`s by long fields (or `Long` if nullable). This
+way various tools (like Sonar) didn't complain about silly mutable `Date` breaking the
+encapsulation when used directly in get/set methods, because it was not stored directly anymore.
+JPA used get/set for `Date`, and we had @Transient get/set for millis long available. We actually
+preferred comparing millis to `before/after` methods on `Date` but that's another story. The same
+can be used for mapping enums -- just have JPA compatible type mapped for JPA and `@Transient`
+get/set with enum type. Most of the stuff about enum encapsulation and static resolving still
+applies.
 
-Everything in the resolver class is the same -- but the instance method getting the value on the enum. I'm not going for any reflection, forget it. But hey, we recently switched to Java 8 and I've heard it has these method references! If we can pass it to the resolver constructor… is it possible?
 
-Those who know Java 8 know that the answer is indeed positive. Our new resolver will look like this (I renamed it since the last time):
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
+## Java 8 and reverse enum resolution
 
+I focused mostly on conversion to values and back in the context of JPA 2.1 converters.
+Now we'll focus on the part that helped us with "reverse resolution". We have the value -- for
+instance an int, but not ordinal number, of course! -- that represents particular enum instance in
+the database and you want that enum instance. Mapping between these values and enum instances is
+a bijection, of course.
+
+Our solution so far works fine but there are two limitations:
+
+* `ConvertedEnumResolver` depends on the common interface `ConvertedEnum` our enums must implement
+hence it is implicitly tied to the conversion framework.
+* If we need another representation (mapping) to different set of values we have to develop new
+resolver class.
+
+The first one may not be a big deal. The second one is a real thing though. I worked on a system
+where enum was represented in the DB as `int` and elsewhere as `String` -- but we didn't want
+to tie it to the Java enum constant strings. New resolver class was developed -- but is another
+class really necessary?
+
+Everything in the resolver class is the same -- except for the instance method getting the value
+on the enum. We didn't want to use any reflection, but we had recently switched to Java 8 and I'd
+heard it has these method references! If we can pass it to the resolver constructor... is it
+possible?
+
+Those who know Java 8 know that the answer is indeed positive. Our new resolver will look like this
+(I renamed it since the last time):
+
+~~~
 /**
  * Helps reverse resolving of enums from any value back to enum instance.
  * Resolver uses provided function that obtains value from enum instance.
@@ -481,111 +479,135 @@ Those who know Java 8 know that the answer is indeed positive. Our new resolver 
  * @param <Y> type of a value
  */
 public final class ReverseEnumResolver<T extends Enum, Y> {
-    private final String classCanonicalName;
-    private final Map<Y, T> valueMap = new HashMap<>();
+  private final String classCanonicalName;
+  private final Map<Y, T> valueMap = new HashMap<>();
 
-    public ReverseEnumResolver(Class<T> enumClass, Function<T, Y> toValueFunction) {
-        classCanonicalName = enumClass.getCanonicalName();
-        for (T t : enumClass.getEnumConstants()) {
-            valueMap.put(toValueFunction.apply(t), t);
-        }
+  public ReverseEnumResolver(Class<T> enumClass,
+    Function<T, Y> toValueFunction)
+  {
+    classCanonicalName = enumClass.getCanonicalName();
+    for (T t : enumClass.getEnumConstants()) {
+      valueMap.put(toValueFunction.apply(t), t);
     }
+  }
 
-    public T get(Y value) {
-        T enumVal = valueMap.get(value);
+  public T get(Y value) {
+    T enumVal = valueMap.get(value);
 
-        if (enumVal == null) {
-            throw new IllegalArgumentException("No enum constant for '" + value + "' in " + classCanonicalName);
-        }
-        return enumVal;
+    if (enumVal == null) {
+      throw new IllegalArgumentException("No enum constant for '" +
+        value + "' in " + classCanonicalName);
     }
+    return enumVal;
+  }
 }
+~~~
 
-There is no conversion mentioned anymore. Just reverse resolving. So, our new enum does not have to be “Converted” anymore -- unless you still need this interface for JPA conversion (which you may). Notice those method references:
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
+There is no conversion mentioned anymore. Just reverse resolving. So, our new enum does not have to
+be "Converted" anymore -- unless you still need this interface for JPA conversion (which you may).
+Let's show complete listing of our `Gender` enum that this time can be converted in two sets of
+values. Notice those method references:
 
-/** Now we don't need to implement any interface for the sake of conversion/reverse resolving itself. */
-public enum SomeEntityType {
-    NORMAL(0, "norm"),
-    SPECIAL(1, "spec");
+~~~
+public enum Gender implements ConvertedEnum<Integer> {
+  MALE(0, "mal"),
+  FEMALE(1, "fem"),
+  OTHER(-1, "oth");
 
-    private final Integer dbValue;
-    private final String strValue;
+  private final Integer dbValue;
+  private final String code;
 
-    private SomeEntityType(Integer dbValue, String strValue) {
-        this.dbValue = dbValue;
-        this.strValue = strValue;
-    }
+  Gender(Integer dbValue, String code) {
+    this.dbValue = dbValue;
+    this.code = code;
+  }
 
-    public Integer toDbValue() {
-        return dbValue;
-    }
+  @Override
+  public Integer toDbValue() {
+    return dbValue;
+  }
 
-    public String getStrValue() {
-        return strValue;
-    }
+  public String toCode() {
+    return code;
+  }
 
-    // static resolving for DB values
-    public static final ReverseEnumResolver<SomeEntityType, Integer> dbValueResolver =
-        new ReverseEnumResolver<>(SomeEntityType.class, SomeEntityType::toDbValue);
+  // static resolving:
+  public static final ReverseEnumResolver<Gender, Integer> resolver =
+    new ReverseEnumResolver<>(Gender.class, Gender::toDbValue);
 
-    public static SomeEntityType fromDbValue(Integer dbValue) {
-        return dbValueResolver.get(dbValue);
-    }
+  public static Gender fromDbValue(Integer dbValue) {
+    return resolver.get(dbValue);
+  }
 
-    // static resolving for String values
-    public static final ReverseEnumResolver<SomeEntityType, String> strResolver =
-        new ReverseEnumResolver<>(SomeEntityType.class, SomeEntityType::getStrValue);
+  // static resolving to string:
+  public static final ReverseEnumResolver<Gender, String> strResolver =
+    new ReverseEnumResolver<>(Gender.class, Gender::toCode);
 
-    public static SomeEntityType fromStrValue(String value) {
-        return strResolver.get(value);
-    }
+  public static Gender fromCode(String code) {
+    return strResolver.get(code);
+  }
 }
+~~~
 
-Plus we demonstrated that you can use two different values (dbValue, strValue). Of course it works:
-1
-2
+So this is how we can have two different values (`dbValue` and `code`) resolved with the same class
+utilizing Java 8 method references.
 
-System.out.println("SomeEntityType.fromStrValue(\"norm\") = " + SomeEntityType.fromStrValue("norm"));
-System.out.println("SomeEntityType.fromDbValue(1) = " + SomeEntityType.fromDbValue(1));
+If we wanted to store `dbValue` into one DB table and `code` into another table we would need two
+different converters. At least one of them wouldn't be able to utilize `ConvertedEnum` contract
+anymore. Being on Java 8 I'd again use method references in converter subclass to specify both
+conversion methods.
 
-This prints NORMAL and SPECIAL -- as expected. Code for the classes can be found here, the whole demo is here and I'll point you also directly to the README addition for this solution.
+Let's say our universal new `AbstractAttributeConverter` looks like this:
+
+~~~
+/** Base implementation for converting values in DB, not only for enums. */
+public abstract class AbstractAttributeConverter<X, Y>
+  implements AttributeConverter<X, Y>
+{
+  private final Function<X, Y> toDbFunction;
+  private final Function<Y, X> fromDbFunction;
+
+  public AbstractAttributeConverter(
+    Function<X, Y> toDbFunction, Function<Y, X> fromDbFunction)
+  {
+    this.toDbFunction = toDbFunction;
+    this.fromDbFunction = fromDbFunction;
+  }
+
+  @Override
+  public final Y convertToDatabaseColumn(X enumValue) {
+    return enumValue != null ? toDbFunction.apply(enumValue) : null;
+  }
+
+  @Override
+  public final X convertToEntityAttribute(Y dbValue) {
+    return dbValue != null ? fromDbFunction.apply(dbValue) : null;
+  }
+}
+~~~
+
+Notice that I dropped previous `notNull` enforcing method because our reverse resolver does it
+already (it still allows `null` values). The converter for Gender enum would be:
+
+~~~
+@Converter
+public class GenderConverter extends AbstractAttributeConverter<Gender, Integer> {
+  public GenderConverterJava8() {
+    super(Gender::toDbValue, Gender::fromDbValue);
+  }
+}
+~~~
+
+The only thing the abstract superclass does now (after dropping `notNull`) is that ternary
+expression treating `null` values. So you may consider it overkill as of now. On the other hand
+it prepares everything in such a way that concrete converter is really declarative and as concise
+as possible (considering Java syntax). Also notice that we made `ConvertedEnum` obsolete.
+
+In this last section we underlined how handy some Java 8 features can get. Method references
+allowed us to create more flexible reverse resolver which we can use for multiple mappings, it
+allowed us to declare concrete attribute converters in a super short manner where nothing is
+superfluous and we could get rid of contract interface for our enums.
+
 
 ## Relational concerns
 

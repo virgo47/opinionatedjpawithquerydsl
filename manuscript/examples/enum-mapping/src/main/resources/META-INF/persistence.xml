@@ -10,6 +10,7 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <!-- Classes should be specified in SE environment, and EclipseLink requires that -->
     <class>modelenum.GenderConverter</class>
+    <class>modelenum.GenderConverterJava8</class>
     <class>modelenum.Dog</class>
 
     <shared-cache-mode>ALL</shared-cache-mode>
