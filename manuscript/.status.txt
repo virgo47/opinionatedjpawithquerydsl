@@ -44,11 +44,8 @@ To actually finish something, I want to do this in the 1st edition:
 %%			&& Objects.equals(getId(), ((BaseObject<?>) obj).getId());
 %%	}
 %% TODO: Can I load detached entity without projection? Is this true? http://stackoverflow.com/a/15632564/658826
-    * Pagination with *to-many* (50%) -- how to paginate when *to-many* is just in where clause and how to
-    do it when you need to fetch from *to-many* as well (famous N+1 select problem)
-        * https://virgo47.wordpress.com/2014/09/29/jpa-pagination-of-entities-with-onetomanymanytomany/
-    * Mapping enums (0%) -- using integer DB values, dual mappings (setter sets the other part),
-    conversions, reverse conversion
+    * Pagination with *to-many* (100%)
+    * Mapping enums (100%)
 %%    * Injecting EMF for better control (integration/standalone scenarios, not typical for webapps/simple services)
 %%        * Always try to keep create/close in one try/finally block
 %%        * Multiple transactions ("system/infrastructure" around business)
