@@ -611,9 +611,36 @@ superfluous and we could get rid of contract interface for our enums.
 
 ## Relational concerns
 
-%% TODO: is enum modelling the right approach? does it even matter?
-%% -- especially not the ones that evolve. If your system is Java centric and you store numeric
-%% code into the DB it may be OK, but it also means that in the database you can't "read" these
-%% values without the Java code at hand. If you use string codes then renaming may be a problem.
-%% otherwise DB guys would recommend to model enumeration with another relation, which means
-%% some duplicity
+Mapping enumerated values from Java to DB is a more complex issue than just the conversion. The
+enumeration can be based on an existing dedicated table or it can exist exclusively in Java world.
+It may or may not change over time. All these factors play a role in how complicated things can
+get.
+
+If DB is "just a store" and application is driving the design you may be happy with encoding
+enums into a DB column as discussed throughout this chapter. But if we want to query the data
+using meaningful values (like `MALE` instead of `0`) or we want to get this meaningful description
+into the outputs of SQL queries we're asking for complications.
+
+We may use enum names directly which is supported by JPA directly using `EnumType.STRING` but this
+has a couple of disadvantages:
+
+* It takes more space than necessary.
+* In case we decide to rename the constant we have to synchronize it with the code deployment.
+Alternatively we can use converter to support both values in DB for some time -- this may be
+necessary when we're not able to rename the data quickly, e.g. there's too much of it.
+
+Actually, if we mention renaming DB admins will want to put enum values into another table as it
+makes renaming a non-issue. We use FK instead of the names. We can also use a [single lookup table
+for all enum types](http://stackoverflow.com/q/26393607/658826) or even more sophisticated
+meta-data facility. In every case it comes with a cost though and it virtually always violates DRY
+principle (don't repeat yourself).
+
+Often we are extending legacy application where the DB schema is a given and we have to deal with
+its design. For some code list tables we may mirror the entries in an enum because it does not
+change that much (e.g. gender). This will save us a lot of troubles in Java code, giving us all
+the goodies of enums. Other lists are not good candidates (e.g. countries or currencies) as they
+tend to change occasionally and are also much longer.
+
+In this chapter we focused only on mapping enums to arbitrary values and back, but before mapping
+something that looks like enumeration into our Java code always think twice whether Java enum is
+the best way. Especially if that enumeration has its own dedicated table.
