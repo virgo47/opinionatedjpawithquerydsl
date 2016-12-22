@@ -29,6 +29,7 @@ besides the JPA configuration were required.
 in Java. Maybe I'd not use it if the database contained a lot of code, but when you need to handle
 couple of simple procedures and some triggers, it can be done.
 
+
 ## Starting it
 
 You can [download it](http://h2database.com/html/download.html) as a Windows Installer or
@@ -45,6 +46,9 @@ do something about it. When everything clicks your default browser will open and
 your default database (user `sa`, empty password). You can learn more in this
 [Quickstart](http://www.h2database.com/html/quickstart.html). I probably forgot to mention that
 it is well documented too!
+
+
+## Using it as a devel/test DB
 
 I have a long relationship with H2 and I can only recommend it. In 100% of projects we used it as
 a developer database -- if for nothing else than for running fast commit tests at least --

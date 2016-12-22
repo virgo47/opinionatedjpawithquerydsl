@@ -11,7 +11,7 @@ is no need to read the original posts.
 Before we embark on our journey we should mention that Java enums are not necessarily the best way
 to model various code lists and other enumerations. We will tackle this at the end of the chapter.
 
-Typical way how enumeration is stored in a DB is a numeric column mapped to enum. We all know
+Typical way how an enumeration is stored in a DB is a numeric column mapped to enum. We all know
 that using `EnumType.ORDINAL` is one of those worse solutions as values returned by `ordinal()`
 get out of control quickly as we evolve the enum -- and most of them do. `EnumType.STRING` is not
 loved by our DB admins (if you have them) -- even though it's easy to read for sure. Normalization
@@ -629,18 +629,19 @@ has a couple of disadvantages:
 Alternatively we can use converter to support both values in DB for some time -- this may be
 necessary when we're not able to rename the data quickly, e.g. there's too much of it.
 
-Actually, if we mention renaming DB admins will want to put enum values into another table as it
-makes renaming a non-issue. We use FK instead of the names. We can also use a [single lookup table
+Actually, if we mention renaming in front of our DB admins they will want to put enum values into
+another table as it makes renaming a non-issue (at least from DB perspective).
+We use FK instead of the names. We can also use a [single lookup table
 for all enum types](http://stackoverflow.com/q/26393607/658826) or even more sophisticated
 meta-data facility. In every case it comes with a cost though and it virtually always violates DRY
 principle (don't repeat yourself).
 
-Often we are extending legacy application where the DB schema is a given and we have to deal with
+Often we are extending a legacy application where the DB schema is a given and we have to deal with
 its design. For some code list tables we may mirror the entries in an enum because it does not
-change that much (e.g. gender). This will save us a lot of troubles in Java code, giving us all
-the goodies of enums. Other lists are not good candidates (e.g. countries or currencies) as they
-tend to change occasionally and are also much longer.
+change that much (e.g. gender). This will save us a lot of troubles in the Java code, giving us all
+the power of enums. Other lists are not good candidates (e.g. countries or currencies) as they
+tend to change occasionally and are also much longer. These should be mapped normally as entities.
 
 In this chapter we focused only on mapping enums to arbitrary values and back, but before mapping
-something that looks like enumeration into our Java code always think twice whether Java enum is
+something that looks like an enumeration into the Java code always think twice whether Java enum is
 the best way. Especially if that enumeration has its own dedicated table.
