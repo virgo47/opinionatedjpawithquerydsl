@@ -1,10 +1,51 @@
 # Advanced Querydsl {#ch-advanced-querydsl}
 
-TODO: Do we want to cover projects? I'd just reference to docs.
+At the beginning of the chapter dedicated to some of the more advanced points of Querydsl I'd like
+to reiterate that Querydsl has quite a [good documentation](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/).
+It's not perfect and does not cover all the possibilities of the library -- even in this chapter
+we will talk about some things that are not presented there. I tried to verify these not only by
+personal experience but also discussing some of them on the
+[Querydsl Google Group](https://groups.google.com/forum/#!forum/querydsl). Other problems were
+solved thanks to StackOverflow, often thanks to answers from the authors of the library personally.
+
+As mentioned in the [first chapter about Querydsl](#ch-querydls) you can find the description of
+a demonstration project in the appendix [Project example](#app-project-example). Virtually all
+[code examples on GitHub](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/manuscript/examples)
+for this book are based on that project layout so it should be easy to replicate.
+
+
+## Handy utility classes
+
+Most of the time using Querydsl we work with our generated Q-classes and `JPAQuery` class. There
+are cases, however, when the fluent API is not enough and we need to add something else. This
+typically happens in the `where` part and helps us putting predicates together, but there are
+other cases too. Let's quickly mention the classes we should know -- our starting points for
+various minor cases. Some of them will be just mentioned here, others will be discussed later in
+this chapter.
+
+* `Expressions` is probably the most useful class allowing creation of various `Expression`s. This
+may represent some functions (like current date) or various `Predicate`s (which is `Expression`
+subclass).
+* `JPADeleteClause` and `JPAUpdateClause` (both implementing `DMLClause`) are natural complement
+to our well-known `JPAQuery` when we want to modify the data.
+* `BooleanBuilder` FROM JAVADOC: BooleanBuilder is a cascading builder for Predicate expressions.
+BooleanBuilder is a mutable Expression implementation.
+* `GroupByBuilder` FROM JAVADOC: is a fluent builder for `GroupBy` transformer instances. This class
+is not to be used directly, but via `GroupBy`.
+* `CaseBuilder` and its special case `CaseForEqBuilder` TODO
+* `PathBuilder` and `PathBuilderFactory` TODO, from Javadoc: `PathBuilder` is an extension to
+`EntityPathBase` for dynamic path construction.
+
+Builders are to be instantiated to offer fluent API where it is not naturally available -- like
+right after opening parenthesis. They don't necessarily follow builder pattern as they often
+implement what they suppose to build and don't require some final *build* method call. Other
+classes offer bunch of convenient static methods.
+
 
 ## Tricky predicate parts
 
 TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
+%% TODO: when to use BooleanBuilder and when `Expressions.predicate`?
 
 
 ## Constants
@@ -48,6 +89,7 @@ protected long execute(DMLClause dmlClause) {
 }
 ~~~
 
+
 ## Detached queries {#querydsl-detached-queries}
 
 While we can create all the queries in methods provided with `EntityManager` parameter, but
@@ -79,8 +121,7 @@ this feature, but I personally use it only in query objects wrapping complicated
 a lot of aliases around already -- and even then mostly without the where part which I rather add
 dynamically later.
 
-%% TODO: revisit clone and other methods in multi-threaded environments, with 3.x we must use
-%% synchronized for these cases - do we really? let's wait for the answer:
+%% TODO: revisit clone and other methods in multi-threaded environments, see the answer:
 %% https://groups.google.com/forum/#!topic/querydsl/OnrWCf6w2V0
 
 
