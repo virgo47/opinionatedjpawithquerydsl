@@ -48,6 +48,12 @@ TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
 %% TODO: when to use BooleanBuilder and when `Expressions.predicate`?
 
 
+### Operator precedence and predicate serialization
+
+%% Based on:
+%% http://stackoverflow.com/questions/10549477/simple-e1-and-e2-or-e3-and-e4-expression-in-querydsl
+%% https://gist.github.com/timowest/5098112
+
 ## Constants
 
 TODO: `Expressions.constant`
