@@ -26,9 +26,12 @@ or map entry types." It is just so unexpected it got reported by someone. This i
 many reasons. You either cannot use embeddables, or you cannot count such cases in the query. This
 means you actually have to list it (you can use DISTINCT then) and then check the size of the
 result. This may not be possible for long lists. Finally, while in SQL you can go around this
-using SELECT in FROM clause, JPA does not allow this (yet). (By the way, Hibernate supports this,
-even against explicit "not supported". I'm not sure whether it is a violation of JPA specification
-but it may become a problem when porting to another provider.)
+using SELECT in FROM clause, JPA does not allow this (yet). By the way, Hibernate supports this (I
+mean distinct in count, not select in from clause), even against explicit "not supported". It seems
+to be a violation of JPA specification (although handy) and it may become a problem when migrating
+to another provider. (Question is what "not supported" means exactly in terms of words like MUST or
+MUST NOT used in RFCs. I understand leaving the feature in your ORM, maybe some compatibility
+switch/property could control the behaviour.)
 * [Stream API gets no results](https://bugs.eclipse.org/bugs/show_bug.cgi?id=433075) (EclipseLink)
 This one is fixed already. It caused that streams based on lazy lists were empty. It was easy to
 work around it -- just stream the copy of the list -- but it was annoying and unexpected. Reason

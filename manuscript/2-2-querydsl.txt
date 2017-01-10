@@ -199,8 +199,8 @@ topics](#ch-advanced-querydsl).
 Before we move to other Querydsl topics I'd go over its disadvantages.
 For one, you're definitely adding some overhead. I don't know exactly how big, maybe with the SQL
 backend (using JDBC directly) it would be more pronounced because ORM itself is big overhead
-anyway. In any case, there is object graph of the query in the memory before it is serialized into
-JPQL -- and from there it's on the same baseline like using JPA directly.
+anyway. In any case, there is an object graph of the query in the memory before it is serialized
+into JPQL -- and from there it's on the same baseline like using JPA directly.
 
 This performance factor obviously is not a big deal for many Querydsl users (some of them are
 really big names), it mostly does not add too much to the SQL execution itself, but in any case --
@@ -934,19 +934,19 @@ our team whatsoever. Snippet of our DAO class may look like this:
 
 ~~~
 public class ClientDao {
-	public static final QClient $ = QClient.client;
+  public static final QClient $ = QClient.client;
 
-	public Client findByName(String name) {
- 		return queryFrom($) // our shortcut for new/select/from
- 			.where($.name.eq(name))
- 			.fetchOne($);
-	}
+  public Client findByName(String name) {
+    return queryFrom($) // our shortcut for new/select/from
+      .where($.name.eq(name))
+      .fetchOne($);
+  }
 
-	public List<Client> listByRole(ClientRole clientRole) {
-		return queryFrom($)
-			.where($.roles.any().eq(clientRole))
-			.list($);
-	}
+  public List<Client> listByRole(ClientRole clientRole) {
+    return queryFrom($)
+      .where($.roles.any().eq(clientRole))
+      .list($);
+  }
 ...
 ~~~
 

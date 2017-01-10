@@ -1,6 +1,5 @@
 package tests;
 
-
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.*;
 import org.antlr.v4.runtime.tree.ParseTree;
