@@ -1,4 +1,4 @@
-package tests;
+package tests.exprdemo;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPADeleteClause;
@@ -100,6 +100,11 @@ public class StringWhereExpressionDemo {
     dunco.birthdate = LocalDate.of(1970, 1, 1);
     dunco.died = LocalDate.of(1980, 1, 1);
     em.persist(dunco);
+
+    Dog goldie = new Dog();
+    goldie.breedId = retriever.getId();
+    goldie.name = "Goldie";
+    em.persist(goldie);
 
     em.getTransaction().commit();
   }

@@ -1,4 +1,4 @@
-package tests;
+package tests.exprdemo;
 
 import com.querydsl.core.types.dsl.DateExpression;
 import com.querydsl.jpa.impl.JPAQuery;

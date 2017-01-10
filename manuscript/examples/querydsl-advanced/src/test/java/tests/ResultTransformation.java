@@ -61,7 +61,7 @@ public class ResultTransformation {
     em.persist(rexo);
 
     Dog ben = new Dog();
-    rexo.name = "Ben";
+    ben.name = "Ben";
     em.persist(ben);
 
     Dog ben2 = new Dog();

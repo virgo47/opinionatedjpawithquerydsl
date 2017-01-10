@@ -1,4 +1,4 @@
-package tests;
+package tests.exprdemo;
 
 import com.querydsl.core.JoinExpression;
 import com.querydsl.core.types.Expression;

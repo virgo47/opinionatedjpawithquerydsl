@@ -16,7 +16,7 @@ public class Dog {
   @Column(nullable = false)
   public String name;
 
-  @Column(nullable = false)
+  @Column
   public LocalDate birthdate;
 
   @Column
