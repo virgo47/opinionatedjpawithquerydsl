@@ -14,7 +14,7 @@ a demonstration project in the appendix [Project example](#app-project-example).
 for this book are based on that project layout so it should be easy to replicate.
 
 
-## Handy utility classes
+## Introducing handy utility classes
 
 Most of the time using Querydsl we work with our generated Q-classes and `JPAQuery` class. There
 are cases, however, when the fluent API is not enough and we need to add something else. This
@@ -43,6 +43,59 @@ classes offer bunch of convenient static methods.
 
 
 ## Tricky predicate parts
+
+Writing static queries in Querydsl is nice but Querydsl is very strong beyond that. We can use
+Querydsl expressions (implementations of `com.querydsl.core.types.Expression`) to create dynamic
+predicates, or to define dynamic lists of returned columns. It's easy to build your own "framework"
+around these -- easy and useful, as many of the problems occur again and again.
+
+I> `Predicate` is an interface extending from `Expression<Boolean>` and providing a single `not()`
+I> operation. Anything that smells like a condition is a predicate. Predicates can be added to the
+I> `where` clause where they are naturally most prominent.
+
+In a small project we may be satisfied with distinct code for various queries. Let's say we have
+three screens with lists with couple of filtering criteria. There is hardly a need to invest into
+some universal framework. We simply have some base query and we just slap couple of conditions
+to it like so:
+
+~~~
+if (filter.getName() != null) {
+  query.where(d.name.eq(filter.getName()));
+}
+if (filter.getBirth() != null) {
+  query.where(d.birthdate.isNull()
+    .or(d.birthdate.goe(LocalDate.now())));
+}
+~~~
+
+Each `where` call adds another condition into an implicit top-level `AND` group. Condition for
+`birthdate` will be enclosed in parenthesis to preserve the intended meaning. You can `toString`
+the query (or just its where part, or any Querydsl expression for that matter), this one will
+produce this output:
+
+{lang=text}
+~~~
+select dog
+from Dog dog
+where dog.name = ?1 and (dog.birthdate is null or dog.birthdate >= ?2)
+~~~
+
+But what if we have a project with many list/table views with configurable columns and filtering
+conditions for each column? This definitely calls for a framework of sort. We may still have
+predefined query objects but predicate construction should be unified. We may even drop query
+objects and have dynamic way how to add joins to a root entity. This, however, may be a
+considerable endeavour even though it may be well worth the effort in the end. My experiences
+in this area are quite extensive and I know that Querydsl will support you greatly.[^nextedmaybe]
+
+[^nextedmaybe]: If I see a demand for the second edition of this book I definitely plan to
+elaborate on an example of such a framework.
+
+
+### Groups of AND/OR predicates
+
+Sometimes the structure of a filter gives us multiple values. If we try to find a dog with any
+of provided names we can use single `in`, but often we have to create a predicate that joins
+multiple conditions with `or` or `and`. How to do that?
 
 TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
 %% TODO: when to use BooleanBuilder and when `Expressions.predicate`?
