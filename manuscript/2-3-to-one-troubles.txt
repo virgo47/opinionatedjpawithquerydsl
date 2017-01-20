@@ -160,12 +160,16 @@ This way we should see what selects are executed when. Hibernate out of the box 
 {title="Hibernate lazy find and traversing", lang=text}
 ~~~
 find
-Hibernate: select dog0_.id as id1_1_0_, dog0_.breed_id as breed_id3_1_0_, dog0_.name as name2_1_0_ from Dog dog0_ where dog0_.id=?
+Hibernate: select dog0_.id as id1_1_0_, dog0_.breed_id as breed_id3_1_0_,
+  dog0_.name as name2_1_0_ from Dog dog0_ where dog0_.id=?
 
 traversing
-Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_, breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
-Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_, breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
-Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_, breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
+Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_,
+  breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
+Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_,
+  breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
+Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_,
+  breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
 breed = wolf
 ~~~
 
@@ -229,11 +233,13 @@ And now the console output mixed with logs:
 {title="Hibernate output for reflection access", lang=text}
 ~~~
 find
-Hibernate: select dog0_.id as id1_1_0_, dog0_.breed_id as breed_id3_1_0_, dog0_.name as name2_1_0_ from Dog dog0_ where dog0_.id=?
+Hibernate: select dog0_.id as id1_1_0_, dog0_.breed_id as breed_id3_1_0_,
+  dog0_.name as name2_1_0_ from Dog dog0_ where dog0_.id=?
 
 hacking
 class modeltoone.Breed
-Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_, breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
+Hibernate: select breed0_.id as id1_0_0_, breed0_.derivedFrom_id as derivedF3_0_0_,
+  breed0_.name as name2_0_0_ from Breed breed0_ where breed0_.id=?
 val = Breed{id=3, name='collie'}
 ~~~
 
@@ -424,7 +430,7 @@ selecting a single entity, but it works the same way for lists as well. I includ
 returning value of the column `breed_id`, we have to use an association path -- and that raises
 questions. Let's see what SQL is generated for this query.
 
-{title="EclipseLink query for a Dog with breed_id", lang=text}
+{title="EclipseLink query for a Dog with breed_id", lang=sql}
 ~~~
 SELECT t0.ID, t0.NAME, t1.ID FROM DOG t0, BREED t1
   WHERE ((t0.ID = ?) AND (t1.ID = t0.BREED_ID))
@@ -432,7 +438,7 @@ SELECT t0.ID, t0.NAME, t1.ID FROM DOG t0, BREED t1
 
 EclipseLink does exactly what the JPQL says -- but is this the best way?
 
-{title="Hibernate query for a Dog with breed_id", lang=text}
+{title="Hibernate query for a Dog with breed_id", lang=sql}
 ~~~
 select dog0_.id as col_0_0_, dog0_.name as col_1_0_, dog0_.breed_id as col_2_0_
 from Dog dog0_ where dog0_.id=?

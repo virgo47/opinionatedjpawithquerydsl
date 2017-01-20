@@ -73,7 +73,7 @@ Each `where` call adds another condition into an implicit top-level `AND` group.
 the query (or just its where part, or any Querydsl expression for that matter), this one will
 produce this output:
 
-{lang=text}
+{lang=sql}
 ~~~
 select dog
 from Dog dog
@@ -101,11 +101,152 @@ TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
 %% TODO: when to use BooleanBuilder and when `Expressions.predicate`?
 
 
-### Operator precedence and predicate serialization
+### Operator precedence and expression serialization
 
-%% Based on:
-%% http://stackoverflow.com/questions/10549477/simple-e1-and-e2-or-e3-and-e4-expression-in-querydsl
-%% https://gist.github.com/timowest/5098112
+Let's return to the first condition from this chapter as added if both `if`s are executed. The
+result was:
+
+{lang=sql}
+~~~
+where dog.name = ?1 and (dog.birthdate is null or dog.birthdate >= ?2)
+~~~
+
+If we wanted to write the same condition in one go, fluently, how would we do it?
+
+~~~
+System.out.println("the same condition fluently (WRONG):\n" + dogQuery()
+  .where(QDog.dog.name.eq("Rex")
+    .and(QDog.dog.birthdate.isNull())
+    .or(QDog.dog.birthdate.goe(LocalDate.now()))));
+~~~
+
+Previous code produces result where AND would be evaluated first on the SQL level:
+
+{lang=sql}
+~~~
+where dog.name = ?1 and dog.birthdate is null or dog.birthdate >= ?2
+~~~
+
+This is easy to remedy in this case as we opened the parenthesis after `and` in the Java code
+and we can nest the whole `OR` inside like this:
+
+~~~
+System.out.println("\nthe same condition fluently:\n" + dogQuery()
+  .where(QDog.dog.name.eq("Rex")
+    .and(QDog.dog.birthdate.isNull()
+      .or(QDog.dog.birthdate.goe(LocalDate.now())))));
+~~~
+
+This gives us what we expected again with `OR` grouped together.
+
+{lang=sql}
+~~~
+where dog.name = ?1 and (dog.birthdate is null or dog.birthdate >= ?2)
+~~~
+
+Now imagine we wanted to write the `OR` group first:
+
+~~~
+System.out.println("\nthe same condition, different order:\n" + dogQuery()
+  .where(QDog.dog.birthdate.isNull()
+    .or(QDog.dog.birthdate.goe(LocalDate.now()))
+    .and(QDog.dog.name.eq("Rex"))));
+~~~
+
+This means we started our fluent predicate with an operator with a lower precedence. The result:
+
+{lang=sql}
+~~~
+where (dog.birthdate is null or dog.birthdate >= ?1) and dog.name = ?2
+~~~
+
+Whow! That went well -- but you may as how? In the Java code it flows seemingly on the same level,
+first `OR`, then `AND`, I don't care. With previous order you could nest `OR` inside the `AND`
+on Java syntactic level, how does it work here?
+
+The answer is actually pretty simple and also stems from Java syntax. If we add redundant
+parenthesis around OR it will be absolutely clear:
+
+~~~
+.where(
+  (QDog.dog.birthdate.isNull()
+    .or(QDog.dog.birthdate.goe(LocalDate.now()))
+  ).and(QDog.dog.name.eq("Rex"))));
+~~~
+
+Now we know what happens. As the calls are chained whatever before another call on the same level
+is already grouped together as an expression. We can imagine the same parenthesis in the generated
+JPQL as well, but if they are redundant they will be removed -- this is the case when `AND` goes
+first, but not the case when we start with `OR`. Parenthesis were added in the JPQL in order to
+preserve the evaluation order.
+
+I> All the demonstrations were made on predicates but they work the same on any expressions using
+I> any operators.
+
+In the following code all the expressions snakes mean the same:
+
+~~~
+e1.or(e2).and(e3).or(e4)
+(e1.or(e2)).and(e3).or(e4)
+((e1.or(e2)).and(e3)).or(e4)
+~~~
+
+We just have to realize that the first one is not the same like SQL `e1 OR e2 AND e3 OR e4` as
+`AND` has the highest precedence and is evaluated first. In Querydsl it's very easy to play with
+expressions as you don't need any entities at all and you don't have to touch the database either:
+
+~~~
+BooleanTemplate e1 = Expressions.booleanTemplate("e1");
+BooleanTemplate e2 = Expressions.booleanTemplate("e2");
+BooleanTemplate e3 = Expressions.booleanTemplate("e3");
+BooleanTemplate e4 = Expressions.booleanTemplate("e4");
+System.out.println("\ne1.or(e2).and(e3).or(e4) = " +
+  e1.or(e2).and(e3).or(e4));
+System.out.println("\ne1.or(e2).and(e3).or(e4) = " + new JPAQuery<>()
+  .where(e1.or(e2).and(e3).or(e4)));
+~~~
+
+This produces:
+
+{lang=text}
+~~~
+e1.or(e2).and(e3).or(e4) = (e1 || e2) && e3 || e4
+
+e1.or(e2).and(e3).or(e4) = where (e1 or e2) and e3 or e4
+~~~
+
+The first line is not much SQL like but if we create just an empty query with where we will get
+nice SQL-like result (although the whole query is obviously invalid). We see that the first `OR`
+group is enclosed in parenthesis, just as we saw it in one of the examples before.
+
+Finally, let's try something even more complicated - let's say we need:
+
+~~~
+((e1 OR e2) AND (e3 OR e4)) OR (e5 AND e6)
+~~~
+
+For that we write this in Java:
+
+~~~
+.where(e1.or(e2).and(e3.or(e4)).or(e5.and(e6))))
+~~~
+
+Let's check the output:
+
+~~~
+(e1 or e2) and (e3 or e4) or e5 and e6
+~~~
+
+Yup, it's the one, unnecessary parenthesis around the first `AND` are omitted but it will work.
+
+D> Now, I apologize if I insulted your intelligence in this section, but these questions
+D> crop up quite often around Querydsl. If we think it through it is clear how the expressions
+D> written in Java form a logical tree and how they are serialized afterwords -- but with SQL
+D> (or JPQL) colliding with Java (and fluent syntax) it definitely is not natural.
+D>
+D> This material is based on [this StackOverflow question](http://stackoverflow.com/q/10549477/658826)
+D> and Timo's [following Gist](https://gist.github.com/timowest/5098112). 
+
 
 ## Constants
 
