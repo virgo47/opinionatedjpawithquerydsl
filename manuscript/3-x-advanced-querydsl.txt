@@ -290,12 +290,25 @@ protected long execute(DMLClause dmlClause) {
 ~~~
 
 
+## `JPAQueryFactory`
+
+From reference documentation:
+
+Q> For the examples of this chapter the queries are created via a JPAQueryFactory instance.
+Q> JPAQueryFactory should be the preferred option to obtain JPAQuery instances.
+
+TODO: mention `selectFrom` and other convenient methods
+`JPAQueryFactory` can be created once in cases where `EntityManager` is injected (typically it
+works as a thread-safe proxy to the actual entity manager). If we obtain `EntityManager`
+programmatically we can still use it but it is short-lived and the benefit is questionable.
+
+
 ## Detached queries {#querydsl-detached-queries}
 
-While we can create all the queries in methods provided with `EntityManager` parameter, but
-sometimes it feels more natural to put queries into a constant a reuse them later. This is
-possible using so called "detached queries" -- simply create a query without entity manager
-and later clone it with entity manager provided:
+Typically we create the `JPAQuery` with `EntityManager` parameter, but sometimes it feels more
+natural to put queries into a constant a reuse them later -- something resembling named queries
+facility of JPA. This is possible using so called "detached queries" -- simply create a query
+without entity manager and later clone it with entity manager provided:
 
 {title="Querydsl, detached query", lang=java}
 ~~~
@@ -323,6 +336,8 @@ dynamically later.
 
 %% TODO: revisit clone and other methods in multi-threaded environments, see the answer:
 %% https://groups.google.com/forum/#!topic/querydsl/OnrWCf6w2V0
+%% detached queries also mean we can't use factory
+%% in overall I'd try to avoid it again
 
 
 ## Working with dates and `java.time` API
