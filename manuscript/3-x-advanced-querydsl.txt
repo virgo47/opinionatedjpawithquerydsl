@@ -127,8 +127,8 @@ Previous code produces result where AND would be evaluated first on the SQL leve
 where dog.name = ?1 and dog.birthdate is null or dog.birthdate >= ?2
 ~~~
 
-This is easy to remedy in this case as we opened the parenthesis after `and` in the Java code
-and we can nest the whole `OR` inside like this:
+We can easily fix this. We opened the parenthesis after `and` in the Java code
+and we can nest the whole `OR` inside:
 
 ~~~
 System.out.println("\nthe same condition fluently:\n" + dogQuery()
@@ -160,11 +160,12 @@ This means we started our fluent predicate with an operator with a lower precede
 where (dog.birthdate is null or dog.birthdate >= ?1) and dog.name = ?2
 ~~~
 
-Whow! That went well -- but you may as how? In the Java code it flows seemingly on the same level,
-first `OR`, then `AND`, I don't care. With previous order you could nest `OR` inside the `AND`
-on Java syntactic level, how does it work here?
+Wow! That went well -- but you may as well wonder how? In the Java code it flows seemingly on the
+same level, first `OR` then `AND` but the generated query didn't put it on the same level. In the
+previous example we could nest `OR` inside the `AND` on Java syntactic level (using parenthesis)
+-- but how does it work here?
 
-The answer is actually pretty simple and also stems from Java syntax. If we add redundant
+The answer is actually pretty simple and it stems from Java syntax. If we add redundant
 parenthesis around OR it will be absolutely clear:
 
 ~~~
@@ -174,16 +175,16 @@ parenthesis around OR it will be absolutely clear:
   ).and(QDog.dog.name.eq("Rex"))));
 ~~~
 
-Now we know what happens. As the calls are chained whatever before another call on the same level
+Now we know what happened. As the calls are chained whatever before another call on the same level
 is already grouped together as an expression. We can imagine the same parenthesis in the generated
 JPQL as well, but if they are redundant they will be removed -- this is the case when `AND` goes
 first, but not the case when we start with `OR`. Parenthesis were added in the JPQL in order to
 preserve the evaluation order.
 
-I> All the demonstrations were made on predicates but they work the same on any expressions using
-I> any operators.
+I> All the demonstrations are made with predicates but they work the same with any expression type
+I> using any operators.
 
-In the following code all the expressions snakes mean the same:
+In the following code all "expression-snakes" mean the same:
 
 ~~~
 e1.or(e2).and(e3).or(e4)
@@ -191,7 +192,13 @@ e1.or(e2).and(e3).or(e4)
 ((e1.or(e2)).and(e3)).or(e4)
 ~~~
 
-We just have to realize that the first one is not the same like SQL `e1 OR e2 AND e3 OR e4` as
+We just have to realize that the first one is not the same like SQL:
+
+{lang=sql}
+~~~
+e1 OR e2 AND e3 OR e4
+~~~
+
 `AND` has the highest precedence and is evaluated first. In Querydsl it's very easy to play with
 expressions as you don't need any entities at all and you don't have to touch the database either:
 
@@ -215,7 +222,7 @@ e1.or(e2).and(e3).or(e4) = (e1 || e2) && e3 || e4
 e1.or(e2).and(e3).or(e4) = where (e1 or e2) and e3 or e4
 ~~~
 
-The first line is not much SQL like but if we create just an empty query with where we will get
+The first line is not much SQL like but if we create just an empty query with `where` we will get
 nice SQL-like result (although the whole query is obviously invalid). We see that the first `OR`
 group is enclosed in parenthesis, just as we saw it in one of the examples before.
 
@@ -237,15 +244,17 @@ Let's check the output:
 (e1 or e2) and (e3 or e4) or e5 and e6
 ~~~
 
-Yup, it's the one, unnecessary parenthesis around the first `AND` are omitted but it will work.
+Yup, it's the one, unnecessary parenthesis around `AND` expressions are omitted but it will work.
+Knowing this we can now write expressions confidently and visualize the resulting JPQL/SQL.
 
 D> Now, I apologize if I insulted your intelligence in this section, but these questions
 D> crop up quite often around Querydsl. If we think it through it is clear how the expressions
-D> written in Java form a logical tree and how they are serialized afterwords -- but with SQL
-D> (or JPQL) colliding with Java (and fluent syntax) it definitely is not natural.
+D> written in Java form a logical tree and how they are serialized afterwords. But with the JPQL/SQL
+D> syntax colliding with the Java one it definitely is not as natural as re-writing the fluent
+D> calls directly into a declarative query language.
 D>
 D> This material is based on [this StackOverflow question](http://stackoverflow.com/q/10549477/658826)
-D> and Timo's [following Gist](https://gist.github.com/timowest/5098112). 
+D> and Timo's [following Gist](https://gist.github.com/timowest/5098112).
 
 
 ## Constants
