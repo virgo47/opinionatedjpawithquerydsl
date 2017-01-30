@@ -80,7 +80,9 @@ D> ~~~
 D>
 D> However, this is rather awkward to understand ("wait a moment, that MIN means it will include
 D> nulls or not?") and it also triggers [EclipseLink bug](https://bugs.eclipse.org/bugs/show_bug.cgi?id=511280)
-D> as it does not correctly convert `LocalDate` to SQL date type.
+D> as it does not correctly convert `LocalDate` to SQL date type. It's also quite possible that
+D> `LocalDate.MIN` will be a bit extreme for your database, so you may use other system-wide
+D> constant for default minimum (from) and maximum (to) dates.
 
 You can `toString` the query (or just its where part, or any Querydsl expression for that matter),
 this one will produce this output:

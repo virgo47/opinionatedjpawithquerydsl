@@ -39,6 +39,9 @@ public class WhereDemo {
           .or(QDog.dog.birthdate.goe(LocalDate.now()))
         ).and(QDog.dog.name.eq("Rex"))));
 
+    System.out.println("\nCoalesce: " + QDog.dog.birthdate
+      .coalesce(LocalDate.MIN).asDate().goe(LocalDate.now()));
+
     BooleanTemplate e1 = Expressions.booleanTemplate("e1");
     BooleanTemplate e2 = Expressions.booleanTemplate("e2");
     BooleanTemplate e3 = Expressions.booleanTemplate("e3");
