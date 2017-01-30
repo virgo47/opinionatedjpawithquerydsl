@@ -70,3 +70,5 @@ if the collection is mapped by a single FK on the entity contained in the collec
 is to explicitly map the association table or using different way to get to the result -- possibly
 more queries, because LEFT JOIN is difficult to rewrite without losing some results. Should work
 according to specification and works fine with Hibernate.
+* [Coalesce ignores converters](https://bugs.eclipse.org/bugs/show_bug.cgi?id=511280)
+TODO description, works fine on Hibernate, at least for the case in the bug report

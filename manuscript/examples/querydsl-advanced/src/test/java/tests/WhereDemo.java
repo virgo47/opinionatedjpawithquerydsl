@@ -8,34 +8,33 @@ import modeladv.QDog;
 
 import java.time.LocalDate;
 
-public class DynamicWhereDemo {
+public class WhereDemo {
 
   public static void main(String[] args) {
     JPAQuery<Dog> query = dogQuery();
 
-    query.where(QDog.dog.name.eq("Rex"));
-    query.where(QDog.dog.birthdate.isNull()
-      .or(QDog.dog.birthdate.goe(LocalDate.now())));
+    addDynamicConditions(query, new DogFilterDto("Rex", LocalDate.now()));
 
     System.out.println("query = " + query);
 
-    System.out.println("\nthe same condition fluently (WRONG):\n" + dogQuery()
+    System.out.println("\nboth conditions fluently (WRONG):\n" + dogQuery()
       .where(QDog.dog.name.eq("Rex")
         .and(QDog.dog.birthdate.isNull())
         .or(QDog.dog.birthdate.goe(LocalDate.now()))));
 
-    System.out.println("\nthe same condition fluently:\n" + dogQuery()
+    System.out.println("\nboth conditions fluently:\n" + dogQuery()
       .where(QDog.dog.name.eq("Rex")
         .and(QDog.dog.birthdate.isNull()
           .or(QDog.dog.birthdate.goe(LocalDate.now())))));
 
-    System.out.println("\nthe same condition, different order:\n" + dogQuery()
+    System.out.println("\nboth conditions, different order:\n" + dogQuery()
       .where(QDog.dog.birthdate.isNull()
         .or(QDog.dog.birthdate.goe(LocalDate.now()))
         .and(QDog.dog.name.eq("Rex"))));
 
-    System.out.println("\nthe same condition, different order, explicit redundant parenthesis:\n" + dogQuery()
-      .where(
+    System.out.println("\nboth conditions, different order," +
+      " explicit redundant parenthesis:\n" +
+      dogQuery().where(
         (QDog.dog.birthdate.isNull()
           .or(QDog.dog.birthdate.goe(LocalDate.now()))
         ).and(QDog.dog.name.eq("Rex"))));
@@ -54,6 +53,29 @@ public class DynamicWhereDemo {
     System.out.println("\ne1.or(e2).and(e3.or(e4)).or(e5.and(e6)) = " +
       new JPAQuery<>()
         .where(e1.or(e2).and(e3.or(e4)).or(e5.and(e6))));
+  }
+
+  private static void addDynamicConditions(
+    JPAQuery<Dog> query, DogFilterDto filter)
+  {
+    if (filter.name != null) {
+      query.where(QDog.dog.name.eq(filter.name));
+    }
+    if (filter.birthdate != null) {
+      // coalesce possible too, but with converted type fails on EclipseLink
+      query.where(QDog.dog.birthdate.isNull()
+        .or(QDog.dog.birthdate.goe(filter.birthdate)));
+    }
+  }
+
+  private static class DogFilterDto {
+    public String name;
+    public LocalDate birthdate;
+
+    public DogFilterDto(String name, LocalDate birthdate) {
+      this.name = name;
+      this.birthdate = birthdate;
+    }
   }
 
   private static JPAQuery<Dog> dogQuery() {

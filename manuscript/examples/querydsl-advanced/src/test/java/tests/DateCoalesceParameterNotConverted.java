@@ -16,8 +16,8 @@ import static modeladv.QDog.dog;
 public class DateCoalesceParameterNotConverted {
 
   public static void main(String[] args) throws IOException {
-    run("demo-el");
-    run("demo-hib");
+    run("demo-el"); // fails, seems to ignore converter for data field
+    run("demo-hib"); // works OK
   }
 
   private static void run(String persistenceUnit) {
@@ -25,7 +25,6 @@ public class DateCoalesceParameterNotConverted {
     try {
       EntityManager em = emf.createEntityManager();
       prepareData(em);
-
 
       // On h2 fails whenever dog with null died is encountered
       // On JTDS fails before executing
