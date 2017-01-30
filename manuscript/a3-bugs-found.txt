@@ -70,5 +70,11 @@ if the collection is mapped by a single FK on the entity contained in the collec
 is to explicitly map the association table or using different way to get to the result -- possibly
 more queries, because LEFT JOIN is difficult to rewrite without losing some results. Should work
 according to specification and works fine with Hibernate.
-* [Coalesce ignores converters](https://bugs.eclipse.org/bugs/show_bug.cgi?id=511280)
-TODO description, works fine on Hibernate, at least for the case in the bug report
+* [Coalesce ignores converters](https://bugs.eclipse.org/bugs/show_bug.cgi?id=511280) (EclipseLink)
+When you want to coalesce value of converted column like `LocalDate` to some default value (e.g.
+`LocalDate.now()`) the query fails on JDBC driver level (JTDS), or later when it encounters a row
+where it needs to apply the default (in H2), or possibly succeeds if no such row is found -- which
+is probably even more sneaky. In any case, value is passed into JDBC without conversion and is
+treated as raw object, not as a date type. Funny enough, if we try to call it with `java.sql.Date`
+instead, EclipseLink complaints right away that the types in coalesce are not compatible. Works
+fine with Hibernate.

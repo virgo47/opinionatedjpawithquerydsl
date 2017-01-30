@@ -62,7 +62,9 @@ public class WhereDemo {
       query.where(QDog.dog.name.eq(filter.name));
     }
     if (filter.birthdate != null) {
-      // coalesce possible too, but with converted type fails on EclipseLink
+      // coalesce possible too, but with converted type it fails on EclipseLink
+//    query.where(QDog.dog.birthdate.coalesce(LocalDate.MIN).asDate()
+//      .goe(filter.birthdate));
       query.where(QDog.dog.birthdate.isNull()
         .or(QDog.dog.birthdate.goe(filter.birthdate)));
     }

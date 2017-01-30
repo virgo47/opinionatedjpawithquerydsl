@@ -69,9 +69,21 @@ if (filter.getBirth() != null) {
 ~~~
 
 Each `where` call adds another condition into an implicit top-level `AND` group. Condition for
-`birthdate` will be enclosed in parenthesis to preserve the intended meaning. You can `toString`
-the query (or just its where part, or any Querydsl expression for that matter), this one will
-produce this output:
+`birthdate` will be enclosed in parenthesis to preserve the intended meaning.
+
+D> Instead of that `or` for nullable `birthdate` we could also use:
+D>
+D> ~~~
+D> query.where(QDog.dog.birthdate.coalesce(LocalDate.MIN).asDate()
+D>   .goe(filter.birthdate))
+D> ~~~
+D>
+D> However, this is rather awkward to understand ("wait a moment, that MIN means it will include
+D> nulls or not?") and it also triggers [EclipseLink bug](https://bugs.eclipse.org/bugs/show_bug.cgi?id=511280)
+D> as it does not correctly convert `LocalDate` to SQL date type.
+
+You can `toString` the query (or just its where part, or any Querydsl expression for that matter),
+this one will produce this output:
 
 {lang=sql}
 ~~~
