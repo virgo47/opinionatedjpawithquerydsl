@@ -23,9 +23,9 @@ other cases too. Let's quickly mention the classes we should know -- our startin
 various minor cases. Some of them will be just mentioned here, others will be discussed later in
 this chapter.
 
-* `Expressions` is probably the most useful class allowing creation of various `Expression`s. This
-may represent some functions (like current date) or various `Predicate`s (which is `Expression`
-subclass).
+* `Expressions` and `ExpressionUtils` are probably the most useful classes allowing creation of
+various `Expression`s. These may be functions (like current date) or various `Predicate`s (which
+is `Expression` subclass).
 * `JPADeleteClause` and `JPAUpdateClause` (both implementing `DMLClause`) are natural complement
 to our well-known `JPAQuery` when we want to modify the data.
 * `BooleanBuilder` FROM JAVADOC: BooleanBuilder is a cascading builder for Predicate expressions.
@@ -35,6 +35,8 @@ is not to be used directly, but via `GroupBy`.
 * `CaseBuilder` and its special case `CaseForEqBuilder` TODO
 * `PathBuilder` and `PathBuilderFactory` TODO, from Javadoc: `PathBuilder` is an extension to
 `EntityPathBase` for dynamic path construction.
+
+%% TODO: Are these interesting? MathUtils, NullExpression, ArrayUtils, CollectionUtils, ...?
 
 Builders are to be instantiated to offer fluent API where it is not naturally available -- like
 right after opening parenthesis. They don't necessarily follow builder pattern as they often
@@ -71,7 +73,7 @@ if (filter.getBirth() != null) {
 Each `where` call adds another condition into an implicit top-level `AND` group. Condition for
 `birthdate` will be enclosed in parenthesis to preserve the intended meaning.
 
-D> Instead of that `or` for nullable `birthdate` we could also use:
+D> Instead of the `or` operator for nullable `birthdate` we could also use:
 D>
 D> ~~~
 D> query.where(QDog.dog.birthdate.coalesce(LocalDate.MIN).asDate()
@@ -82,7 +84,9 @@ D> However, this is rather awkward to understand ("wait a moment, that MIN means
 D> nulls or not?") and it also triggers [EclipseLink bug](https://bugs.eclipse.org/bugs/show_bug.cgi?id=511280)
 D> as it does not correctly convert `LocalDate` to SQL date type. It's also quite possible that
 D> `LocalDate.MIN` will be a bit extreme for your database, so you may use other system-wide
-D> constant for default minimum (from) and maximum (to) dates.
+D> constant for default minimum (from) and maximum (to) dates. Finally, it's also possible that
+D> using a function prevents any index on that column to kick in, unless it's a matching function
+D> based index. 
 
 You can `toString` the query (or just its where part, or any Querydsl expression for that matter),
 this one will produce this output:
@@ -113,6 +117,7 @@ multiple conditions with `or` or `and`. How to do that?
 
 TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
 %% TODO: when to use BooleanBuilder and when `Expressions.predicate`?
+%% TODO: Expressions/ExpressionUtils DO NOT support other than two args for OR/AND 
 
 
 ### Operator precedence and expression serialization
@@ -260,6 +265,9 @@ Let's check the output:
 
 Yup, it's the one, unnecessary parenthesis around `AND` expressions are omitted but it will work.
 Knowing this we can now write expressions confidently and visualize the resulting JPQL/SQL.
+
+The bottom line is: Precedence as we know it from SQL *does not matter* -- Java expression
+evaluation order does.
 
 D> Now, I apologize if I insulted your intelligence in this section, but these questions
 D> crop up quite often around Querydsl. If we think it through it is clear how the expressions

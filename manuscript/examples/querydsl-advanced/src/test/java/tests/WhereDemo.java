@@ -11,12 +11,11 @@ import java.time.LocalDate;
 public class WhereDemo {
 
   public static void main(String[] args) {
-    JPAQuery<Dog> query = dogQuery();
+    dynamicConditionsDemo();
+    expressionSerialization();
+  }
 
-    addDynamicConditions(query, new DogFilterDto("Rex", LocalDate.now()));
-
-    System.out.println("query = " + query);
-
+  private static void expressionSerialization() {
     System.out.println("\nboth conditions fluently (WRONG):\n" + dogQuery()
       .where(QDog.dog.name.eq("Rex")
         .and(QDog.dog.birthdate.isNull())
@@ -56,6 +55,12 @@ public class WhereDemo {
     System.out.println("\ne1.or(e2).and(e3.or(e4)).or(e5.and(e6)) = " +
       new JPAQuery<>()
         .where(e1.or(e2).and(e3.or(e4)).or(e5.and(e6))));
+  }
+
+  private static void dynamicConditionsDemo() {
+    JPAQuery<Dog> query = dogQuery();
+    addDynamicConditions(query, new DogFilterDto("Rex", LocalDate.now()));
+    System.out.println("query = " + query);
   }
 
   private static void addDynamicConditions(
