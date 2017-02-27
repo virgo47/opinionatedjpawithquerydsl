@@ -3,6 +3,7 @@ package tests;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQuery;
 import modeladv.Dog;
+import modeladv.QBreed;
 import modeladv.QDog;
 
 import javax.persistence.EntityManager;

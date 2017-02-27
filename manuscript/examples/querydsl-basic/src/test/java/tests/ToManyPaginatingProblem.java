@@ -32,7 +32,7 @@ public class ToManyPaginatingProblem {
 
   private static List<String> listPeople(EntityManager em, int offset, int limit, boolean join) {
     QPerson p = QPerson.person;
-    JPAQuery<String> query = new JPAQuery<Person>(em)
+    JPAQuery<String> query = new JPAQuery<>(em)
       .select(p.name)
       .from(p)
       .orderBy(p.name.asc())

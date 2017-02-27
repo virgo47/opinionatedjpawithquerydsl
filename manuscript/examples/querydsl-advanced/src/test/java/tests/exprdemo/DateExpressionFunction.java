@@ -26,7 +26,7 @@ public class DateExpressionFunction {
       prepareData(em);
 
       QDog d = QDog.dog;
-      List<Dog> liveDogs = new JPAQuery<Dog>(em)
+      List<Dog> liveDogs = new JPAQuery<>(em)
         .select(d)
         .from(d)
         // client-side option

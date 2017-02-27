@@ -50,7 +50,7 @@ public class SingleEntityReadRaw {
   }
 
   private static void querydslDemo(EntityManager em) {
-    List<Dog> dogs = new JPAQuery<Dog>(em)
+    List<Dog> dogs = new JPAQuery<>(em)
       .select(QDog.dog)
       .from(QDog.dog)
       .leftJoin(QBreed.breed).on(QBreed.breed.id.eq(QDog.dog.breedId))

@@ -56,7 +56,7 @@ The first naive attempt may be:
 {title="Naive `JOIN` to localized names", lang=java}
 ~~~
 QBreedLocalizedName qbn = QBreedLocalizedName.breedLocalizedName;
-List<Tuple> breedEnNames = new JPAQuery<Breed>(em)
+List<Tuple> breedEnNames = new JPAQuery<>(em)
   .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
   .from(QBreed.breed)
   .join(QBreed.breed.names, qbn)
@@ -70,7 +70,7 @@ introduce the `LEFT JOIN` concept to them. Next attempt:
 
 {title="`LEFT JOIN` without `ON` clause", lang=java}
 ~~~
-breedEnNames = new JPAQuery<Breed>(em)
+breedEnNames = new JPAQuery<>(em)
   .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
   .from(QBreed.breed)
   .leftJoin(QBreed.breed.names, qbn)
@@ -90,7 +90,7 @@ about. Let's do it right after all:
 
 {title="`LEFT JOIN` with `ON` clause", lang=java}
 ~~~
-breedEnNames = new JPAQuery<Breed>(em)
+breedEnNames = new JPAQuery<>(em)
   .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
   .from(QBreed.breed)
   .leftJoin(QBreed.breed.names, qbn).on(qbn.language.eq("en"))
@@ -152,7 +152,7 @@ We need to make this implicit `ON` condition explicit. Let's see an example:
 
 {title="JOIN to root entity and explicit ON", lang=java}
 ~~~
-List<Dog> dogs = new JPAQuery<Dog>(em)
+List<Dog> dogs = new JPAQuery<>(em)
   .select(QDog.dog)
   .from(QDog.dog)
   .leftJoin(QBreed.breed).on(QBreed.breed.id.eq(QDog.dog.breedId))

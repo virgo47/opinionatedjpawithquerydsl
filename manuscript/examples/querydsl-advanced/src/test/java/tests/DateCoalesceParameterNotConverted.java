@@ -40,14 +40,15 @@ public class DateCoalesceParameterNotConverted {
       // the same problem
       try {
         Param<LocalDate> SOME_DATE = new Param<>(LocalDate.class);
-        List<Dog> funnyDogs = new JPAQuery<Dog>(em)
+        List<Dog> funnyDogs = new JPAQuery<>(em)
           .select(dog)
           .from(dog)
           .where(dog.died.coalesce(SOME_DATE).asDate().after(dog.birthdate))
 
 //         IllegalArgumentException: You have attempted to set a value of type class java.sql.Date for parameter 1...
 //        .set(SOME_DATE, new Date(System.currentTimeMillis()))
-          .set(SOME_DATE, LocalDate.now()) // can be any date, cannot replace it with DateExpression.currentDate()
+          // we may need any date, we can't use DateExpression.currentDate()
+          .set(SOME_DATE, LocalDate.now())
           .fetch();
       } catch (Exception e) {
         e.printStackTrace();

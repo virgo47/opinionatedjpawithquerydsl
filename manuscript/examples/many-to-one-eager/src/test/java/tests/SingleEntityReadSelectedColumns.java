@@ -25,7 +25,7 @@ public class SingleEntityReadSelectedColumns {
       emf.getCache().evictAll();
 
       System.out.println("\nfind");
-      Tuple tuple = new JPAQuery<QDog>(em)
+      Tuple tuple = new JPAQuery<>(em)
         .select(QDog.dog.id, QDog.dog.name, QDog.dog.breed.id)
         .from(QDog.dog)
         .where(QDog.dog.id.eq(1))

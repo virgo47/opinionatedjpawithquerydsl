@@ -417,7 +417,7 @@ Let's try it:
 
 {title="Selecting specific columns", lang=java}
 ~~~
-Tuple tuple = new JPAQuery<QDog>(em)
+Tuple tuple = new JPAQuery<>(em)
   .select(QDog.dog.id, QDog.dog.name, QDog.dog.breed.id)
   .from(QDog.dog)
   .where(QDog.dog.id.eq(1))

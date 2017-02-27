@@ -56,7 +56,7 @@ public class UpdateAndInsertWithWrappedFkDemo {
 
   private static Dog findDogByName(EntityManager em, String name) {
     QDog d = QDog.dog;
-    return new JPAQuery<Dog>(em).select(d)
+    return new JPAQuery<>(em).select(d)
       .from(d)
       .where(d.name.eq(name))
       .fetchOne();

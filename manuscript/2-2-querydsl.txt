@@ -42,7 +42,7 @@ goes like this:
 
 {title="Querydsl simple example", lang=java}
 ~~~
-List<Dog> dogs = new JPAQuery<Dog>(em)
+List<Dog> dogs = new JPAQuery<>(em)
   .select(QDog.dog)
   .from(QDog.dog)
   .where(QDog.dog.name.like("Re%"))
@@ -160,7 +160,7 @@ with Querydsl is adding one line to introduce shorter "alias" like this:
 {title="Querydsl simple example with alias", lang=java}
 ~~~
 QDog d = new QDog("d1");
-List<Dog> dogs = new JPAQuery<Dog>(em)
+List<Dog> dogs = new JPAQuery<>(em)
   .select(d)
   .from(d)
   .where(d.name.startsWith("Re"))
@@ -471,7 +471,7 @@ an idea of a subquery. The previous result can be achieved with join as well -- 
 joins are almost always preferable.
 
 To make our life easier we can use `JPAExpressions.select(...)` instead of
-`new JPAQuery().select(...)`. There is also a neat shortcut for the subquery with `select` and
+`new JPAQuery<>().select(...)`. There is also a neat shortcut for the subquery with `select` and
 `from` with the same expression.
 
 ~~~
@@ -866,7 +866,7 @@ or not. This is something we will tackle in a [dedicated section](#to-many-pagin
 Querydsl is a nice API and DSL but may lead to horrific monsters like:
 
 ~~~
-new JPAQuery(em)
+Integer trnId = new JPAQuery<>(em)
   .select(QClientAgreementBankAccountTransaction.clientAgreementBankAccountTransaction.transactionId))
   .from(QClientAgreement.clientAgreement)
   .join(QClientAgreementBankAccount.clientAgreementBankAccount).on(
@@ -894,7 +894,7 @@ QClientAgreementBankAccount caba =
   QClientAgreementBankAccount.clientAgreementBankAccount;
 QClientAgreementBankAccountTransaction cabat =
   QClientAgreementBankAccountTransaction.clientAgreementBankAccountTransaction;
-new JPAQuery(em)
+Integer trnId = new JPAQuery<>(em)
   .select(cabat.transactionId)
   .from(ca)
   .join(caba).on(caba.clientAgreementId.eq(ca.id))
@@ -909,7 +909,7 @@ signal-to-noise ratio which can easily overweight the burden of mental mapping t
 Another option is to use static imports which halves the QNames into half:
 
 ~~~
-new JPAQuery(em)
+Integer trnId = new JPAQuery<>(em)
   .select(clientAgreementBankAccountTransaction.transactionId)
   .from(clientAgreement)
   .join(clientAgreementBankAccount).on(

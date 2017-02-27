@@ -62,7 +62,7 @@ public class DogQueryDemo {
     CriteriaQuery<Dog> query = cb.createQuery(Dog.class);
     Root<Dog> dog = query.from(Dog.class);
     query.select(dog)
-      .where(cb.like(dog.<String>get("name"), "Re%"));
+      .where(cb.like(dog.get("name"), "Re%"));
     List<Dog> dogs = em.createQuery(query)
       .getResultList();
 
@@ -85,7 +85,7 @@ public class DogQueryDemo {
   }
 
   private static void querydslDemo(EntityManager em) {
-    List<Dog> dogs = new JPAQuery<Dog>(em)
+    List<Dog> dogs = new JPAQuery<>(em)
       .select(QDog.dog)
       .from(QDog.dog)
       .where(QDog.dog.name.like("Re%"))
@@ -107,7 +107,7 @@ public class DogQueryDemo {
 
   private static void querydslWithAliasDemo(EntityManager em) {
     QDog d = new QDog("d1");
-    List<Dog> dogs = new JPAQuery<Dog>(em)
+    List<Dog> dogs = new JPAQuery<>(em)
       .select(d)
       .from(d)
       .where(d.name.startsWith("Re"))
@@ -117,8 +117,8 @@ public class DogQueryDemo {
   }
 
   private static QDog DOG_ALIAS = new QDog("d1");
-  private static Param<String> DOG_NAME_PREFIX = new Param<String>(String.class);
-  private static JPAQuery<Dog> DOG_QUERY = new JPAQuery<Dog>()
+  private static Param<String> DOG_NAME_PREFIX = new Param<>(String.class);
+  private static JPAQuery<Dog> DOG_QUERY = new JPAQuery<>()
     .select(DOG_ALIAS)
     .from(DOG_ALIAS)
     .where(DOG_ALIAS.name.startsWith(DOG_NAME_PREFIX));

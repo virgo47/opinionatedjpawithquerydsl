@@ -24,7 +24,7 @@ public class QueryVsPersistenceContext {
       dog.setName("Dex");
       System.out.println("dog.name = " + dog.getName()); // Rex
 
-      String dogName = new JPAQuery<String>(em)
+      String dogName = new JPAQuery<>(em)
         .select(QDog.dog.name)
         .from(QDog.dog)
         .where(QDog.dog.id.eq(1))
@@ -33,7 +33,7 @@ public class QueryVsPersistenceContext {
       System.out.println("dogName = " + dogName);
       em.getTransaction().commit();
 
-      dogName = new JPAQuery<String>(em)
+      dogName = new JPAQuery<>(em)
         .select(QDog.dog.name)
         .from(QDog.dog)
         .where(QDog.dog.id.eq(1))

@@ -38,7 +38,7 @@ public class LeftJoinWithAliasAndOnDemo {
       DogQueryDemo.prepareData(em);
       emf.getCache().evictAll();
 
-      List<Person> owners = new JPAQuery<Person>(em)
+      List<Person> owners = new JPAQuery<>(em)
         .select(QPerson.person)
         .from(QPerson.person)
         .leftJoin(QPerson.person.dogs, QDog.dog).on(QDog.dog.name.eq("Rex"))

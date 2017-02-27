@@ -20,14 +20,14 @@ public class SelectFromDualDemo {
       // We "map" DUAL too to call table unrelated functions, but it works for normal tables
       // and functions in WHERE as well, of course
       // HOWEVER: currently only in EclipseLink, not in Hibernate 5.1.0! (try unit "demo-hib")
-      UUID uuid = new JPAQuery<UUID>(em)
+      UUID uuid = new JPAQuery<>(em)
         .select(Expressions.template(UUID.class, "FUNCTION('random_uuid')"))
         .from(QDual.dual)
         .fetchOne();
 
       System.out.println("uuid = " + uuid);
 
-      Double result = new JPAQuery<Double>(em)
+      Double result = new JPAQuery<>(em)
         .select(random(3))
         .from(QDual.dual)
         .fetchOne();

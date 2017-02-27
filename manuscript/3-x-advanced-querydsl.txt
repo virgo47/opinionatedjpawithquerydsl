@@ -346,7 +346,7 @@ without entity manager and later clone it with entity manager provided:
 private static QDog DOG_ALIAS = new QDog("d1");
 private static Param<String> DOG_NAME_PREFIX =
   new Param<String>(String.class);
-private static JPAQuery<Dog> DOG_QUERY = new JPAQuery<Dog>()
+private static JPAQuery<Dog> DOG_QUERY = new JPAQuery<>()
   .select(DOG_ALIAS)
   .from(DOG_ALIAS)
   .where(DOG_ALIAS.name.startsWith(DOG_NAME_PREFIX));
@@ -423,7 +423,7 @@ Let's compare a query from version 4 with the same query from version 3 -- let's
 
 {title="Querydsl version 4 query", lang=java}
 ~~~
-List<Dog> dogs = new JPAQuery<Dog>(em)
+List<Dog> dogs = new JPAQuery<>(em)
   .select(QDog.dog)
   .from(QDog.dog)
   .where(QDog.dog.name.like("Re%"))
@@ -477,39 +477,27 @@ you have to use different flow of the fluent API than for a map.
 
 ### Placement of `select`
 
-TODO: Rewrite the next para. The problem is that from without select still gives you JPAQuery<?>.
-But it is possible to put select at the end. It is NOT necessary to parametrize the constructor,
-diamond is sufficient.
-
-Another thing is that version 3 API was actually really fluent. I didn't have to parametrize
-`JPAQuery` constructor -- in version 4 you have to otherwise `where(...)` does not return anything
-you can call `fetch()` on. In version 3 you went on and on, maybe there was a bit less compile-time
-safety, but I never encountered this as a real problem. Version 3 worked perfectly with IDE,
-version 4 is rather annoying with that parametrized constructor without giving me, the programmer,
-any additional benefit. (I don't claim to know all about these API/DSL changes, though.)
-
-As the fluency goes most programmers in our team agreed to prefer finish with the
+As for the fluency, most programmers in our team agreed to prefer finishing with the
 `list(expressions...)` call as the last call clearly says what gets returned. With SQL-like
-approach you do this first, then add various `JOIN`s -- but this all fights typical Java-like
-programming mindset. For me personally version 3 hit the sweet spot perfectly, not fighting
-Java syntax (I feel a bit of a struggle between Querydsl 4 and Java) and giving me very
-SQL-like style of queries.
+approach you do this first, then add various `JOIN`s -- but this all goes against typical Java-like
+programming mindset. For me personally version 3 hit the sweet spot perfectly -- it gave me very
+SQL-like style of queries to a degree I needed and the terminal operation (e.g. `list`) perfectly
+expressed what I want to return without any superfluous dangling `fetch`.
 
 We can also question what changes more. Sometimes we change the list of expressions, which means
 we have to construct the whole query again and the most moving part -- the list of resulting
-expressions -- go somewhere in the middle (actually right at the start!). I cannot have my query
+expressions -- goes right at the start. I cannot have my query
 template with `FROM` and `JOIN`s ready anymore. All I had to do before was to clone it (so we don't
 change the template), add where parts based on some filter and declare what expressions we want
 as results, based on well-known available aliases, columns, etc.
 
-TODO: we actually can move select to the end and finish with select(...).fetch()
-
-Sure you have to have those aliases thought through before anyway, so it's not such a big deal to
-create all the queries dynamically and add `JOIN`s after you "use them" in the `SELECT` part,
+Sure you have to have all the `JOIN` aliases thought out before anyway, so it's not such a big deal
+to create all the queries dynamically and add `JOIN`s after you "use them" in the `SELECT` part,
 because the aliases are the common ground and probably available as some constants. But there is
-another good scenario for pre-created template query -- you can use it as... well, we said it
-already, as a template. This way you can ask its metadata and do some preparation based on this.
-We use this for our filter framework where the guys from UI know exactly what kind of aliases we
+another good scenario for pre-created template query -- you can inspect its metadata and do some
+preparation based on this.
+
+We used this for our filter framework where the guys from UI know exactly what kind of aliases we
 offer, because we crate a `Map<String, SimpleExpression<?>>` to get to the paths representing the
 alias by its name very quickly. We can still do this with Querydsl 4. We create one query selecting
 the entity used in the `FROM` clause (makes sense) and extract the map of aliases on this one,
@@ -517,12 +505,18 @@ discarding this "probe query" afterwards. Not a big deal, but still supports the
 the `WHERE` clause it is the `SELECT` part that is most flexible and using it right at the start
 of the "sentence" may sound natural, but not programmatically right.
 
+Rather accidentally we found out that in Querydsl 4 we actually can move `select` to the end and
+finish with `select(...).fetch()`. The `fetch` here looks even more superfluous than before, but
+the question is whether we want to use both styles in one project. With Querydsl 3 this question
+was never raised.
+
 D> The same applies for SQL itself. In its time it was probably great, but imagine nowadays IDEs
 D> that can help you with the `SELECT` part of the query. What will you do? You'll write `SELECT *`
 D> and finish the rest (froms, joins, wheres) and return to that `*` expecting that IDE will give
 D> you hints based on actual tables/aliases used. This "backward-ish" flow opens space for that
 D> question: Is the original order of clauses really the best one? I believe Querydsl 3 was ahead
 D> and shouldn't have gone back to SQL style.
+
 
 ### Subqueries
 

@@ -26,7 +26,7 @@ public class ProjectionToDogAndMerge {
 
       em.getTransaction().begin();
       QDog d = QDog.dog;
-      Tuple result = new JPAQuery<Dog>(em)
+      Tuple result = new JPAQuery<>(em)
         .select(d.id, d.name)
         .from(d)
         .where(d.id.eq(1))

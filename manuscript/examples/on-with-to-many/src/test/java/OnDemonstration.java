@@ -24,7 +24,7 @@ public class OnDemonstration {
       prepareData(em);
 
       QBreedLocalizedName qbn = QBreedLocalizedName.breedLocalizedName;
-      List<Tuple> breedEnNames = new JPAQuery<Breed>(em)
+      List<Tuple> breedEnNames = new JPAQuery<>(em)
         .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
         .from(QBreed.breed)
         .join(QBreed.breed.names, qbn)
@@ -32,7 +32,7 @@ public class OnDemonstration {
         .fetch();
       System.out.println("\nINNER JOIN and WHERE: breedEnNames = " + breedEnNames);
 
-      breedEnNames = new JPAQuery<Breed>(em)
+      breedEnNames = new JPAQuery<>(em)
         .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
         .from(QBreed.breed)
         .leftJoin(QBreed.breed.names, qbn)
@@ -40,7 +40,7 @@ public class OnDemonstration {
         .fetch();
       System.out.println("\nLEFT JOIN, WHERE instead of ON: breedEnNames = " + breedEnNames);
 
-      breedEnNames = new JPAQuery<Breed>(em)
+      breedEnNames = new JPAQuery<>(em)
         .select(QBreed.breed.id, QBreed.breed.code, qbn.name)
         .from(QBreed.breed)
         .leftJoin(QBreed.breed.names, qbn).on(qbn.language.eq("en"))
