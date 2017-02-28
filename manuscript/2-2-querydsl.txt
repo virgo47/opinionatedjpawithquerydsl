@@ -879,7 +879,7 @@ Integer trnId = new JPAQuery<>(em)
   .fetch();
 ~~~
 
-The problems here are caused by long entity class names but often there is nothing you can about
+The problems here are caused by long entity class names but often there is nothing you can do about
 it. Querydsl exacerbates it with the duplication of the name in `QClassName.className`. There are
 many ways how to tackle the problem.
 
