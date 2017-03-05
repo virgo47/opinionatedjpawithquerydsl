@@ -1,7 +1,8 @@
 # Advanced Querydsl {#ch-advanced-querydsl}
 
 At the beginning of the chapter dedicated to some of the more advanced points of Querydsl I'd like
-to reiterate that Querydsl has quite a [good documentation](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/).
+to reiterate that Querydsl has quite a
+[good documentation](http://www.querydsl.com/static/querydsl/4.1.4/reference/html_single/).
 It's not perfect and does not cover all the possibilities of the library -- even in this chapter
 we will talk about some things that are not presented there. I tried to verify these not only by
 personal experience but also discussing some of them on the
@@ -115,9 +116,123 @@ Sometimes the structure of a filter gives us multiple values. If we try to find 
 of provided names we can use single `in`, but often we have to create a predicate that joins
 multiple conditions with `or` or `and`. How to do that?
 
-TODO: BooleanBuilder, and/or and other prioritized operations serialization, ...
-%% TODO: when to use BooleanBuilder and when `Expressions.predicate`?
-%% TODO: Expressions/ExpressionUtils DO NOT support other than two args for OR/AND 
+If we want to code it ourselves, we can try something like (not a good version):
+
+~~~
+private static Predicate naiveOrGrouping(List<Predicate> predicates) {
+  if (predicates.isEmpty()) {
+    return Expressions.TRUE; // no condition, accepting all
+  }
+
+  Predicate result = null;
+  for (Predicate predicate : predicates) {
+    if (result == null) {
+      result = predicate;
+    } else {
+      result = Expressions.booleanOperation(Ops.OR, result, predicate);
+    }
+  }
+
+  return result;
+}
+~~~
+
+The first thing to consider is what to return when the list is empty. If thrown into a `where`
+clause `TRUE` seems to be neutral option -- but only if combined with other predicates using `AND`.
+If `OR` was used it would break the condition. However, Querydsl is smart enough to treat `null`
+as neutral value so we can simply remove the first three lines:
+
+~~~
+private static Predicate naiveOrGrouping(List<Predicate> predicates) {
+  Predicate result = null;
+  for (Predicate predicate : predicates) {
+    if (result == null) {
+      result = predicate;
+    } else {
+      result = Expressions.booleanOperation(Ops.OR, result, predicate);
+    }
+  }
+
+  return result;
+}
+~~~
+
+Try it in various queries and see that it does what you'd expect, with empty list not changing
+the condition.
+
+Notice that we use `Expressions.booleanOperation` to construct the `OR` operation. Fluent `or`
+is available on `BooleanExpression` but not on its supertype `Predicate`. You can use that subtype
+but `Expressions.booleanOperation` will take care of it.
+
+There is a shorter version using a loop:
+
+~~~
+private static Predicate naiveOrGroupingSimplified(List<Predicate> predicates) {
+  Predicate result = null;
+  for (Predicate predicate : predicates) {
+    result = ExpressionUtils.or(result, predicate);
+  }
+  return result;
+}
+~~~
+
+This utilizes `ExpressionUtils.or` which is extremely useful because -- as you may guess from the
+code -- it treats `null` cases for us in a convenient way. This may not be a good way (and you can
+use more strict `Expressions.booleanOperation` then) but here it's exactly what we want.
+
+I> While `ExpressionUtils` is more handy in this case, there are many cases not covered by this
+I> class. When we have two arbitrary number expressions and we want to use some operation with them
+I> we use `Expressions.` For instance, for numbers represented by `BigDecimal`s:
+I>
+I> ~~~
+I> NumberOperation<BigDecimal> result =
+I>   NumberExpressionExpressions.numberOperation(BigDecimal.class, Ops.ADD, left, right)
+I> ~~~
+I>
+I> Another example is `ExpressionUtils.isNull` -- this returns `Predicate` which may be limited
+I> if you want to work with `BooleanExpression`. Using `Expressions.booleanOperation(Ops.IS_NULL,
+I> left)` instead returns `BooleanOperation` which is `BooleanExpression` and allows more for
+I> flexibility when needed -- like fluent `and`/`or` and other operations compared to single `not`
+I> for `Predicate`.
+
+Now this all seems to be working fine but we're creating tree of immutable expressions and using
+some expression utils "magic" in a process (good to learn and un-magic it if you are serious with
+Querydsl). Because joining multiple predicates in `AND` or `OR` groups is so common there is a
+dedicated tool for it -- `BooleanBuilder`. Compared to what we know we don't save that much:
+
+~~~
+private static Predicate buildOrGroup(List<Predicate> predicates) {
+  BooleanBuilder bb = new BooleanBuilder();
+  for (Predicate predicate : predicates) {
+    bb.or(predicate);
+  }
+  return bb;
+}
+~~~
+
+Good thing is that the builder also communicates our intention better. It actually uses
+`ExpressionUtils` internally so we're still creating all those objects behind the scene. If you
+use this method in a fluent syntax you may rather return `BooleanBuilder` so you can chain other
+calls on it.
+
+However, in all the examples we used loop for something so trivial -- collection of predicates
+coming in and we wanted to join them with simple boolean operation. Isn't there even better way?
+Yes, there is:
+
+~~~
+Predicate orResult = ExpressionUtils.anyOf(predicates);
+Predicate andResult = ExpressionUtils.allOf(predicates);
+~~~
+
+There are both collection and vararg versions so we're pretty much covered. Other previously
+mentioned constructs, especially `BooleanBuilder` are still useful for cases when the predicates
+are created on the fly inside of a loop, but if we have predicates ready `ExpressionUtils` are
+there for us.
+
+I> If you look at the signature of a utility method like `Expressions.booleanOperation` you may
+I> think that second parameter of `Expression<?>... args` allows for any number of arguments. This
+I> is not true, however. It expects two parameters for `OR` and `AND` and one for `NOT`, just as is
+I> normal when you use those in an SQL expression.
 
 
 ### Operator precedence and expression serialization

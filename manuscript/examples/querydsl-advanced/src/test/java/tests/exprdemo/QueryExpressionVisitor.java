@@ -52,9 +52,9 @@ public class QueryExpressionVisitor extends ExprBaseVisitor {
 
     switch (ctx.op.getType()) {
       case OP_AND:
-        return Expressions.booleanOperation(Ops.AND, left, right);
+        return ExpressionUtils.and(left, right);
       case OP_OR:
-        return Expressions.booleanOperation(Ops.OR, left, right);
+        return ExpressionUtils.or(left, right);
       default:
         throw new ExpressionException("Unknown operator " + ctx.op);
     }

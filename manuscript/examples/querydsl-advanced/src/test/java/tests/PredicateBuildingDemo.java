@@ -35,6 +35,11 @@ public class PredicateBuildingDemo {
     nonEmptyGroup = naiveOrGroupingSimplified(predicates);
     showGroup("Naive simplified", emptyGroup, nonEmptyGroup);
 
+    emptyGroup = ExpressionUtils.anyOf(Collections.emptyList());
+    nonEmptyGroup = ExpressionUtils.anyOf(predicates);
+    showGroup("ExpressionUtils.anyOf", emptyGroup, nonEmptyGroup);
+
+    // Wrong usage - expects specific number of args!
     // shows only two first args
     System.out.println("\n=== ExpressionUtils: " +
       ExpressionUtils.predicate(Ops.OR, ImmutableList.copyOf(predicates)));
@@ -51,8 +56,8 @@ public class PredicateBuildingDemo {
     System.out.println(dogQuery().where(nonEmptyGroup));
 
     System.out.println("\nEmpty: " + emptyGroup);
-    System.out.println(dogQuery().where(emptyGroup));
-    System.out.println(dogQuery()
+    System.out.println("Query: " + dogQuery().where(emptyGroup));
+    System.out.println("Query (combined with other condition): " + dogQuery()
       .where(QDog.dog.name.eq("Rex").and(emptyGroup)));
   }
 
@@ -74,7 +79,6 @@ public class PredicateBuildingDemo {
     for (Predicate predicate : predicates) {
       bb.or(predicate);
     }
-
     return bb;
   }
 
