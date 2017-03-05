@@ -60,7 +60,7 @@ To actually finish something, I want to do this in the 1st edition:
 
 Other ideas, maybe for next editions:
 
-* filtering/pagination
+* filtering/pagination (promised for 2nd ed)                                         
 You may be interested in presented filtering/pagination "framework" too and while it is utilized
 with the JPA back-end in our case, the concept is rather generic. Sometimes I feel like reinventing
 this part for every project I've made.

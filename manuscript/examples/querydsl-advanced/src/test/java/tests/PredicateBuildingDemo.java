@@ -57,10 +57,6 @@ public class PredicateBuildingDemo {
   }
 
   private static Predicate naiveOrGrouping(List<Predicate> predicates) {
-    if (predicates.isEmpty()) {
-      return Expressions.TRUE; // no condition, accepting all
-    }
-
     Predicate result = null;
     for (Predicate predicate : predicates) {
       if (result == null) {
@@ -82,11 +78,10 @@ public class PredicateBuildingDemo {
     return bb;
   }
 
-  // saves lines, but is less safe, and "uglyfies" the order of predicates
   private static Predicate naiveOrGroupingSimplified(List<Predicate> predicates) {
     Predicate result = null;
     for (Predicate predicate : predicates) {
-      result = ExpressionUtils.or(predicate, result);
+      result = ExpressionUtils.or(result, predicate);
     }
     return result;
   }

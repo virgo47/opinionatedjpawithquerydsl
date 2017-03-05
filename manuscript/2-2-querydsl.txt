@@ -131,7 +131,7 @@ in Querydsl this is not optional. But using metamodel in Criteria API is advanta
 so the need to generate the metamodel for Querydsl using annotation processor can hardly be
 considered a drawback. It can be easily integrated with Maven or other build as demonstrated
 in the [companion sources](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/pom.xml)
-to this book or [documented](http://www.querydsl.com/static/querydsl/4.0.7/reference/html/ch02.html#d0e127)
+to this book or [documented](http://www.querydsl.com/static/querydsl/4.1.4/reference/html/ch02.html#d0e132)
 on Querydsl site.
 
 For another comparison of Querydsl and Criteria API, you can also check the
@@ -210,7 +210,7 @@ compare it with Criteria API which does not have to go through JPQL, but also cr
 graph in the memory (richer or not? depends).
 
 Documentation, while good, is definitely not complete. For instance, detached queries are not
-mentioned in their [Querydsl Reference Guide](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/)
+mentioned in their [Querydsl Reference Guide](http://www.querydsl.com/static/querydsl/4.1.4/reference/html_single/)
 and there is much more you need to find out yourself. You'll need to find your own best practices,
 probably, but it is not that difficult with Querydsl. Based (not only) on my own experience, it
 is literally joy to work with Querydsl and explore what it can provide -- for me it worked like
@@ -270,7 +270,7 @@ List<EntityD> result = new JPAQuery<>(em)
 After running this we end up with `NullPointerException` on the line with `select` method. What
 happened? The core problem is that it is not feasible to generate infinitely deep path using
 final fields. Querydsl offers some solutions to this as [discussed in the reference
-documentation](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2260).
+documentation](http://www.querydsl.com/static/querydsl/4.1.4/reference/html_single/#d0e2260).
 You can either ask the generator to initialize the path you need with the `@QueryInit` annotation
 or you can mark the entity with `@Config(entityAccessors=true)` which generates accessor methods
 instead of final fields. In the latter case you'd simply use this annotation on `EntityC` and
@@ -442,7 +442,7 @@ clause, just by the way, as it hardly deserves special treatment in this book.
 
 Here we will use the same data like in the previous section on functions and operations.
 The following examples can be found on GitHub in [Subqueries.java](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/src/test/java/tests/Subqueries.java)).
-You can also check Querydsl [reference documentation](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e410).
+You can also check Querydsl [reference documentation](http://www.querydsl.com/static/querydsl/4.1.4/reference/html_single/#d0e410).
 
 
 ### Independent subquery
@@ -752,8 +752,8 @@ result.forEach(t -> {
 And of course, you can combine entities with columns ad-lib.
 
 There are other ways how to combine multiple expressions into one object. See the reference guide
-to see how to [populate beans](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2187),
-or how to use [projection constructors](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2198).
+to see how to [populate beans](http://www.querydsl.com/static/querydsl/4.1.4/reference/html_single/#d0e2187),
+or how to use [projection constructors](http://www.querydsl.com/static/querydsl/4.1.4/reference/html_single/#d0e2198).
 
 
 ## Fetching *to-many* eagerly
@@ -972,7 +972,7 @@ That's it for our first tour around Querydsl. We will see more in the chapter on
 features](#ch-advanced-querydsl) (or perhaps just features used less). In the course of this
 chapter there was plenty of links to other resources too -- let's sum it up:
 
-* [Querydsl Reference Guide](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/)
+* [Querydsl Reference Guide](http://www.querydsl.com/static/querydsl/4.1.4/reference/html_single/)
 is the first stop when you want to learn more. It is not the last stop though, as it does not even
 cover all the stuff from this chapter. It still is a useful piece of documentation.
 * Querydsl is also popular enough on [StackOverflow](http://stackoverflow.com/questions/tagged/querydsl)

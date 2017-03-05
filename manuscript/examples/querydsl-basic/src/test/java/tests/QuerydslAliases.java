@@ -40,7 +40,7 @@ public class QuerydslAliases {
 
   private static void pathTooDeepCausesNpe(EntityManager em) {
     // fails with NPE, because 3rd level property entityD is not initialized
-    // see: http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2260
+    // see: http://www.querydsl.com/static/querydsl/4.1.4/reference/html_single/#d0e2260
     List<EntityD> result = new JPAQuery<>(em)
       .select(QEntityA.entityA.entityB.entityC.entityD)
       .from(QEntityA.entityA)

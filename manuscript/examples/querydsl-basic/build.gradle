@@ -18,7 +18,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-  querydslVersion = '4.0.7'
+  querydslVersion = '4.1.4'
   hibernateVersion = '5.0.6.Final'
   h2Version = '1.4.190'
 }

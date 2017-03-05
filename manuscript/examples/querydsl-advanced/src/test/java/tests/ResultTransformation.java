@@ -3,7 +3,6 @@ package tests;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQuery;
 import modeladv.Dog;
-import modeladv.QBreed;
 import modeladv.QDog;
 
 import javax.persistence.EntityManager;
@@ -15,7 +14,7 @@ import java.util.Map;
 import static com.querydsl.core.group.GroupBy.groupBy;
 
 /**
- * See http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2228 and
+ * See http://www.querydsl.com/static/querydsl/4.1.4/reference/html_single/#d0e2228 and
  * https://github.com/querydsl/querydsl/blob/master/querydsl-collections/src/test/java/com/querydsl/collections/GroupByTest.java
  */
 public class ResultTransformation {
