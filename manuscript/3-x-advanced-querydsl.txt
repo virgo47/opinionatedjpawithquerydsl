@@ -186,7 +186,8 @@ I> we use `Expressions.` For instance, for numbers represented by `BigDecimal`s:
 I>
 I> ~~~
 I> NumberOperation<BigDecimal> result =
-I>   NumberExpressionExpressions.numberOperation(BigDecimal.class, Ops.ADD, left, right)
+I>   NumberExpressionExpressions.numberOperation(
+I>     BigDecimal.class, Ops.ADD, left, right);
 I> ~~~
 I>
 I> Another example is `ExpressionUtils.isNull` -- this returns `Predicate` which may be limited
