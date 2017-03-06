@@ -395,6 +395,41 @@ D> This material is based on [this StackOverflow question](http://stackoverflow.
 D> and Timo's [following Gist](https://gist.github.com/timowest/5098112).
 
 
+## Querydsl Expression hierarchy
+
+We talk about `Expression`s, `Path`s and `Predicate`s a lot, but what is their relation? You may
+guess there is some hierarchy involved and this one is a rich one, indeed. Let's take a look at
+the snippet of it from the top:
+
+![Expression with few of the subtypes](images/querydsl-expression-hierarchy.png)
+
+Most of the things we work with in Querydsl are somehow subtypes of `Expression` interface.
+Picture shows just couple of examples -- be it `Constant` used to wrap constants in expressions
+like `age.add(4)` (here internally), or `Path` representing properties of our entity classes
+(among other things), or `Operation` for results of combining other expressions with operators.
+
+The list of direct sub-interfaces is longer, there are also three direct abstract sub-classes
+that are another "path" how to get from concrete expression implementation to the top of this
+hierarchy. In the picture above I used `NumberOperation` as an example. It implements `Operation`
+interface, but also follows a longer path that adds a lot of expected methods to the type, here
+from `NumberExpression` that has many more methods than listed in the picture.
+
+Creators of Querydsl had to deal with both single class inheritance and general problems making
+taxonomy trees and sometimes we can question whether they got it right, for instance: Isn't number
+constant a literal? Why doesn't it extend `LiteralExpression`? Other times you expect some
+operation on a common supertype but you find it defined in two separate branches of a hierarchy.
+But these problems are expected in any complex hierarchy and designers must make some arbitrary
+decisions. It's not really difficult to find the proper solutions for our Querydsl problems.[^j8dm]
+
+[^j8dm]: Perhaps default methods in interfaces could help with some of it, but these came with Java
+8 and it's unlikely to affect existing versions of Querydsl.
+
+Let's focus on another example of expression hierarchy, `BooleanPath` -- this time from the bottom
+to the top:
+
+![BooleanPath and its many supertypes](images/querydsl-boolean-expression.png)
+
+
 ## Constants
 
 TODO: `Expressions.constant`
