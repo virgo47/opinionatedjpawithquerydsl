@@ -107,7 +107,7 @@ considerable endeavour even though it may be well worth the effort in the end. M
 in this area are quite extensive and I know that Querydsl will support you greatly.[^nextedmaybe]
 
 [^nextedmaybe]: If I see a demand for the second edition of this book I definitely plan to
-elaborate on an example of such a framework.
+    elaborate on an example of such a framework.
 
 
 ### Groups of AND/OR predicates
@@ -335,7 +335,8 @@ e1 OR e2 AND e3 OR e4
 ~~~
 
 `AND` has the highest precedence and is evaluated first. In Querydsl it's very easy to play with
-expressions as you don't need any entities at all and you don't have to touch the database either:
+expressions as you don't need any entities at all and you don't have to touch the database either
+(don't mind the `BooleanTemplate`, it's just a kind of Querydsl `Expression`):
 
 ~~~
 BooleanTemplate e1 = Expressions.booleanTemplate("e1");
@@ -422,12 +423,49 @@ But these problems are expected in any complex hierarchy and designers must make
 decisions. It's not really difficult to find the proper solutions for our Querydsl problems.[^j8dm]
 
 [^j8dm]: Perhaps default methods in interfaces could help with some of it, but these came with Java
-8 and it's unlikely to affect existing versions of Querydsl.
+    8 and it's unlikely to affect existing versions of Querydsl.
 
 Let's focus on another example of expression hierarchy, `BooleanPath` -- this time from the bottom
 to the top:
 
 ![BooleanPath and its many supertypes](images/querydsl-boolean-expression.png)
+
+Here we followed the `extends` line all the way (any `T` is effectively `Boolean`).
+`BooleanExpression` implements expected operations (I omitted `andAnyOf(Predicate...)` and
+`orAllOf(Predicate...)` from the picture), any of those returning `BooleanOperation` which is also
+a subclass of `BooleanExpression`.
+
+`LiteralExpression` is a common supertype for other types of expressions `StringExpression` (and
+`StringPath` and `StringOperation`), `TemporalExpression` with subtypes `DateExpression`,
+`TimeExpression` and `DateTimeExpression` (and their paths), and `EnumExpression`. All these
+subtypes having their `Path` and `Operation` implementations this part of the hierarchy seems to
+be pretty regular and logical. (There are also `Template` implementations, but I don't cover those
+in the book.) `LiteralExpression` doesn't add methods we would use that much, so let's go one step
+higher.
+
+`ComparableExpression` adds tons of operation methods: `between`, `notBetween`, `goe` (greater or
+equal), `gt`, `loe` and `lt`, the last four with `ALL` and `ANY` variants (e.g. `goeAll`). We will
+get to the missing `eq` and similar higher in the hierarchy.
+
+D> One of `ComparableExpression` subclasses is called `ComparablePath` but it is used for something
+D> else. None of the previously mentioned paths -- all of them subclasses of `ComparableExpression`
+D> implementing `Path` interface, hence effectively "comparable paths" -- are subclasses of
+D> `ComparablePaths`. There are couple of similar naming issues in Querydsl types, I guess it stems
+D> from a typical problem to name things combined with the fact that putting all the concepts in
+D> a single `extends` tree is really hard. Just be warned that just because something is
+D> *comparable* to you it doesn't mean it implements every Querydsl type that says *comparable*. 
+
+Let's go to up to the `ComparableExpressionBase` which adds `asc` and `desc` methods returning
+`OrderSpecifier` we use in the `orderBy` clause. It also contains `coalesce` method for SQL
+function `COALESCE` returning first non-null argument. As the picture indicates this is also the
+point where `NumberExpression` hierarchy starts (with `NumberPath` and `NumberExpression`) -- it
+does not sit at the same place like string, boolean and date/time expressions. It also implements
+all the comparable functions (like `gt`) on its own which means that any infrastructure code for
+comparing expressions has to have two separate branches. Never mind, let's go up again.
+
+`SimpleExpression` adds `eq` and `ne` (with `ALL` and `ANY` variants), `isNull`, `isNotNull`,
+`count`, `countDistinct`, `in`, `notIn`, `nullif` and `when` (for `CASE` cases with equals, for
+other cases you want to utilize more universal `CaseBuilder`).
 
 
 ## Constants
