@@ -28,7 +28,7 @@ So let's talk about the limits, let's talk about implications, about lazy loads 
 consequences, etc. Don't "just fix it with OSIV"
 ([Open Session in View](http://stackoverflow.com/tags/open-session-in-view/info)).
 
-In the following chapters we will talk what is really [good about JPA](#ch-good-parts), what is
+In the following chapters we will talk about what is really [good in JPA](#ch-good-parts), what is
 [missing](#ch-missing-parts) and what is [limiting or questionable](#ch-questionable-parts).
 I tried to avoid "plain bad" for these parts because it is rather unfairly harsh statement and
 some of these features are... well, features. Just questionable on many occasions, that's all.
