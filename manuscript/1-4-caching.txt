@@ -180,16 +180,23 @@ implement a component utilizing logic behind the data better -- and whether it's
 
 ## Conclusion
 
+Caching can help tremendously with the performance of your application -- but it can also hurt
+if done badly.
 You should be very aware of your cache setup. You should be very clear how you want to do it.
 In the code it may look automagical, but it must be explicit somewhere -- your strategy must be
 well known to all the people who may encounter it in any way (even without knowing).
 
-You always trade something for something -- with caching it's typically memory for speed. Memory
-can slow you down too, but in general we have plenty of it nowadays. While you are in a single
-process a JPA provider can typically manage the data consistency. If you have a distributed
+You always trade something for something -- with caching it's typically memory for speed.[^memcpu]
+Memory can slow you down too, but in general we have plenty of it nowadays. While you are in a
+single process a JPA provider can typically manage the data consistency. If you have a distributed
 architecture you enter a different world altogether and I'd think twice before going there. You
 must feel the need for it and you must measure what you got -- because you'll definitely get
 complexity and you have to think about consistency much more.
+
+[^memcpu]: Books on Java performance often mention that memory versus CPU is not such a clear cut
+    in JVM, as memory may affect garbage collector in such a way that you actually trade CPU for
+    memory *and CPU*. Another reason to be really aware of what we do -- we should not rely on
+    automagic and we should always measure the impact as well. 
 
 Don't mix freely caching on multiple levels. Database cache is mostly transparent to us, but
 when you mix two declarative caches you often make matters worse. Especially when you cache

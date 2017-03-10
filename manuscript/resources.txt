@@ -13,6 +13,12 @@
 [JAA] Kirk Knoernschild. *Java Application Architecture: Modularity Patterns with Examples Using
 OSGi*, Prentice Hall, 2012.
 
+{#bib-jp}
+[JP] Charlie Hunt, Binu John. *Java Performance*, Addison-Wesley, 2012.
+
+{#bib-jpdg}
+[JPDG] Scott Oaks. *Java Performance: The Definitive Guide*, O'Reilly, 2014.
+
 {#bib-jpspec}
 [JPspec] Java Persistence 2.1 Expert Group. *JSR 338: JavaTM Persistence API, Version 2.1*, Oracle,
 2013. [Download](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
@@ -25,7 +31,7 @@ OSGi*, Prentice Hall, 2012.
 
 {#bib-sdata}
 [SData] Mark Pollack, Oliver Gierke, Thomas Risberg, Jon Brisbin, and Michael Hunger.
-*Spring Data*, O’Reilly Media, Inc., 2012.
+*Spring Data*, O'Reilly Media, Inc., 2011.
 
 {#bib-sqlpe}
 [SQLPE] Markus Winand. *SQL Performance Explained*, 2012.
@@ -41,7 +47,7 @@ well-argued longer post about troubles with ORM
 * [Flush and Clear: O/R Mapping Anti-Patterns](http://www.developerfusion.com/article/84945/flush-and-clear-or-mapping-antipatterns/)
 * [The OpenSessionInView Antipattern](https://dzone.com/articles/opensessioninview-antipattern)
 * [The Open Session In View Anti-Pattern](https://vladmihalcea.com/2016/05/30/the-open-session-in-view-anti-pattern)
-* [A beginner’s guide to JPA and Hibernate Cascade Types](https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types)
+* [A beginner's guide to JPA and Hibernate Cascade Types](https://vladmihalcea.com/2015/03/05/a-beginners-guide-to-jpa-and-hibernate-cascade-types)
 * Martin Fowler's [Anemic Domain Model](http://www.martinfowler.com/bliki/AnemicDomainModel.html)
 * [JPA 2.1 -- 12 features every developer should know](http://www.thoughts-on-java.org/jpa-21-overview)
 * [Transaction strategies: Understanding transaction pitfalls](http://www.ibm.com/developerworks/java/library/j-ts1/)
