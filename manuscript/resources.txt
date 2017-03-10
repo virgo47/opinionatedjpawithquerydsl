@@ -6,7 +6,7 @@
 [DDD] Eric Evans. *Domain-Driven Design*, Addison-Wesley Professional, 2003.
 
 {#bib-hpjp}
-[HPJP] Vlad Mihalcea. *High Performance Java Persistence*, Leanpub, 2016.
+[HPJP] Vlad Mihalcea. *High Performance Java Persistence*, Leanpub, 2017.
 [Book site](https://leanpub.com/high-performance-java-persistence)
 
 {#bib-jaa}
