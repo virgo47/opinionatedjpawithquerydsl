@@ -464,8 +464,13 @@ all the comparable functions (like `gt`) on its own which means that any infrast
 comparing expressions has to have two separate branches. Never mind, let's go up again.
 
 `SimpleExpression` adds `eq` and `ne` (with `ALL` and `ANY` variants), `isNull`, `isNotNull`,
-`count`, `countDistinct`, `in`, `notIn`, `nullif` and `when` (for `CASE` cases with equals, for
-other cases you want to utilize more universal `CaseBuilder`).
+`count`, `countDistinct`, `in`, `notIn`, `nullif` and `when` for simple `CASE` cases with equals --
+for more complicated cases you want to utilize more universal `CaseBuilder`.
+
+Finally `DslExpression` gives us support for expression aliases using `as` method. (These are
+different than aliases for joins we used until now.) Getting all the way up we now have all the
+necessary methods we can use on `BooleanPath` -- and the same applies for `StringPath` or, although
+a bit sideways, for `NumberPath` and other expressions as well.
 
 
 ## Constants

@@ -74,7 +74,7 @@ are covered elsewhere anyway. Let's talk about some of the books available in th
 JPA came with EJB 3, actually first as a part of *JSR 220* "Enterprise JavaBeans 3.0", but it soon
 proved as a worthy API on its own because it is not tied to EJP in particular. In those days I'd
 recommend [Pro EJB 3: Java Persistence API](http://www.amazon.com/dp/1590596455), but I think the
-book is now dead (and yes, in 2016 it celebrates its 10^th^ anniversary).
+book is now dead (and yes, in 2016 it celebrated its 10^th^ anniversary).
 
 I can highly recommend [Pro JPA 2](http://www.amazon.com/dp/1430249269)
 in its 2^nd^ Edition [[PJPA2](#bib-projpa2)],
@@ -104,6 +104,29 @@ There are tons of blog posts, of course, some of them are very influential. I wi
 most important ones in chapter [Love and hate for ORM](#ch-love-hate).
 
 
+## Books on performance of the database and persistence layer
+
+Any book about persistence gives at least some elementary advices on performance. You definitely
+should consult the documentation to your provider. I can also recommend two books on Java
+performance in general -- both named quite plainly: [Java Performance](https://www.amazon.com/dp/0137142528)
+(2011) [[JP](#bib-jp)] and [Java Performance: The Definitive Guide](https://www.amazon.com/dp/1449358454)
+(2014) [[JPDG](#bib-jpdg)]. The first one has a final chapter named *Java Persistence and
+Enterprise Java Beans Performance*, the second one deals with the topic in its penultimate chapter
+*Database Performance Best Practices*. Finally, there is also a very recent book that covers
+performance of Java persistence specifically --
+[High Performance Java Persistence](https://leanpub.com/high-performance-java-persistence)
+[[HPJP](#bib-hpjp)].
+
+{icon=book}
+G> ### SQL Performance Explained
+G>
+G> I can highly recommend this incredible book [[SQLPE](#bib-sqlpe)] which explains indexes,
+G> joins, execution plans and many other aspects of queries (including data modification) in just
+G> under 200 pages. This not only is a true gem in this area, it can be also obtained as PDF from
+G> [its site](http://sql-performance-explained.com) for 10 Eur or so. I hope it goes without saying
+G> that ignoring the database level and SQL will not get far (and not in the right direction).
+
+
 ## Looking back to *Patterns of Enterprise Application Architecture*
 
 Martin Fowler wrote his *Patterns of Enterprise Application Architecture* [[PoEAA](#bib-poeaa)]
@@ -128,9 +151,9 @@ read books like *Clean Code*... probably because it was before they were written
 Closing his chapter *Mapping to Relational Databases* Martin Fowler wrote:
 
 {icon=quote-right}
-G> Object-relational mapping is a fact of life for most people, so it’s no surprise
-G> that there’s been a lot written on the subject. The surprise is that there isn’t a
-G> single coherent, complete, and up-to-date book, which is why I’ve devoted so
+G> Object-relational mapping is a fact of life for most people, so it's no surprise
+G> that there's been a lot written on the subject. The surprise is that there isn’t a
+G> single coherent, complete, and up-to-date book, which is why I've devoted so
 G> much of this one to this tricky yet interesting subject.
 
 Today there are more books related to ORM, even if you narrow it down to Java world. My attempt
