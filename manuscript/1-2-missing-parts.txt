@@ -76,11 +76,14 @@ allow you, among other things, to count rows for results that current JPA does n
     use them where you otherwise would.
 
 JPA offers a palette of favourite functions, but of course it does not provide all possible
-functions. Before *JPA 2.1* you'd have to use ORM provider custom functionality to overcome this, or
+functions.[^datearit]
+Before *JPA 2.1* you'd have to use ORM provider custom functionality to overcome this, or
 fallback to native SQL. Just because you are consciously sacrificing database portability it does
 not mean you don't want to use JPQL. It provides you with `FUNCTION` construct where the name
 of the called function is the first argument with other arguments following behind. Easy to use
 and very flexible -- this effectively closes the gap for functions you can use.
+
+[^datearit]: One especially big pain is no support for date arithmetic like `GETDATE() + 1`.
 
 
 ## Other missing parts
