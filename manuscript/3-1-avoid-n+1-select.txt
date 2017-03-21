@@ -468,7 +468,7 @@ Adam's dogs = {[Dog{id=1, name='Alan', owner.id=1}, Dog{id=2, ...
 Adam's dogs = {[Dog{id=1, name='Alan', owner.id=1}, Dog{id=2, ...
 ~~~
 
-The same happens if we want to be explicit. Here we even use "raw" versions of entities, ad-hoc
+The same happens if we want to be explicit. Here we even use "raw" versions of entities, ad hoc
 join (to root entity) and explicit `ON`:
 
 ~~~

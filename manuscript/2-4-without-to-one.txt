@@ -1,7 +1,8 @@
 # Removing *to-one* altogether {#ch-without-to-one}
 
 W> This solution builds on JPA 2.1 `ON` clause but is not JPA compliant because it also uses
-W> root entity after `JOIN` keyword that is only supported in EclipseLink and not according to
+W> root entity after `JOIN` keyword (also known as *ad hoc join*) that is only supported in
+W> EclipseLink and not according to
 W> [[JPspec](#bib-jpspec)]. Specification details this on page 176 and the following sections
 W> 4.4.5.x. I discovered this option when I played with Querydsl
 W> and various options how to state my joins -- and it worked on the reference implementation!
@@ -179,6 +180,26 @@ although smart DBAs have no problem to understand JPQL either. But with dropping
 loosing this comfort too. In theory we could leave some logical mapping information on the
 attribute, but without redesigning JPA we cannot benefit it in our queries anyway. We will try to
 tackle the problem of missing metadata on the plain FK-typed attribute later in this chapter.
+
+
+## Ad hoc joins across tables
+
+It's not that rare to see tables with a shared ID value. In the following picture `Person` has
+an ID column (its primary key) and other two tables share the same value as both their PK and FK
+into the `Person` table:
+
+![Three entities with common ID column](images/join-across-common-table.png)
+
+Now imagine a situation we want some information from `NaturalPerson` table and its residence
+but we don't need anything from `Person` table itself. With JPA/ORM you need to join all three
+tables or you need to map direct relationships across the tables as well -- that requires dual
+mapping to two different object types which is really superfluous. With ad hoc joins you have
+no problem at all, we can simply join tables on the side using `ON` condition for equality of
+their `id` attributes.
+
+Even beyond this shared ID example there are many cases when ad hoc join is practical. Sometimes
+you need to build a report with join on a column that is not PK/FK pair -- although there may be
+better ways than ORM to produce a report.
 
 
 ## Loading the relationship from the entity

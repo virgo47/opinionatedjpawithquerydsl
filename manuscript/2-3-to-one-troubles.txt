@@ -245,13 +245,13 @@ val = Breed{id=3, name='collie'}
 
 This is perfectly lazy. The solution seems even magic when you think about it.
 
-Doing lazy collection (`@OneToMany` or `@ManyToMany`) -- on the other hand -- is not a problem,
+
+### Lazy *to-one* not guaranteed {#lazy-not-guaranteed}
+
+Doing lazy collection (`@OneToMany` or `@ManyToMany`) is not a problem,
 we would probably mess around a bit but eventually we would create some collection implementation
 that does it right. The trick is we have the actual entities wrapped in a collection that works
 as an intermediary. We don't need to perform any bytecode voodoo on the entity class.
-
-
-### Lazy *to-one* not guaranteed {#lazy-not-guaranteed}
 
 With *to-one* situation changes dramatically as you have no intermediary. It would be interesting
 if JPA at least offered some wrapper to enforce lazy behaviour when you really need it regardless
@@ -290,7 +290,14 @@ D> Damn "may" in a specification, although strictly speaking Hibernate behaviour
 So the whole trouble with *to-one* is that you rely on out-of-language features (bytecode
 manipulation) for `LAZY` support or suffer potentially very costly cascade of relation loading.
 The cost may be alleviated by a cache somewhat, but you just trade CPU/network cost for memory
--- even if you don't need most of the loaded data at all (maybe ever).
+(and CPU for GC, mind you) -- even if you don't need most of the loaded data at all (maybe ever).
+
+Also, `LAZY` can work perfectly for WAR application in Java EE container but it may suddenly stop
+working when switching to embedded container. I'm not saying that `LAZY` is not worth the trouble,
+on the contrary, I believe that lazy relationship is essential for both *to-many* (as default) and
+*to-one* (in most circumstances) but it indeed can be a lot of trouble during the build time or
+runtime, especially in Java SE environment. Java EE with its default provider may be nice to us,
+but it still isn't guaranteed.
 
 
 ## Dual relationship mapping

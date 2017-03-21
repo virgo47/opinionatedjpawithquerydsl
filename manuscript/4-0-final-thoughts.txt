@@ -98,7 +98,7 @@ D> because of it.
 
 This all means you have to know your provider one way or the other. I always try to use as much of
 JPA capabilities (mapping annotations, JPQL) but when the time comes I go beyond. It's very easy
-with a feature like ad-hoc joins where all the providers understand its usefulness (although I
+with a feature like *ad hoc joins* where all the providers understand its usefulness (although I
 doubt they did it to promote my raw FK mapping style). With something specific it's up to you.
 Will you ever switch? This depends. If you're pure JPA using whatever some application server
 provides you have to be super compliant and super compatible -- avoiding bugs included. That sounds
@@ -120,8 +120,8 @@ and also not the only way how to do it.
 
 In any case, I always put Querydsl over JPA. I recently tried JPA 2.0 project without it and the
 experience is terrible if you got used to it before. Also 2.0 version is nothing to be happy about
-and missing ad-hoc joins also proved to be incredible pain as some tables were already mapped with
-raw FKs and without ad-hoc join you're out of luck, you have to remap it properly with all the
+and missing ad hoc joins also proved to be incredible pain as some tables were already mapped with
+raw FKs and without ad hoc join you're out of luck, you have to remap it properly with all the
 consequences.
 
 Finally, about this book. It was much bigger story for me in the end, especially as I discovered
