@@ -1,8 +1,11 @@
 -# Final thoughts {#part-final-thoughts}
 
 So here we are after the ride through highs and lows of JPA with some bits of common sense advices.
-Story wasn't that good, probably, because -- at least for me -- it culminated quite soon around
+Perhaps the story wasn't that good because -- at least for me -- it culminated quite soon around
 the troubles with *to-one* relationships, not to mention that my proposed solution is not pure JPA.
+
+
+## JPA/ORM -- yes or no?
 
 Would I use JPA or ORM again? Voluntarily? Yes -- especially for simple cases. I'd use it even for
 bigger projects, of course, but I'd tune it down, not using all its features, especially avoiding
@@ -31,13 +34,22 @@ D> the area of domain modelling in software. Early 2000s were also very rigid wi
 D> "design-by-committee" standard and just a couple of alternatives. Later explosion of approaches
 D> offered many more options like [event sourcing](http://martinfowler.com/eaaDev/EventSourcing.html)
 D> or [CQRS](http://martinfowler.com/bliki/CQRS.html). In some of these architectures ORM may not
-D> provide enough benefits. 
+D> provide enough benefits, in others it may be used only for one part of the solution. 
 
 If we take the ORM shortcut for simple case it may still happen that the simple problem gets more
 complex, application grows a lot and we will suddenly have to live with a lot of ORM investment
 with a very difficult retreat path (business will not be able to pay for it, for sure). So if I
 know that I would rather use some other solution instead, I'd think couple of times about the
 possibility of this small project/product becoming big.
+
+There is another way how to treat JPA and ORM -- especially for rich domains. Understand it fully
+-- really, really fully -- tune the caches, use reliable lazy where appropriate and reap the
+benefits. Personally, I doubt this is a good solution (or realistic for that matter) but it can be
+OK for command part of CQRS application. ORM simply falls short in area of queries beyond the
+most primitive levels of sophistication.
+
+
+## JPA or concrete ORM provider?
 
 Do I prefer JPA or concrete ORM provider? For many years the answer was pretty clear -- I always
 strove to stay within JPA realm. Accidentally, though, I went down the path with EclipseLink
@@ -84,6 +96,17 @@ D> didn't help, of course. It is still the most invasive from all three mentione
 D> not mean it must be any bad, I just didn't want to disrupt or make separate examples just
 D> because of it.
 
+This all means you have to know your provider one way or the other. I always try to use as much of
+JPA capabilities (mapping annotations, JPQL) but when the time comes I go beyond. It's very easy
+with a feature like ad-hoc joins where all the providers understand its usefulness (although I
+doubt they did it to promote my raw FK mapping style). With something specific it's up to you.
+Will you ever switch? This depends. If you're pure JPA using whatever some application server
+provides you have to be super compliant and super compatible -- avoiding bugs included. That sounds
+rather unlikely for me.
+
+
+## JPA, Querydsl and beyond
+
 So, will I use ORM on bigger systems again? Probably -- as I don't design every system I work on.
 Would I try something else if I could? Definitely. I have much more faith in [Querydsl](http://www.querydsl.com/)
 itself, for instance. You can use it over SQL directly, bypassing the JPA altogether. Main Querydsl
@@ -95,9 +118,15 @@ commercial licences if you want to use it with commercial databases. Both these 
 their popularity -- show that the JPA is far from being the last word in Java persistence landscape
 and also not the only way how to do it.
 
-%%Finally, about this book. It was much bigger story for me in the end, especially as I discovered
-%%I'd been working outside of JPA realm for more than a year. That obviously totally ruined all
-%%my plans, my wannabe climax was suddenly dull and I wasn't sure whether to go on at all. But
-%%I also learnt a lot about the JPA (and I really had thought before I'm quite solid already!)
-%%and about the two most popular providers. I hope it was helpful also for you, even though I might
-%%have raised more questions than provided answers. At least I tried to keep it all quite short.
+In any case, I always put Querydsl over JPA. I recently tried JPA 2.0 project without it and the
+experience is terrible if you got used to it before. Also 2.0 version is nothing to be happy about
+and missing ad-hoc joins also proved to be incredible pain as some tables were already mapped with
+raw FKs and without ad-hoc join you're out of luck, you have to remap it properly with all the
+consequences.
+
+Finally, about this book. It was much bigger story for me in the end, especially as I discovered
+I'd been working outside of JPA realm for more than a year. That obviously totally ruined all
+my plans, my wannabe climax was suddenly dull and I wasn't sure whether to go on at all. But
+I also learnt a lot about the JPA (and I really had thought I'was quite solid already!)
+and about the two most popular providers. I hope it was helpful also for you, even though I might
+have raised more questions than provided answers. At least I tried to keep it reasonably short.
