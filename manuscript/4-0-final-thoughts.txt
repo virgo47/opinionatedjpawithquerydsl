@@ -116,11 +116,11 @@ commercial licences if you want to use it with commercial databases. Both these 
 their popularity -- show that the JPA is far from being the last word in Java persistence landscape
 and also not the only way how to do it.
 
-In any case, I always put Querydsl over JPA. I recently tried JPA 2.0 project without it and the
-experience is terrible if you got used to it before. Also 2.0 version is nothing to be happy about
-and missing ad hoc joins also proved to be incredible pain as some tables were already mapped with
-raw FKs and without ad hoc join you're out of luck, you have to remap it properly with all the
-consequences.
+In any case, I always put Querydsl over JPA. I recently tried *JPA 2.0* project without it and the
+experience was terrible if you had got used to it before. Also *JPA 2.0* version was nothing to be
+happy about and missing ad hoc joins also proved to be incredible pain as some tables were already
+mapped with raw FKs and without ad hoc join you're out of luck -- you have to remap it properly
+with all the consequences.
 
 Finally, about this book. It was much bigger story for me in the end, especially as I discovered
 I'd been working outside of JPA realm for more than a year. That obviously totally ruined all
