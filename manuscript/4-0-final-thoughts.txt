@@ -34,7 +34,7 @@ D> the area of domain modelling in software. Early 2000s were also very rigid wi
 D> "design-by-committee" standard and just a couple of alternatives. Later explosion of approaches
 D> offered many more options like [event sourcing](http://martinfowler.com/eaaDev/EventSourcing.html)
 D> or [CQRS](http://martinfowler.com/bliki/CQRS.html). In some of these architectures ORM may not
-D> provide enough benefits, in others it may be used only for one part of the solution. 
+D> provide enough benefits, in others it may be used only for one part of the solution.
 
 If we take the ORM shortcut for simple case it may still happen that the simple problem gets more
 complex, application grows a lot and we will suddenly have to live with a lot of ORM investment
@@ -75,12 +75,10 @@ What bothers me are some very serious bugs that are completely unattended by pro
 often not even answered. You create a test case for concurrency problem with `CASE` (read "don't
 use CASE at all if the query may be executed in parallel"), issue tracker tells you it sent emails
 to half a dozen people -- and no response at all. To be honest I lost my faith in EclipseLink
-quality quite a lot -- we're simply stuck with it and we are afraid to switch to Hibernate because
-of all the possible bugs we don't know about. Not to mention we would have to rollback our nasty
-*to-one* tricks that are not JPA compliant. Or maybe we can try some other JPA provider -- like
+quality quite a lot. Before Hibernate 5.1 we were stuck with EclipseLink but even with ad hoc join
+support it's still mainly about trading one set of bugs for other (less known) set of bugs.
+Or perhaps we can try some other JPA provider -- like
 DataNucleus that also [allows JOIN to another root entity](https://datanucleus.wordpress.com/2016/04/08/dn-v5-jpql-from-join-to-another-root-entity/).
-Or wait for the next JPA spec version hoping it will get there and then we may try Hibernate after
-all, but that seems like a long stretch, right?
 
 D> I actually tried [DataNucleus](http://www.datanucleus.org/) briefly with demos for this
 D> book and it didn't grow on me at all. Any relevant page (like Maven dependency example or
