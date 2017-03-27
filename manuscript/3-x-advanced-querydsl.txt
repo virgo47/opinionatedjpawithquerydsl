@@ -29,13 +29,14 @@ various `Expression`s. These may be functions (like current date) or various `Pr
 is `Expression` subclass).
 * `JPADeleteClause` and `JPAUpdateClause` (both implementing `DMLClause`) are natural complement
 to our well-known `JPAQuery` when we want to modify the data.
-* `BooleanBuilder` FROM JAVADOC: BooleanBuilder is a cascading builder for Predicate expressions.
-BooleanBuilder is a mutable Expression implementation.
-* `GroupByBuilder` FROM JAVADOC: is a fluent builder for `GroupBy` transformer instances. This class
-is not to be used directly, but via `GroupBy`.
-* `CaseBuilder` and its special case `CaseForEqBuilder` TODO
-* `PathBuilder` and `PathBuilderFactory` TODO, from Javadoc: `PathBuilder` is an extension to
-`EntityPathBase` for dynamic path construction.
+* `BooleanBuilder` mutable predicate expression for building `AND` or `OR` groups from arbitrary
+number of predicates -- discussed later in [Groups of AND/OR predicates](#and-or-groups).
+* `GroupByBuilder` is a fluent builder for `GroupBy` transformer instances. This class
+is not to be used directly, but via `GroupBy` -- see [Result
+transformation](#querydsl-transformations).
+* `CaseBuilder` and its special case `CaseForEqBuilder` -- not covered in this book but quite
+easy to use (see it in [reference documentation](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2105)).
+* `PathBuilder` is an extension to `EntityPathBase` for dynamic path construction.
 
 %% TODO: Are these interesting? MathUtils, NullExpression, ArrayUtils, CollectionUtils, ...?
 
@@ -87,7 +88,7 @@ D> as it does not correctly convert `LocalDate` to SQL date type. It's also quit
 D> `LocalDate.MIN` will be a bit extreme for your database, so you may use other system-wide
 D> constant for default minimum (from) and maximum (to) dates. Finally, it's also possible that
 D> using a function prevents any index on that column to kick in, unless it's a matching function
-D> based index. 
+D> based index.
 
 You can `toString` the query (or just its where part, or any Querydsl expression for that matter),
 this one will produce this output:
@@ -110,7 +111,7 @@ in this area are quite extensive and I know that Querydsl will support you great
     elaborate on an example of such a framework.
 
 
-### Groups of AND/OR predicates
+## Groups of AND/OR predicates {#and-or-groups}
 
 Sometimes the structure of a filter gives us multiple values. If we try to find a dog with any
 of provided names we can use single `in`, but often we have to create a predicate that joins
@@ -236,7 +237,7 @@ I> is not true, however. It expects two parameters for `OR` and `AND` and one fo
 I> normal when you use those in an SQL expression.
 
 
-### Operator precedence and expression serialization
+## Operator precedence and expression serialization
 
 Let's return to the first condition from this chapter as added if both `if`s are executed. The
 result was:
@@ -453,7 +454,7 @@ D> implementing `Path` interface, hence effectively "comparable paths" -- are su
 D> `ComparablePaths`. There are couple of similar naming issues in Querydsl types, I guess it stems
 D> from a typical problem to name things combined with the fact that putting all the concepts in
 D> a single `extends` tree is really hard. Just be warned that just because something is
-D> *comparable* to you it doesn't mean it implements every Querydsl type that says *comparable*. 
+D> *comparable* to you it doesn't mean it implements every Querydsl type that says *comparable*.
 
 Let's go to up to the `ComparableExpressionBase` which adds `asc` and `desc` methods returning
 `OrderSpecifier` we use in the `orderBy` clause. It also contains `coalesce` method for SQL
@@ -581,6 +582,8 @@ Tuple notificationWithState = queryFrom($)
 ~~~
 
 How to coerce with `java.util` types? How to mix `LocalDate` and `LocalDateTime`?
+
+%% mention the lack of temporal arithmetic in JPA standard
 
 
 ## Query object
