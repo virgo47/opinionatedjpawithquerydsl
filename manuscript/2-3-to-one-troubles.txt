@@ -479,7 +479,7 @@ cherry-pick columns you want to work with.
 Mentioning cache, we also have to realize that listing columns will not use an entity cache, but it
 may use query cache. We're getting closer to traditional SQL, just with JPQL shape. If persistence
 context contains unflushed changes and flush mode is set to `COMMIT` query will not see any changes
-either. Typically though, flash mode `AUTO` is used which flushes pending changes before executing
+either. Typically though, flush mode `AUTO` is used which flushes pending changes before executing
 queries.
 
 
