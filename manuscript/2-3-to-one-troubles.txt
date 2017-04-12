@@ -602,7 +602,7 @@ marginal optimization, we're talking about common sense and a significant waste 
 resources.[^read-to-dto]
 
 [^read-to-dto]: See [[HPJP](#bib-hpjp)], introduction of the chapter *Fetching* in part *JPA and
-Hibernate*.
+    Hibernate*.
 
 If we have raw foreign key values mapped in the entity view we can use non-standard approach
 supported by all major JPA providers -- we will discuss this in the next chapter. However, for
