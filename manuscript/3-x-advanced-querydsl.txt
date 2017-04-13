@@ -474,9 +474,38 @@ necessary methods we can use on `BooleanPath` -- and the same applies for `Strin
 a bit sideways, for `NumberPath` and other expressions as well.
 
 
-## Constants
+## Constant expressions
 
-TODO: `Expressions.constant`
+When we start using expressions in a more advanced fashion (e.g. for the sake of some filtering
+framework) we soon get to the need to convert constant (literal) to Querydsl `Expression`.
+Consider a simple predicate like this:
+
+~~~
+QDog.dog.name.eq("Axiom")
+~~~
+
+Fluent API offers two options for the type of the parameter of `eq` (or similar operations).
+`String` is most natural here and API knows it should be string because `QDog.name` is of type
+`StringPath` -- that is `Path<String>` which itself is `Expression<String>`. And
+`Expression<? super String>` (not that String can have subtypes) is the second option we can use
+as the type of the parameter for the `eq` method.
+
+But when we try to use `Expressions` utilities to construct `Operation` we can only use expressions
+and we need to convert any literal to the expression of a respective type -- like this:
+
+~~~
+Expressions.booleanOperation(Ops.EQ,
+  QDog.dog.name, Expressions.constant("Axiom"))
+~~~
+
+Equals being used quite often there is an alternative shortcut as well:
+
+~~~
+ExpressionUtils.eqConst(QDog.dog.name, "Axiom")
+~~~
+
+With this we can construct virtually any expression using Querydsl utility classes in a very
+flexible way.
 
 
 ## Using FUNCTION template {#qdsl-function-template}
