@@ -534,7 +534,7 @@ W> we make this code flexible enough to use the right function when switching da
 
 Now how can we do the same with Querydsl? While it doesn't provide this `FUNCTION` construct
 directly it is very flexible with its templates. We already met `BooleanTemplate` in one of our
-previous experiments, now let's try to get this `DAYNAME` function working.
+previous experiments, now let's try to get this `DAYNAME` function working:
 
 ~~~
 QDog d = QDog.dog;
