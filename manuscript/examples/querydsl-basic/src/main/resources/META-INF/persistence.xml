@@ -12,7 +12,6 @@
     <class>model00.Breed</class>
     <class>model00.Dog</class>
     <class>model00.Person</class>
-    <class>model00.system.Dual</class>
     <class>model00.aliasdemo.EntityA</class>
     <class>model00.aliasdemo.EntityB</class>
     <class>model00.aliasdemo.EntityC</class>

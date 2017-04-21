@@ -396,8 +396,8 @@ List<Tuple> dogsAndNameLengths = new JPAQuery<>(em)
 ~~~
 
 This returns `[[Lassie, 6], [Rex, 3], [Ben, 3], [Mixer (unknown breed), 21]]`. *JPA 2.1* allows
-any function using the `FUNCTION` construct. We will cover this [later](#qdsl-function-template)
-in the [advanced chapter](#ch-advanced-querydsl) on Querydsl.
+the usage of any function using the `FUNCTION` construct. We will cover this
+[later](#qdsl-function-template) in the [advanced chapter](#ch-advanced-querydsl) on Querydsl.
 
 
 ### Aggregate functions {#querydsl-aggregation}

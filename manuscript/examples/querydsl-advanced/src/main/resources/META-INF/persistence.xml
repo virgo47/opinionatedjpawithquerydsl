@@ -8,6 +8,7 @@
   <persistence-unit name="demo-el" transaction-type="RESOURCE_LOCAL">
 
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>modeladv.system.Dual</class>
     <class>modeladv.Dog</class>
     <class>modeladv.Breed</class>
     <class>modeladv.LocalizedBreedName</class>

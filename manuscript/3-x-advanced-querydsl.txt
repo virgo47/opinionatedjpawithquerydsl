@@ -38,8 +38,6 @@ transformation](#querydsl-transformations).
 easy to use (see it in [reference documentation](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e2105)).
 * `PathBuilder` is an extension to `EntityPathBase` for dynamic path construction.
 
-%% TODO: Are these interesting? MathUtils, NullExpression, ArrayUtils, CollectionUtils, ...?
-
 Builders are to be instantiated to offer fluent API where it is not naturally available -- like
 right after opening parenthesis. They don't necessarily follow builder pattern as they often
 implement what they suppose to build and don't require some final *build* method call. Other
@@ -510,7 +508,64 @@ flexible way.
 
 ## Using FUNCTION template {#qdsl-function-template}
 
-TODO
+*JPA 2.1* allows us to call any function beyond the (quite limited) set of those supported by
+JPA specification -- which is a nice extension point. Let's see JPQL how to do that:
+
+~~~
+em.createQuery(
+  "select d.name, function('dayname', d.died) from Dog d ", Object[].class)
+  .getResultList()
+  .stream()
+  .map(Arrays::toString)
+  .forEach(System.out::println);
+~~~
+
+This may print (depending on the actual data):
+
+{lang=text}
+~~~
+[Lassie, Tuesday]
+[Rex, null]
+[Oracle, Wednesday]
+~~~
+
+W> One thing we have to be aware of is that now we depend on a concrete database. It's up to us how
+W> we make this code flexible enough to use the right function when switching database providers.
+
+Now how can we do the same with Querydsl? While it doesn't provide this `FUNCTION` construct
+directly it is very flexible with its templates. We already met `BooleanTemplate` in one of our
+previous experiments, now let's try to get this `DAYNAME` function working.
+
+~~~
+QDog d = QDog.dog;
+List<Tuple> result = new JPAQuery<>(em)
+  .from(d)
+  .select(d.name, dayname(d.died))
+  .fetch();
+System.out.println("result = " + result);
+// ...
+
+private static StringTemplate dayname(Expression<LocalDate> date) {
+  return Expressions.stringTemplate("FUNCTION('dayname', {0})", date);
+}
+~~~
+
+Of course, `Expressions.stringTemplate` can be inlined, but we made it reusable this way. Parameters
+following the template string are either `Object...` vararg or `List<?>`. This is flexible enough
+but raises the question whether we want to be type-safe on the level of our method call or not. If
+I chose `Object` for `date` parameter (or even more universal `Object...`) I could freely call it
+with a `java.util.Date` literal as well (not `LocalDate` as H2 database does not support these
+directly).
+
+Type of the template -- which happens to be some subtype of `TemplateExpression` -- can be anything.
+The most common types of templates are easy to create using specific methods on `Expressions` --
+like `stringTemplate` or `dateTemplate` -- and then there is `template` (or `simpleTemplate`) where
+we can specify the type parameter as a first argument.
+
+Using it in a query itself is then very easy as demonstrated above.[^hibfunerr]
+
+[^hibfunerr]: With Hibernate I found many cases that didn't work. I filed a bug that is mentioned
+    in the [appendix about bugs](#app-bugs).
 
 
 ## Update/delete clauses and exception handling
