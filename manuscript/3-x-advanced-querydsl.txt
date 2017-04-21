@@ -565,7 +565,8 @@ we can specify the type parameter as a first argument.
 Using it in a query itself is then very easy as demonstrated above.[^hibfunerr]
 
 [^hibfunerr]: With Hibernate I found many cases that didn't work. I filed a bug that is mentioned
-    in the [appendix about bugs](#app-bugs).
+    in the [appendix about bugs](#app-bugs). However, we can still use Querydsl templates and
+    Hibernates proprietary way how to call custom functions.
 
 
 ## Update/delete clauses and exception handling
