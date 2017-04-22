@@ -34,6 +34,9 @@
     <!-- Classes should be specified in SE environment, but Hibernate finds them automatically -->
 
     <properties>
+      <!-- In Hibernate you have to register custom functions in custom dialect even in JPA 2.1 -->
+      <property name="hibernate.dialect" value="hibernate.MyH2Dialect"/>
+
       <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:demo-hib"/>
       <property name="javax.persistence.jdbc.user" value="sa"/>
       <property name="javax.persistence.jdbc.password" value=""/>
