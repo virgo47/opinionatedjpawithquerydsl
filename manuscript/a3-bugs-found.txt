@@ -15,8 +15,10 @@ any case these are all bugs that were encountered on a single Java project.
 
 * [JPA 2.1 FUNCTION not supported?](https://hibernate.atlassian.net/browse/HHH-10569) (Hibernate)
 I reported this bug after trying this *JPA 2.1* feature successfully on EclipseLink. Hibernate
-provides custom functions in HQL/JPQL, but this is proprietary. standard *JPA 2.1* way is not
-supported.
+provides custom functions in HQL/JPQL, but this requires additional configuration. Whether this is
+against the standard *JPA 2.1* is questionable (section 4.6.17.3 on custom functions does not say
+"no additional configuration must be required" after all) but Hibernate's grammar has also a bug
+and does not support function calls without arguments.
 * [Wrong SQL generated for delete with where crossing tables](https://hibernate.atlassian.net/browse/HHH-9711)
 (Hibernate) Open in Apr 2015, but older linked bug was open in May 2012. Works on EclipseLink.
 * [Bad SQL result for method countDistinct with join from criteria API](https://bugs.eclipse.org/bugs/show_bug.cgi?id=317777)

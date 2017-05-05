@@ -562,11 +562,16 @@ The most common types of templates are easy to create using specific methods on 
 like `stringTemplate` or `dateTemplate` -- and then there is `template` (or `simpleTemplate`) where
 we can specify the type parameter as a first argument.
 
-Using it in a query itself is then very easy as demonstrated above.[^hibfunerr]
+Using it in a query itself is then very easy as demonstrated above.
 
-[^hibfunerr]: With Hibernate I found many cases that didn't work. I filed a bug that is mentioned
-    in the [appendix about bugs](#app-bugs). However, we can still use Querydsl templates and
-    Hibernates proprietary way how to call custom functions.
+W> [[JPspec](#bib-jpspec)] in its section 4.6.17.3 does not mention anything else beyond using
+W> `FUNCTION(...)` construct, but JPA providers may require some additional work to use this
+W> feature with unknown functions. Hibernate provided a way how to support custom functions but
+W> this required additional changes. Now with *JPA 2.1* you still need to extend the dialect for
+W> a specific database and register your functions there, otherwise Hibernate does not determine
+W> the types (especially in `select` clause). In addition to this Hibernate's grammar has [a
+W> bug](https://hibernate.atlassian.net/browse/HHH-10569) that it does not support functions
+W> without arguments.
 
 
 ## Update/delete clauses and exception handling
