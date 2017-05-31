@@ -576,7 +576,14 @@ W> without arguments.
 
 ## Update/delete clauses and exception handling
 
-Instead of:
+Very often we need some common exceptional handling for insert/update/delete clauses -- especially
+for the cases of constraint violations. We achieve this with some common `BaseDao` (also known as
+[layer supertype](http://martinfowler.com/eaaCatalog/layerSupertype.html)). It's easy to have
+a single common `persist` method, but we often need various specific update/delete clauses (these
+are the parts that bypass the persistence context to a degree).
+
+So instead of a block like this (which would have to be wrapped in a try/catch and the exception
+handling would be repeated over and over):
 
 ~~~
 // delete by holidays by calendar ID
@@ -585,14 +592,17 @@ new JPADeleteClause(entityManager, $)
   .execute();
 ~~~
 
-We use:
+We use this with exception handling hidden inside the call:
 
 ~~~
 execute(deleteFrom($)
   .where($.calendarId.eq(calendar.getId())));
+~~~
 
-// with these methods in common `BaseDao`
-public final JPADeleteClause deleteFrom(EntityPath<?> path) {
+This requires us to introduce the following methods in our common `BaseDao`:
+
+~~~
+protected final JPADeleteClause deleteFrom(EntityPath<?> path) {
   return new JPADeleteClause(entityManager, path);
 }
 
@@ -604,6 +614,10 @@ protected long execute(DMLClause dmlClause) {
   }
 }
 ~~~
+
+This is just an example and we don't have to use common layer supertype, but we definitely want to
+put the common exception handling on a single place. I didn't present `JPAUpdateClause` in this
+section but the need for common exception handling relates to it as well, of course.
 
 
 ## `JPAQueryFactory`
