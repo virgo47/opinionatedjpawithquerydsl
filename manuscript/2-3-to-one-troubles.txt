@@ -670,17 +670,18 @@ W> the schema is not generated but I believe it is a good style to have a canoni
 W> one of the classes.
 
 
-## What to do?
+## Summary
 
-With current state of standard there are following options available:
+With current state of the standard there are following options available:
 
 * Leave *to-one* as `EAGER` and compensate with caches.
 * Configure your ORM to make it `LAZY`. This may be easy, it may even be provided out of the box,
-but it can also change with upgrade. It is simply not guaranteed by the JPA standard.
+but it can also change with an upgrade or depend on the environment (Java SE/EE). It is simply not
+guaranteed by the JPA standard.
 * Select only the columns you're interested in. This is very cumbersome for read/update scenarios
 of a single entity and bearable but still inconvenient for selecting of lists for tables, etc.
-* Use entity views, that is map the same table with multiple classes based on the use case you want
-to cover. This is very practical for read/update scenarios when you can fetch by entity's ID.
+* Use entity views, that is to map the same table with multiple classes based on the use case you
+want to cover. This is very practical for read/update scenarios when you can fetch by entity's ID.
 
 In any of these cases you can also use dual mapping -- mapping both the foreign key value and the
 relationship as an object. When mapping more attributes for a single column we have to designate
