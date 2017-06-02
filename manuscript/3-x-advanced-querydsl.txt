@@ -179,7 +179,7 @@ This utilizes `ExpressionUtils.or` which is extremely useful because -- as you m
 code -- it treats `null` cases for us in a convenient way. This may not be a good way (and you can
 use more strict `Expressions.booleanOperation` then) but here it's exactly what we want.
 
-I> While `ExpressionUtils` is more handy in this case, there are many cases not covered by this
+I> While `ExpressionUtils` is more practical in this case, there are many cases not covered by this
 I> class. When we have two arbitrary number expressions and we want to use some operation with them
 I> we use `Expressions.` For instance, for numbers represented by `BigDecimal`s:
 I>
@@ -622,15 +622,28 @@ section but the need for common exception handling relates to it as well, of cou
 
 ## `JPAQueryFactory`
 
-From reference documentation:
+Querydsl reference documentation, part about [querying JPA](http://www.querydsl.com/static/querydsl/latest/reference/html/ch02.html#d0e230)
+states:
 
-Q> For the examples of this chapter the queries are created via a JPAQueryFactory instance.
-Q> JPAQueryFactory should be the preferred option to obtain JPAQuery instances.
+Q> For the examples of this chapter the queries are created via a `JPAQueryFactory` instance.
+Q> `JPAQueryFactory` should be the preferred option to obtain `JPAQuery` instances.
 
-TODO: mention `selectFrom` and other convenient methods
-`JPAQueryFactory` can be created once in cases where `EntityManager` is injected (typically it
-works as a thread-safe proxy to the actual entity manager). If we obtain `EntityManager`
-programmatically we can still use it but it is short-lived and the benefit is questionable.
+Personally I've been using `JPAQuery` directly for ages and never missed the factory, but there are
+some minor advantages:
+
+* `JPAQueryFactory` can be pre-created once per managed component with thread-safe persistence
+context (`EntityManager` that is). This also means that in non-managed context we perhaps don't
+use it that much.
+* If we need to customize `JPQLTemplates` we don't have to repeat it every time we create the
+query but only when we create the `JPAQueryFactory`.
+* Factory has also handy combo methods like `selectFrom` and other convenient shortcuts.
+
+Other than this it doesn't really matter. Looking at the implementation the factory is so
+lightweight that if you want to use something like `selectFrom` you may create it even if it's
+short-lived. But you're perfectly fine without it as well without missing anything crucial.
+
+In the end we typically implement some "mini-framework" in our data layer superclass anyway. It
+may use the factory or not and still offer any convenient methods for query creation and more. 
 
 
 ## Detached queries {#querydsl-detached-queries}
