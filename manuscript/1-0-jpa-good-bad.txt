@@ -4,9 +4,9 @@
 
 The biggest trouble with JPA (and ORM in general) is that it is hard. Harder than people realize.
 The topic is complex, yet the solutions somehow make it look easier than it really is. JPA is part
-of Java EE and Spring framework supports it very well too, so you simply can't go wrong with it.
-Or can you? Various problems -- especially complexity -- are inherent to ORM solutions in general.
-But there is also no widespread alternative. JDBC? Too low level, although you may use some
+of Java EE and Spring framework supports it very well too, so we simply can't go wrong with it.
+Or can we? Various problems -- especially complexity -- are inherent to ORM solutions in general.
+But there is also no widespread alternative. JDBC? Too low level, although we may use some
 frameworks above it (like Spring's `JdbcTemplate`). Anything else? Not widespread.
 
 JPA/ORM also somehow make people believe they don't need to understand *SQL*. Or *JPQL* (or any

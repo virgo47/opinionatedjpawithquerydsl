@@ -18,44 +18,44 @@ round-trips to the database. But caching has consequences.
 ## Caching control
 
 [[JPspec](#bib-jpspec)] doesn't say much about caching. It says how to configure it -- starting
-with `shared-cache-mode` in your `persistence.xml`. But I'd probably study caching documentation
-of a particular provider, because if you don't care at all, you don't even know whether and how
-you use the cache.
+with `shared-cache-mode` in the `persistence.xml`. But I'd probably study caching documentation
+of a particular provider, because if we don't care at all, we don't even know whether and how
+we use the cache.
 
 Without choosing `shared-cache-mode` it is up to the JPA provider and its defaults. This may render
 any use of `@Cacheable` annotations useless. Currently, Hibernate typically doesn't cache by
 default, while EclipseLink caches everything by default. Being oblivious to the cache (not related
-to *cache-oblivious algorithms* at all) is rather dangerous, especially if your application is
+to *cache-oblivious algorithms* at all) is rather dangerous, especially if our application is
 not the only one running against the same database. In that case setting `shared-cache-mode`
-explicitly to `NONE` is by far the best start. You may revisit your decisions later, but at least
-you know what is happening.
+explicitly to `NONE` is by far the best start. We may revisit our decisions later, but at least
+we know what is happening.
 
 T> ### Database caches too
 T>
-T> Caching happens also directly on the database level. You still incur a network round-trip but it
-T> does not necessarily load data from a disk (that would be really slow) and you don't have this
+T> Caching happens also directly on the database level. It still incurs a network round-trip but it
+T> does not necessarily load data from disk (that would be really slow) and we don't have this
 T> entity-query duality -- although we don't know how complex the database cache is. In any case,
 T> it is used whether we use second-level cache or not and, luckily, it is mostly totally
 T> transparent for a programmer or user.
 T>
-T> If you don't want to dig deep you may disable ORM caches knowing that something still probably
-T> caches for you. Often you can see that the first request for a page of something is slow
-T> but the second requests is much faster -- even if both go to the database. Sure you don't go
-T> as fast as you can, but you avoided a lot of problems, like stale data on the screen when you
-T> change them in the database directly or distributed caches when you scale your application
-T> while still using a single database server (until sufficient).
+T> If we don't want to dig deep we may disable ORM caches knowing that something still probably
+T> caches for us. Often we can see that the first request for a page of something is slow
+T> but the second requests is much faster -- even if both go to the database. Sure we don't go
+T> as fast as we can, but we avoided a lot of problems, like stale data on the screen when we
+T> change them in the database directly or the need for a distributed cache when we scale the
+T> application while still using a single database server (until sufficient).
 
-Probably the most important question to consider is: Is your application the sole user of
-a particular database? Is it running in a single process? If yes, you may safely use the cache. But
+Probably the most important question to consider is: Is our application the sole user of
+a particular database? Is it running in a single process? If yes, we may safely use the cache. But
 I'd not "just use the defaults" of the JPA provider -- which may be no cache as well. It's
 not a good idea to use caching without any thought at all. I prefer not to use it until I feel the
-need. When you start using the cache and tuning it be prepared for a walk that may be not as easy
-as it seems.
+need. When we start using the cache and tuning it we must be prepared for a walk that may be not
+as easy as it seems.
 
-Entity cache returning you entities by ID really quickly sounds like a good idea because
+Entity cache returning the entities by ID really quickly sounds like a good idea because
 it makes the problem of eager-loads of *to-one* relationships less serious. E.g. when we load a dog
 we may get its breed quickly from the cache. It doesn't fix the problem though as all the
-additional entities are part of your current persistence context whether you want them or not.
+additional entities are part of the current persistence context whether we want them or not.
 E.g. we want to update a single attribute of a dog and we are not interested in its breed. We
 already mentioned that units of work bigger than necessary are not for free.
 
@@ -63,13 +63,13 @@ T> ### When JPA is not the only one caching
 T>
 T> Imagine you're caching returned JPA entities with *JSR 107*, e.g. using Spring implementation of
 T> the JSR. It can be some data access method that returns single entity for a filter -- filter
-T> is the key to the cache. There is one serious problem with this approach. Let's ignore that
+T> is the key for the cache. There is one serious problem with this approach. Let's ignore that
 T> we may have many keys that return the same entity, but in the cache these may be stored as
-T> many instances (I'm not sure, but I doubt that identity is considered to de-duplicate values).
+T> many instances (recreated from its dehydrated/serialized form in the 2nd-level cache).
 T> The real problem is that when the cache misses it reaches for JPA to get the entity, stores
 T> it and gives it to you -- attached. But when the cache hits it returns detached entity. This
 T> is highly non-deterministic situation that may lead to exceptions in better case or to
-T> unexpected changes of entities in worse one, depending on the code that uses such a method.
+T> unexpected changes of entities in a worse one, depending on the code that uses such a method.
 T>
 T> All in all -- don't cache managed stuff with technology that doesn't understand it.
 
@@ -83,7 +83,7 @@ is structured (I'm talking from my own experience too, after all). This depends 
 but typically there is an *entity cache* and a *query cache*.
 
 Entity cache helps with performance of `EntityManager.find`, or generally with loading by entity's
-`@Id` attribute. But this will not help you if you accidentally obfuscate what you want with a
+`@Id` attribute. But this will not help us if we accidentally obfuscate what we want with a
 query, that would otherwise return the same. The provider has no way to know what entity (with what
 ID) will be loaded just looking at arbitrary where conditions. This is what query cache is for.
 Bulk update and deletes using JPQL go around either of these caches and the safest way how to
@@ -97,8 +97,8 @@ D> how many rows and columns we fetch, etc. In update-heave applications query c
 D> worse the overall performance. For more, see also his presentation [High-performance
 D> JDBC](https://www.youtube.com/watch?v=u25Xc88d_iE).
 
-If you only work with whole entities all the time *and* nothing else accesses the database you
-can be pretty sure you always get the right result from the entity cache. You may wonder how this
+If we only work with whole entities all the time *and* nothing else accesses the database we
+can be pretty sure we always get the right result from the entity cache. You may wonder how this
 cache behaves in concurrent environment (like any EE/Spring application inherently is). If you
 imagine it as a `Map`, even with synchronized access, you may feel the horror of getting the same
 entity instance (`Dog` with the same ID) for two concurrent persistence contexts (like concurrent
@@ -113,10 +113,10 @@ the cache in some "dehydrated" form.[^ecacheorm]
 
 Previously we ignored the case when we cache some entities under multiple different keys, not
 necessarily retrieved by the same method. Imagine a component that returns some classifiers
-by various attributes (ID, name, code, whatnot) -- this is pretty realistic scenario. You code
+by various attributes (ID, name, code, whatnot) -- this is pretty realistic scenario. We code
 it as a managed component with declarative cache. There are separate methods to obtain the
-classifier by specific attributes. If you retrieve the same classifier by three different
-attributes you'll populate three different caches with -- essentially the same -- entity stored
+classifier by specific attributes. If we retrieve the same classifier by three different
+attributes we'll populate three different caches with -- essentially the same -- entity stored
 under different key (attribute value) in each of these caches.
 
 Even if we ignore that the entities sometimes participate in the persistence context and
@@ -126,7 +126,7 @@ but let's say these are only for reading and we may not care. Imagine further th
 on these entities -- like "give me a list of classifiers with name starting with BA". Now we have
 even more variability in cache keys -- any distinct filter is the key -- and probably many more
 repeated entities in the results. But these are likely distinct objects even for the same
-logical entities. This may either explode your cache, or cause frequent evictions rendering your
+logical entities. This may either explode our cache, or cause frequent evictions rendering our
 cache useless, probably utilizing more CPU in the process.
 
 If the amount of underlying data is big we may have no other chance, but in case of various
@@ -136,7 +136,7 @@ a day -- not to mention the traffic on our site was in order of thousands of req
 an unnecessarily rich relational model and this part of system would be better represented in some
 kind of document/NoSQL store. We didn't use the relations in that data that much -- and they
 actually prevented some needed data fixes because of overly restricted cobweb of foreign keys.
-But this was the design we had and we needed a fix. "Can't you just cache it somehow?" The data
+But this was the design we had and we needed a fix. "Can't we just cache it somehow?" The data
 were localization keys -- not for the application itself but for some form templates -- so it was
 part of the data model. We joined these keys based on the user's language for each row of possibly
 multi-row template (often with hundreds of rows).
@@ -148,25 +148,25 @@ it. The component simply read the whole table and created map of maps based on t
 IDs. DB guys were happy. We stopped executing some queries altogether and removed unnecessary
 joins from many others.
 
-There are other situations when you may seriously consider just coding your own cache explicitly
+There are other situations when we may seriously consider just coding our own cache explicitly
 and not rely on declarative one like *JSR 107*. Declarative cache doesn't mean *unattended* anyway.
-You should limit it, set policies, etc. It can be extremely handy when you can get results cheap
+We should limit it, set policies, etc. It can be extremely handy when we can get results cheap
 and this typically happens when limited subset of possibly big chunk of data is used repeatedly
 using the same keys.
 
 Programmatic (explicit) cache can shine in other areas:
 
-* When you work with limited set of data and you need it often -- and you want to pre-cache it.
-This may be reasonable scenario also for declarative cache if you can pre-fill it somehow and
-there is a single way how you obtain the data.
-* If you require the same data based on various attributes (different views). You can use
-multiple maps that point to the same actual instances. This can work both for cases when you
-cache as you go (when misses are possible) and when you preload the whole set (ideal case when
+* When we work with a limited set of data and we need it often -- and we want to pre-cache it.
+This may be reasonable scenario also for declarative cache if we can pre-fill it somehow and
+there is a single way how we obtain the data.
+* If we require the same data based on various attributes (different views). We can use
+multiple maps that point to the same actual instances. This can work both for cases when we
+cache as we go (when misses are possible) and when we preload the whole set (ideal case when
 not too big).
 * The cache can cooperate with any administrative features that modify the underlying data.
 Because we code it with full knowledge of the logic behind the data we can selectively refresh
-update the cache in a smart way. In declarative cache you often have to evict it completely --
-although this can still be good simple strategy even for programmatic caches, especially
+update the cache in a smart way. In declarative cache we often have to evict it completely --
+although this can still be a good simple strategy even for programmatic caches, especially
 when the refresh requires a single select.
 * Full preload requires more memory up-front and slows down the startup of the application (can
 be done lazily on-demand) but deals with the DB once and for all. Declarative cache executes
@@ -180,31 +180,31 @@ implement a component utilizing logic behind the data better -- and whether it's
 
 ## Conclusion
 
-Caching can help tremendously with the performance of your application -- but it can also hurt
+Caching can help tremendously with the performance of our applications -- but it can also hurt
 if done badly.
-You should be very aware of your cache setup. You should be very clear how you want to do it.
-In the code it may look automagical, but it must be explicit somewhere -- your strategy must be
-well known to all the people who may encounter it in any way (even without knowing).
+We should be very aware of our cache setup. We should be very clear how we want to do it.
+In the code it may look automagical, but it must be explicit somewhere -- our strategy must be
+well known to all the developers who may encounter it in any way (even without knowing).
 
-You always trade something for something -- with caching it's typically memory for speed.[^memcpu]
-Memory can slow you down too, but in general we have plenty of it nowadays. While you are in a
-single process a JPA provider can typically manage the data consistency. If you have a distributed
-architecture you enter a different world altogether and I'd think twice before going there. You
-must feel the need for it and you must measure what you got -- because you'll definitely get
-complexity and you have to think about consistency much more.
+We always trade something for something -- with caching it's typically memory for speed.[^memcpu]
+Memory can slow uw down too, but in general we have plenty of it nowadays. While we are in a
+single process a JPA provider can typically manage the data consistency. If we have a distributed
+architecture we enter a different world altogether and I'd think twice before going there. We
+must feel the need for it and we must measure what we get -- because we'll definitely get
+the complexity and we have to think about consistency much more.
 
 [^memcpu]: Books on Java performance often mention that memory versus CPU is not such a clear cut
-    in JVM, as memory may affect garbage collector in such a way that you actually trade CPU for
+    in JVM, as memory may affect garbage collector in such a way that we actually trade CPU for
     memory *and CPU*. Another reason to be really aware of what we do -- we should not rely on
     automagic and we should always measure the impact as well. 
 
 Don't mix freely caching on multiple levels. Database cache is mostly transparent to us, but
-when you mix two declarative caches you often make matters worse. Especially when you cache
+when we mix two declarative caches we often make matters worse. Especially when we cache
 entities with technology that is not aware of their lifecycle within the persistence context.
 
-Finally, depending on what your keys for caching are you may waste a lot of memory. Entity ID
-(like in second level cache) is natural and good key. But if you key on many various selectors that
-may return the same entities (single or even whole collections) you may store many instances for
+Finally, depending on what our keys for caching are we may waste a lot of memory. Entity ID
+(like in second level cache) is natural and good key. But if we key on many various selectors that
+may return the same entities (single or even whole collections) we may store many instances for
 the same entity in the cache. That wastes memory. Knowing more about the logic between the keys
-and values you may get better results with your implementation of some explicit cache on
+and values we may get better results with our own implementation of some explicit cache on
 an application level. It may require more effort but the pay-off may be significant.

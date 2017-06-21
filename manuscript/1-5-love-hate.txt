@@ -180,7 +180,8 @@ avoid using `EntityManager`, how could I?
 ## And there is more
 
 This list of potential surprises is far from complete, but for the rest of the book we will narrow
-our focus to relationships. We will review their mapping and how it affects querying.
+our focus to relationships. We will review their mapping and how it affects querying and generated
+SQL queries.
 
 I'd like to mention one more problem, kind of natural outcome of real-life software development.
 JPA is implemented by couple of projects and these projects have bugs. If the bug is generally

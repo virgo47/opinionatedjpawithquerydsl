@@ -8,23 +8,23 @@ compared with SQL.
 ## Compared to ORM providers {#missing-from-orm}
 
 Couple of years back this section would be a long one -- but the JPA narrowed the gap with 2.0
-and virtually closed it with 2.1. There are still things that may be missing when you compare it
+and virtually closed it with 2.1. There are still things that may be missing when we compare it
 with ORM providers. The list of various ORM features not included in the JPA is probably long.
 However, the right question is how much a feature is really missed, how often we use it and how
 serious impact this omission has.
 
-In most cases you can get out of the comfortable "standard" zone and use capabilities of a
-particular ORM without affecting parts that can be pure JPA. Maybe you add some provider-specific
-annotations in your mapping -- so be it, let's be pragmatic.
+In most cases we can get out of the comfortable "standard" zone and use capabilities of a
+particular ORM without affecting parts that can be pure JPA. Maybe we add some provider-specific
+annotations in our mapping -- so be it, let's be pragmatic.
 
 One particular feature I once missed a lot is something that allows me to go through a result
 set just like in JDBC, but using entities. These don't have to be put into the persistence context
 as I can process them as they come. Actually -- they *must not* be put there, because they just
 bloat the heap without any real use. It's like streaming the result set. This may be extremely
-handy when you produce some very long exports that are streamed straight to the client browser
+handy when we produce some very long exports that are streamed straight to the client browser
 or a file. Hibernate offers `ScrollableResults`, I personally used JDBC with Spring `JdbcTemplate`
 instead and solved the problem without JPA altogether -- obviously, I had to do the mapping myself,
-while Hibernate can do it for you. Even so, as mentioned in this
+while Hibernate can do it for us. Even so, as mentioned in this
 [StackOverflow answer](http://stackoverflow.com/q/2826319/658826) this may still cause
 `OutOfMemoryError` or similar memory related issue, this time not on JPA/ORM level, but because
 of silly JDBC driver (or even because of database limitations, but that's rare).
@@ -47,41 +47,41 @@ this topic and how to do it with EclipseLink and Hibernate (5.1.0 and higher) in
 
 JPQL gets more and more powerful with every new
 specification version, but obviously it cannot match SQL with proprietary features. Being "object
-query language" it does have its expressiveness on its own though -- for instance you may simply
+query language" it does have its expressiveness on its own though -- for instance we may simply
 say "delete all the dogs where breed name is <this and this>" without explicitly using joins
 (although this relies on *to-one* mapping we will try to get rid of). When object relations are
 mapped properly, joins are implied using the mapping and JPA provider will take care of generating
-the proper SQL for us. You may also ask for dog owners with their dogs and ORM can load it in a
-single query and provide it to you as list of owners, each with their list of dogs -- this is the
+the proper SQL for us. We may also ask for dog owners with their dogs and ORM can load it in a
+single query and provide it as a list of owners, each with their list of dogs -- this is the
 difference between relational and object view.
 
 But there are some very useful constructs that are clearly missing. I personally never needed
 [right outer join](https://en.wikipedia.org/wiki/Join_%28SQL%29#Right_outer_join), so far I was
 always able to choose the right entity to start with and then using left outer joins, but this one
-may hit you sometimes. There is also no full outer join, but this relates to the fact you're
-working with objects, not with rows -- although technically you may work with tuples (and with
+may hit us sometimes. There is also no full outer join, but this relates to the fact we're
+working with objects, not with rows -- although technically we may work with tuples (and with
 relations in RDBMS meaning). This dumbs down the JPA capabilities a bit, but in many cases it may
-be a good way and actually simplify things, provided you understand SQL -- which you should.
+be a good way and actually simplify things, provided we understand SQL -- which we should.
 
 When compared to SQL, probably the most striking JPQL limitations are related to subqueries. Some
-scenarios can be replaced by JOINs, but some can't. For instance, you cannot put subqueries into
-a SELECT clause -- this would allow for aggregated results per row. You cannot put them into a FROM
+scenarios can be replaced by JOINs, but some can't. For instance, we cannot put subqueries into
+a SELECT clause -- this would allow for aggregated results per row. We cannot put them into a FROM
 clause and use the select result as any other table -- or, in relational database sense, as a
 [relation](https://en.wikipedia.org/wiki/Relation_%28database%29)). This would
-allow you, among other things, to count rows for results that current JPA does not support.[^cntemb]
+allow us, among other things, to count rows for results that current JPA does not support.[^cntemb]
 
 [^cntemb]: My favourite is [JPspec](#bib-jpspec), section 4.8.5, mentioning that *"use of DISTINCT
     with COUNT is not supported for arguments of embeddable types or map entry types"*. In general,
-    using embeddables may limit your options, which is a pity and may force design decisions not to
-    use them where you otherwise would.
+    using embeddables may limit our options, which is a pity and may force design decisions not to
+    use them where we otherwise would.
 
 JPA offers a palette of favourite functions, but of course it does not provide all possible
 functions.[^datearit]
-Before *JPA 2.1* you'd have to use ORM provider custom functionality to overcome this, or
-fallback to native SQL. Just because you are consciously sacrificing database portability it does
-not mean you don't want to use JPQL. It provides you with `FUNCTION` construct where the name
+Before *JPA 2.1* we'd have to use ORM provider custom functionality to overcome this, or
+fallback to native SQL. Just because we are consciously sacrificing database portability it does
+not mean we don't want to use JPQL. It provides us with `FUNCTION` construct where the name
 of the called function is the first argument with other arguments following behind. Easy to use
-and very flexible -- this effectively closes the gap for functions you can use.
+and very flexible -- this effectively closes the gap for functions we can use.
 
 [^datearit]: One especially big pain is no support for date arithmetic like `GETDATE() + 1`.
 
@@ -98,7 +98,7 @@ over collections is undefined"*).[^paging]
 
 What I dearly miss in JPA is better control over fetching of *to-one* relations. Current solution
 is trying to be transparent both in terms of object-relational mapping and Java language features,
-but it may kill your performance or require caching, potentially a lot of it. While *to-many*
+but it may kill our performance or require caching, potentially a lot of it. While *to-many*
 relations can be loaded lazily with special collection implementation enabling it, *to-one*
 cannot work like this without bytecode modification. I believe though, that developers should
 be allowed to decide that this and this *to-one* relationship will not be loaded and only detached

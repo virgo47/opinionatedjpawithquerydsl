@@ -190,7 +190,7 @@ are presented in the book. Because I present various JPA models and setups examp
 into many small projects, each with its own Maven `pom.xml`. Entity classes and other "production"
 code is in the `src/main/java` (or `resources`) while demo code is in the `src/test/java`. If you
 want to run it in IDE, I recommend those that can create multiple run configurations and are able
-to run normal classes (with `main`) from test sources as well -- I suspect some prominent IDEs
+to run normal classes (with `main`) from the test sources as well -- I suspect some prominent IDEs
 don't support this. But you can always run the demo code using Maven like this (from the project
 directory, e.g. `examples/querydsl-basic`:
 

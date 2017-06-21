@@ -1,5 +1,5 @@
 0-0-preface.txt
-0-1-acknowledgement.txt
+%% 0-1-acknowledgement.txt
 
 1-0-jpa-good-bad.txt
 1-1-good-parts.txt
