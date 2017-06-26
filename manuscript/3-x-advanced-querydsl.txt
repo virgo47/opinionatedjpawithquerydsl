@@ -653,7 +653,6 @@ natural to put queries into a constant a reuse them later -- something resemblin
 facility of JPA. This is possible using so called "detached queries" -- simply create a query
 without entity manager and later clone it with entity manager provided:
 
-{title="Querydsl, detached query", lang=java}
 ~~~
 private static QDog DOG_ALIAS = new QDog("d1");
 private static Param<String> DOG_NAME_PREFIX =
@@ -669,18 +668,66 @@ List<Dog> dogs = DOG_QUERY.clone(em)
   .fetch();
 ~~~
 
-The benefit is questionable though. You need to name the query well enough so it expresses what
-it does while seeing the query sometimes says it better. You have to walk the distance to introduce
-parameters explicitly -- you don't want it constant. And I doubt there is any performance benefit
-as we clone the query. I'm sure there are legitimate cases when to use
-this feature, but I personally use it only in query objects wrapping complicated query where I have
-a lot of aliases around already -- and even then mostly without the where part which I rather add
-dynamically later.
+The benefit is questionable though. We need to name the query well enough so it expresses what
+it does while seeing the query sometimes says it better. We have to walk the distance to introduce
+parameter constants and use them explicitly after the `clone`. There is also probably hardly-if-any
+performance benefit because cloning and creating a query from the scratch are essentially the same
+activity.
 
-%% TODO: revisit clone and other methods in multi-threaded environments, see the answer:
-%% https://groups.google.com/forum/#!topic/querydsl/OnrWCf6w2V0
-%% detached queries also mean we can't use factory
-%% in overall I'd try to avoid it again
+Perhaps there are legitimate cases when to use this feature, but I personally used it only in query
+objects wrapping complicated query where I have a lot of aliases around already -- and even then
+mostly without the where part which I rather add dynamically later. But the same can be achieved
+by a method call -- preferably placed in a designated query object:
+
+~~~
+public class DogQuery {
+  private static QDog DOG_ALIAS = new QDog("d1");
+
+  private final EntityManager em;
+
+  public DogQuery(EntityManager em) {
+    this.em = em;
+  }
+
+  public JPAQuery<Dog> query() {
+    return new JPAQuery<>(em)
+      .select(DOG_ALIAS)
+      .from(DOG_ALIAS);
+  }
+
+  public JPAQuery<Dog> nameStartsWith(String namePrefix) {
+    return query()
+      .where(DOG_ALIAS.name.startsWith(namePrefix));
+  }
+}
+~~~
+
+First method `query` does not have to be exposed but often it comes handy, next one produces the
+query from the previous example. To use it we need `EntityManager`, just like we needed it in the
+`clone` example above.
+
+~~~
+List<Dog> dogs = new DogQuery(em)
+  .nameStartsWith("Re")
+  .fetch();
+~~~
+
+We can use builder pattern if we want to, many options open up when the query has a place to live.
+
+I> On one occasion I asked about [clone's thread-safety](https://groups.google.com/forum/#!topic/querydsl/OnrWCf6w2V0).
+I> It was not designed to be thread-safe. This may mean couple of things. It's not safe to start
+I> cloning and change the query (which is not our case) or it's not safe to call two `clone` at
+I> the same time (which is our case). In any case, while detached queries look interesting there
+I> is no need to use them to represent "named queries". Query object or some object builder is
+I> superior. Also, without `EntityManager` we can't use `JPAQueryFactory` but with query object
+I> we can because we use it "just-in-time" when we provide `EntityManager` as well.
+I>
+I> There is one case when detached query may be handy though. It is dedicated "template" we can use
+I> for metadata introspection in applications that need it, e.g. when you have a universal table
+I> filtering/ordering framework working with any query. But even this can be done with some dummy
+I> query created with query object. In both cases we don't actually fetch anything from the
+I> database, we just examine the query. Framework working with metadata is in any case beyond the
+I> scope of this book, or at least this edition of it.
 
 
 ## Working with dates and `java.time` API
@@ -701,6 +748,9 @@ Tuple notificationWithState = queryFrom($)
 How to coerce with `java.util` types? How to mix `LocalDate` and `LocalDateTime`?
 
 %% mention the lack of temporal arithmetic in JPA standard
+
+%% [EclipseLink bug](https://bugs.eclipse.org/bugs/show_bug.cgi?id=511280) coalesce with converted
+%% dates
 
 
 ## Query object
