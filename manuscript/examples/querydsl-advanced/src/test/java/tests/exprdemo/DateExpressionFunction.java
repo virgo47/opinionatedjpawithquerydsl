@@ -25,24 +25,28 @@ public class DateExpressionFunction {
       EntityManager em = emf.createEntityManager();
       prepareData(em);
 
-      QDog d = QDog.dog;
-      List<Dog> liveDogs = new JPAQuery<>(em)
-        .select(d)
-        .from(d)
-        // client-side option
-//        .where(d.birthdate.before(LocalDate.now()))
-//        .where(d.died.after(LocalDate.now()))
-
-        // using function on the database side
-        .where(d.birthdate.before(DateExpression.currentDate(LocalDate.class))
-          .and(d.died.after((DateExpression.currentDate(LocalDate.class)))
-            .or(d.died.isNull())))
-        .fetch();
-
-      System.out.println("\nLIVE DOGS = " + liveDogs);
+      parametrizedDateExpression(em);
     } finally {
       emf.close();
     }
+  }
+
+  private static void parametrizedDateExpression(EntityManager em) {
+    QDog d = QDog.dog;
+    List<Dog> liveDogs = new JPAQuery<>(em)
+      .select(d)
+      .from(d)
+      // client-side option
+//        .where(d.birthdate.before(LocalDate.now()))
+//        .where(d.died.after(LocalDate.now()).or(d.died.isNull()))
+
+      // using function on the database side
+      .where(d.birthdate.before(DateExpression.currentDate(LocalDate.class))
+        .and(d.died.after(DateExpression.currentDate(LocalDate.class))
+          .or(d.died.isNull())))
+      .fetch();
+
+    System.out.println("\nLIVE DOGS = " + liveDogs);
   }
 
   private static void prepareData(EntityManager em) {

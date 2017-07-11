@@ -732,35 +732,43 @@ I> scope of this book, or at least this edition of it.
 
 ## Working with dates and `java.time` API
 
-TODO
+Because Querydsl 4.x still supports Java before version 8 it does not have native support for
+new date/time types. But with JPA we can use any other type that can capture date and time
+information, so technically Querydsl should be prepared for any class to represent date/time.
+This is achieved by `DateTimeExpression` being parametrized type which covers our needs as long
+as the class we use implements `Comparable`.
 
-This is how to convert return of the `DateTimeExpression` function to specific date/time type:
+Then there are static methods on the `DateTimeExpression` representing SQL functions like
+`current_date`. These by default return expression parametrized to `Date`, but we can specific
+the requested date/time type using additional `Class` parameter:
 
 ~~~
-Tuple notificationWithState = queryFrom($)
-  .innerJoin(n).on(n.id.eq($.notificationId))
-  .where($.mailStatus.eq(GuiUserNotificationSendStatus.TO_SEND)
-    .and(n.validFrom.lt(DateTimeExpression.currentTimestamp(LocalDateTime.class))))
-  .orderBy($.id.desc())
-  .singleResult($, n);
+QDog d = QDog.dog;
+List<Dog> liveDogs = new JPAQuery<>(em)
+  .select(d)
+  .from(d)
+// client-side option - no problem there with generics
+//.where(d.birthdate.before(LocalDate.now()))
+//.where(d.died.after(LocalDate.now()).or(d.died.isNull()))
+
+  // using function on the database side
+  .where(d.birthdate.before(DateExpression.currentDate(LocalDate.class))
+    .and(d.died.after(DateExpression.currentDate(LocalDate.class))
+      .or(d.died.isNull())))
+  .fetch();
 ~~~
 
-How to coerce with `java.util` types? How to mix `LocalDate` and `LocalDateTime`?
+Alas, even with Querydsl having us covered there can still be striking problems with the support
+of Java 8 types (or other converted types) in concrete JPA implementations. For instance,
+EclipseLink [ignores date/time converters in `coalesce`](https://bugs.eclipse.org/bugs/show_bug.cgi?id=511280).
 
-%% mention the lack of temporal arithmetic in JPA standard
-
-%% [EclipseLink bug](https://bugs.eclipse.org/bugs/show_bug.cgi?id=511280) coalesce with converted
-%% dates
-
-
-## Query object
-
-TODO: aliases as fields, mention metadata possibilities, alias thread-safety
-TODO: check if PathBuilder is better in getting fields than reflection on Qclass
+To mix dates with timestamps we might need to use custom functions described earlier. In general
+JPA does not support much of temporal arithmetic.
 
 
 ## Result transformation {#querydsl-transformations}
 
+%% TODO
 Example sources ResultTransformation.java
 TODO: ResultTransformer and GroupBy; how does QMap relate? (it goes into select part)
 
