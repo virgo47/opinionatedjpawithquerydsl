@@ -187,7 +187,7 @@ In the code it may look automagical, but it must be explicit somewhere -- our st
 well known to all the developers who may encounter it in any way (even without knowing).
 
 We always trade something for something -- with caching it's typically memory for speed.[^memcpu]
-Memory can slow uw down too, but in general we have plenty of it nowadays. While we are in a
+Memory can slow us down too, but in general we have plenty of it nowadays. While we are in a
 single process a JPA provider can typically manage the data consistency. If we have a distributed
 architecture we enter a different world altogether and I'd think twice before going there. We
 must feel the need for it and we must measure what we get -- because we'll definitely get
@@ -196,7 +196,7 @@ the complexity and we have to think about consistency much more.
 [^memcpu]: Books on Java performance often mention that memory versus CPU is not such a clear cut
     in JVM, as memory may affect garbage collector in such a way that we actually trade CPU for
     memory *and CPU*. Another reason to be really aware of what we do -- we should not rely on
-    automagic and we should always measure the impact as well. 
+    automagic and we should always measure the impact as well.
 
 Don't mix freely caching on multiple levels. Database cache is mostly transparent to us, but
 when we mix two declarative caches we often make matters worse. Especially when we cache
@@ -208,3 +208,12 @@ may return the same entities (single or even whole collections) we may store man
 the same entity in the cache. That wastes memory. Knowing more about the logic between the keys
 and values we may get better results with our own implementation of some explicit cache on
 an application level. It may require more effort but the pay-off may be significant.
+
+Shortly:
+
+* Don't cache mindlessly. Design what to cache (or not) and size the cache regions properly.
+* Realize that with caching we trade CPU for memory -- or rather for memory and hopefully less CPU
+required by GC. Check the heap usage after changes.
+* Beware of caching on multiple levels, especially combining JPA and non-JPA caches.
+* Consider implementing your own caching for selected sub-domains. Various static/configuration
+data are ideal candidates.
