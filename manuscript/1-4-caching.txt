@@ -214,6 +214,7 @@ Shortly:
 * Don't cache mindlessly. Design what to cache (or not) and size the cache regions properly.
 * Realize that with caching we trade CPU for memory -- or rather for memory and hopefully less CPU
 required by GC. Check the heap usage after changes.
-* Beware of caching on multiple levels, especially combining JPA and non-JPA caches.
-* Consider implementing your own caching for selected sub-domains. Various static/configuration
-data are ideal candidates.
+* Beware of caching on multiple levels, especially combining JPA and non-JPA caches inside JVM.
+* Consider implementing your own caching for selected sub-domains. The same data accessed by
+various criteria may be fit for this.
+* Measure the impact of any change related to caching.
