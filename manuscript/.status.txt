@@ -30,7 +30,7 @@ To actually finish something, I want to do this in the 1st edition:
 * Common Problems
 %%    * Object identity, easy problem, recommended always the same way
 %%        * Composite `@Id` or `@IdClass`?
-%%        * Equals object or id in queries? TODO - does it matter? tests with popular ORMs
+%%        * Equals object or id in queries? Does it matter? Tests with popular ORMs
 %%        * equals/hashCode best practices, why isAssignableFrom? can it collide in hierarchies? (should not)
 %%	@Override
 %%	public final int hashCode() {

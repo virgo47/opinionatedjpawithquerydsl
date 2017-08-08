@@ -590,7 +590,11 @@ Map<OwnerRaw, List<DogRaw>> ownerDogs = new JPAQuery<>(em)
 System.out.println("ownerDogs = " + ownerDogs);
 ~~~
 
-Using the same order like in the first query is essential, additional order are allowed. Important
+We will talk more about `transform` method later in the chapter on advanced Querydsl, and its
+section [result transformation](#querydsl-transformations). Obviously it is the trick that allows
+us to return `Map` instead of `List`.
+
+Using the same order like in the first query is essential, additional orders are allowed. Important
 question is whether you need to join any *to-many* relationship for the first query as well. If we
 need to (e.g. for `WHERE` conditions) we have to use `DISTINCT` which means we also have to bring
 expression from `ORDER BY` into the `SELECT` clause. This is mandated by SQL, because `DISTINCT`

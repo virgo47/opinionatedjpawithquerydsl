@@ -768,19 +768,56 @@ JPA does not support much of temporal arithmetic.
 
 ## Result transformation {#querydsl-transformations}
 
-%% TODO
-Example sources ResultTransformation.java
-TODO: ResultTransformer and GroupBy; how does QMap relate? (it goes into select part)
+We already know how to select an entity or a single attribute (column) or tuples of entities and/or
+attributes (columns). We also saw some `groupBy` examples previously. But very often we want to
+get a `Map` instead of `List`. For instance, instance of this:
+
+~~~
+List<Tuple> tuple = new JPAQuery<>(em)
+  .select(QDog.dog.name, QDog.dog.id.count())
+  .from(QDog.dog)
+  .groupBy(QDog.dog.name)
+  .fetch();
+System.out.println("name and count (as list, not map) = " + tuple);
+~~~
+
+We would prefer this:
+
+~~~
+Map<String, Long> countByName = new JPAQuery<>(em)
+  .from(QDog.dog)
+  .groupBy(QDog.dog.name)
+  .transform(groupBy(QDog.dog.name).as(QDog.dog.id.count()));
+System.out.println("countByName = " + countByName);
+~~~
+
+Couple of things are clear from the code:
+
+* We don't need `select` as it is implied by `transform` arguments and called internally.
+* There is also no need to call explicit `fetch` -- `transform` is a terminal operation and calls
+it internally.
 
 Method `groupBy` is statically imported from provided `GroupBy` class. You can return list of
-multiple results in `as` part, or you can use aggregation functions like `sum`, `avg`, etc.
-You may notice that you don't need `select` as the arguments of `transform` fully replace it.
-
-Transform does not affect generated query, it only post-process its results.
+multiple results in `as` part and you can use aggregation functions like `sum`, `avg`, etc.
 
 I> If you want to aggregate some columns you still need to use `groupBy(Expression...)` as
 I> explained in the section about [aggregate functions](#querydsl-aggregation).
 I> Aggregating the results and transforming them are two separate things.
+
+Transform itself does not affect generated query, it only post-process its results. It is in no way
+tied to `groupBy` call, although they often come together. Very often it is used to get a map of
+something unique to the values. We can, for instance, map IDs to their entities (`Map` of entities
+with ID as a key) or IDs to a particular attribute:
+
+~~~
+Map<Integer, Dog> breedsById = new JPAQuery<>(em)
+  .from(QDog.dog)
+  .transform(groupBy(QDog.dog.id).as(QDog.dog));
+System.out.println("breedsById = " + breedsById);
+~~~
+
+I personally miss simple `list` and `map` terminal operations from Querydsl 3 which leads us to
+a final part of this chapter.
 
 
 ## Note about Querydsl 3 versus 4 {#querydsl3vs4}

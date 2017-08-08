@@ -48,6 +48,10 @@ benefits. Personally, I doubt this is a good solution (or realistic for that mat
 OK for command part of CQRS application. ORM simply falls short in area of queries beyond the
 most primitive levels of sophistication.
 
+W> The two most nasty effects of using ORM are N+1 problem and its cousin many updates/deletes in
+W> a loop instead of bulk updates/deletes. Watch for these as I yet need to see a DDD project where
+W> we can be that oblivious to the SQL layer underneath.
+
 
 ## JPA or concrete ORM provider?
 
@@ -75,9 +79,9 @@ What bothers me are some very serious bugs that are completely unattended by pro
 often not even answered. You create a test case for concurrency problem with `CASE` (read "don't
 use CASE at all if the query may be executed in parallel"), issue tracker tells you it sent emails
 to half a dozen people -- and no response at all. To be honest I lost my faith in EclipseLink
-quality quite a lot. Before Hibernate 5.1 we were stuck with EclipseLink but even with ad hoc join
-support it's still mainly about trading one set of bugs for other (less known) set of bugs.
-Or perhaps we can try some other JPA provider -- like
+quality quite a lot. Before Hibernate 5.1 we were stuck with EclipseLink but even now with ad hoc
+join now generally available it's still mainly about trading one set of bugs for other
+(less known) set of bugs. Or perhaps we can try some other JPA provider -- like
 DataNucleus that also [allows JOIN to another root entity](https://datanucleus.wordpress.com/2016/04/08/dn-v5-jpql-from-join-to-another-root-entity/).
 
 D> I actually tried [DataNucleus](http://www.datanucleus.org/) briefly with demos for this
@@ -108,7 +112,7 @@ rather unlikely for me.
 So, will I use ORM on bigger systems again? Probably -- as I don't design every system I work on.
 Would I try something else if I could? Definitely. I have much more faith in [Querydsl](http://www.querydsl.com/)
 itself, for instance. You can use it over SQL directly, bypassing the JPA altogether. Main Querydsl
-contributor, Timo Westkämper, answers virtually any question anywhere (groups, issues,
+contributor, Timo Westkämper, answers virtually any question anywhere[^qdsl2017] (groups, issues,
 StackOverflow)... the only risk here is it seems to be predominantly
 [one-man show](https://github.com/querydsl/querydsl/graphs/contributors) even though it is backed
 by a company. You can also check [jOOQ](http://www.jooq.org), though here you can't avoid
@@ -116,11 +120,37 @@ commercial licences if you want to use it with commercial databases. Both these 
 their popularity -- show that the JPA is far from being the last word in Java persistence landscape
 and also not the only way how to do it.
 
-In any case, I always put Querydsl over JPA. I recently tried *JPA 2.0* project without it and the
+[^qdsl2017]: Querydsl project seems more sleepy in 2017 but it still provides and there is a lot
+    of interest in it (e.g. Atlassian is using it a lot and they wish to get involved). 
+
+In any case, I always put Querydsl as another layer over JPA. I recently tried *JPA 2.0* project
+without it and the
 experience was terrible if you had got used to it before. Also *JPA 2.0* version was nothing to be
 happy about and missing ad hoc joins also proved to be incredible pain as some tables were already
 mapped with raw FKs and without ad hoc join you're out of luck -- you have to remap it properly
 with all the consequences.
+
+
+### JPA 2.2 coming
+
+JPA itself is now progressing slowly. *JPA 2.1* was a massive improvement over *JPA 2.0*, but that
+was already 4 years ago. *JPA 2.2* coming with *Java EE 8* will be merely a maintenance release.
+Even so it should bring [couple of good things](https://en.wikipedia.org/wiki/Java_Persistence_API#JPA_2.2):
+
+* Support for Java 8 Date and Time types.
+* Ability to stream a query result.
+
+Now the first one is sweet -- especially when EclipseLink currently has a bug when `COALESCE`
+is used on converted types (not that they should not fix it, of course).
+
+The second one is much more interesting but I don't know what to expect. Will it be true streaming
+of results from a cursor? Will the entities be created lazily as we consume them? Will it allow us
+to avoid `OutOfMemoryError` for longer queries (e.g. hundreds of thousands lines exported to CSV)?
+Or is it just `stream()` called on the list returned from `getResultList()`? I hope for the first
+as that would be a massive improvement for some less typical cases. 
+
+
+## This book
 
 Finally, about this book. It was much bigger story for me in the end, especially as I discovered
 I'd been working outside of JPA realm for more than a year. That obviously totally ruined all
@@ -128,3 +158,7 @@ my plans, my wannabe climax was suddenly dull and I wasn't sure whether to go on
 I also learnt a lot about the JPA (and I really had thought I'was quite solid already!)
 and about the two most popular providers. I hope it was helpful also for you, even though I might
 have raised more questions than provided answers. At least I tried to keep it reasonably short.
+
+I'm considering another edition discussing other typical problems (why to map *many-to-many*
+association entity explicitly, why to avoid Open session in view, etc.) but right now I need a
+break. :-) With next version after *JPA 2.2* probably far away I have plenty of time for it.

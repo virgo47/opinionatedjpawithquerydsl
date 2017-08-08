@@ -1,5 +1,6 @@
 package tests;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQuery;
 import modeladv.Dog;
@@ -34,6 +35,13 @@ public class ResultTransformation {
         .from(QDog.dog)
         .transform(groupBy(QDog.dog.id).as(QDog.dog));
       System.out.println("breedsById = " + breedsById);
+
+      List<Tuple> tuple = new JPAQuery<>(em)
+        .select(QDog.dog.name, QDog.dog.id.count())
+        .from(QDog.dog)
+        .groupBy(QDog.dog.name)
+        .fetch();
+      System.out.println("name and count (as list, not map) = " + tuple);
 
       Map<String, Long> countByName = new JPAQuery<>(em)
         .from(QDog.dog)
