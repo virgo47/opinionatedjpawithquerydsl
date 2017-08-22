@@ -41,7 +41,11 @@
   <persistence-unit name="demo-hib" transaction-type="RESOURCE_LOCAL">
 
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <!-- Classes should be specified in SE environment, but Hibernate finds them automatically -->
+    <!--
+    Classes should be specified in SE environment, but Hibernate finds them automatically
+    in the same JAR. If not, classpath is probably constructed differently and we need to
+    add <class> elements from EclipseLink section.
+    -->
 
     <!-- For Hibernate to cache we need this (or ENABLE_SELECTIVE or similar), default NONE -->
     <shared-cache-mode>ALL</shared-cache-mode>

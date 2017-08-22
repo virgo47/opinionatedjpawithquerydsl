@@ -643,8 +643,9 @@ CREATE TABLE DOG (ID INTEGER IDENTITY NOT NULL, NAME VARCHAR,
 
 And it contains all the necessary columns. But if we switch the order in `persistence.xml`
 EclipseLink generates the table based on `DogBasicView` and it will miss the `breed_id` column.
-Hibernate scans for classes even in SE environment and if you want to try the effect of the order
-of `<class>` elements in `persistence.xml` you also have to include this:
+Hibernate scans for the classes even in SE environment (but only within the JAR file containing
+`persistence.xml`) and if you want to try the effect of the order of `<class>` elements in
+`persistence.xml` you also have to include this:
 
 {lang=xml}
 ~~~

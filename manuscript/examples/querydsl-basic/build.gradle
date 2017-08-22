@@ -23,14 +23,6 @@ ext {
   h2Version = '1.4.190'
 }
 
-sourceSets {
-  generated {
-    java {
-      srcDirs = ["$buildDir/generated-src"]
-    }
-  }
-}
-
 dependencies {
   provided 'javax:javaee-api:7.0'
   compile "com.querydsl:querydsl-jpa:$querydslVersion"
@@ -40,6 +32,24 @@ dependencies {
 
   querydslApt "com.querydsl:querydsl-apt:$querydslVersion"
   jpaMetamodelApt "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$eclipseLinkVersion"
+}
+
+sourceSets {
+  generated {
+    java {
+      srcDirs = ["$buildDir/generated-src"]
+    }
+  }
+  test {
+    // This is required for tests to "see" generated classes as well
+    runtimeClasspath += generated.output
+  }
+}
+
+idea {
+  module {
+    generatedSourceDirs += sourceSets.generated.java.srcDirs
+  }
 }
 
 task generateQuerydsl(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
@@ -75,19 +85,6 @@ compileGeneratedJava {
   dependsOn generateQuerydsl
   options.warnings = false
   classpath += sourceSets.main.runtimeClasspath
-}
-
-sourceSets {
-  test {
-    // This is required for tests to "see" generated classes as well
-    runtimeClasspath += generated.output
-  }
-}
-
-idea {
-  module {
-    generatedSourceDirs += sourceSets.generated.java.srcDirs
-  }
 }
 
 test {
