@@ -1,16 +1,10 @@
 /*
- * This build tries to streamline things as much as possible by declaring the generated classes
- * directory as part of the main classes - no new source set is created and in overall it requires
- * less handling afterwards (compare this file with build-alt.gradle).
+ * Alternative (probably more traditional) build with separate "generated" source set
+ * and resources in separate directory (as by default).
  *
- * In addition to that the build redirects main/resources to main/classes. This means that
- * persistence.xml is found in the same component of the classpath as entities and allows Hibernate
- * to auto-scan for entities (not strictly JPA in SE environment compliant though).
- *
- * However, this does not work from IntelliJ IDEA which compiles to its own directories and
- * keeps classes separate from resources. When the same module is imported as Maven project,
- * IDEA uses target/classes where both resources and classes are under one component. (Would
- * be nice if IDEA used Gradle's build directory.)
+ * Currently this build nearly passes, but the test fails because persistence.xml does not
+ * enumerate entity classes for Hibernate (this is not necessary for Maven build or for
+ * build.gradle build file)
  */
 plugins {
   id 'nebula.provided-base' version '3.0.3'
@@ -29,9 +23,8 @@ configurations {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-ext {
-  generatedSrc = "$buildDir/generated-src"
 
+ext {
   querydslVersion = '4.1.4'
   hibernateVersion = '5.2.2.Final'
   eclipseLinkVersion = '2.6.2'
@@ -53,11 +46,15 @@ dependencies {
 }
 
 sourceSets {
-  main {
-    java.srcDir file(generatedSrc)
-    output.resourcesDir = "$buildDir/classes/java/main"
+  generated {
+    java {
+      srcDirs = ["$buildDir/generated-src"]
+    }
   }
-  // no special additions to test configuration is necessary, as everything is in main classes now
+  test {
+    // This is required for tests to "see" generated classes as well
+    runtimeClasspath += generated.output
+  }
 }
 
 task generateQuerydsl(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
@@ -67,7 +64,7 @@ task generateQuerydsl(type: JavaCompile, group: 'build', description: 'Generates
     '-proc:only',
     '-processor', 'com.querydsl.apt.jpa.JPAAnnotationProcessor'
   ]
-  destinationDir = file(generatedSrc)
+  destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
 }
 
 task generateJpaMetamodel(type: JavaCompile, group: 'build', description: 'Generates metamodel for JPA Criteria (not QueryDSL)') {
@@ -79,12 +76,21 @@ task generateJpaMetamodel(type: JavaCompile, group: 'build', description: 'Gener
     '-Aeclipselink.persistencexml=src/main/resources/META-INF/persistence.xml',
     '-Aeclipselink.persistenceunits=demo-el'
   ]
-  destinationDir = file(generatedSrc)
+  destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
 }
 
 compileJava {
   dependsOn generateQuerydsl
   dependsOn generateJpaMetamodel
+  source generateQuerydsl.destinationDir
+  source generateJpaMetamodel.destinationDir
+}
+
+compileGeneratedJava {
+  dependsOn generateQuerydsl
+  dependsOn generateJpaMetamodel
+  options.warnings = false
+  classpath += sourceSets.main.runtimeClasspath
 }
 
 test {

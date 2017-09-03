@@ -1,4 +1,4 @@
-package tests;
+package demos;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import model00.Breed;

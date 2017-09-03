@@ -1,4 +1,4 @@
-package tests;
+package demos;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;

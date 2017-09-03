@@ -1,4 +1,4 @@
-package tests;
+package demos;
 
 import com.querydsl.core.types.dsl.Param;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -17,8 +17,8 @@ import javax.persistence.criteria.Root;
 import java.io.IOException;
 import java.util.List;
 
-import static tests.Tools.breed;
-import static tests.Tools.dog;
+import static demos.Tools.breed;
+import static demos.Tools.dog;
 
 public class DogQueryDemo {
 

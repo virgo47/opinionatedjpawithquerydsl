@@ -1,4 +1,4 @@
-package tests;
+package demos;
 
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -11,9 +11,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
-
-import static tests.Tools.breed;
-import static tests.Tools.dog;
 
 public class Subqueries {
 
@@ -81,14 +78,14 @@ public class Subqueries {
   public static void prepareData(EntityManager em) {
     em.getTransaction().begin();
 
-    Breed collie = breed(em, "collie");
-    Breed germanShepherd = breed(em, "german shepherd");
-    breed(em, "retriever");
+    Breed collie = Tools.breed(em, "collie");
+    Breed germanShepherd = Tools.breed(em, "german shepherd");
+    Tools.breed(em, "retriever");
 
-    dog(em, "Lassie", collie, 7);
-    dog(em, "Rex", germanShepherd, 6);
-    dog(em, "Ben", germanShepherd, 4);
-    dog(em, "Mixer (unknown breed)", null, 3);
+    Tools.dog(em, "Lassie", collie, 7);
+    Tools.dog(em, "Rex", germanShepherd, 6);
+    Tools.dog(em, "Ben", germanShepherd, 4);
+    Tools.dog(em, "Mixer (unknown breed)", null, 3);
 
     em.getTransaction().commit();
   }

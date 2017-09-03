@@ -1,4 +1,4 @@
-package tests;
+package demos;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -10,8 +10,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
 import java.util.stream.IntStream;
-
-import static tests.Tools.breed;
 
 public class Pagination {
 
@@ -84,7 +82,7 @@ public class Pagination {
     em.getTransaction().begin();
 
     IntStream.range(1, 27)
-      .forEach(i -> breed(em, "Breed" + i));
+      .forEach(i -> Tools.breed(em, "Breed" + i));
 
     em.getTransaction().commit();
   }

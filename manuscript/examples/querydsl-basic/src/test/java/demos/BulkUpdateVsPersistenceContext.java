@@ -1,4 +1,4 @@
-package tests;
+package demos;
 
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import model00.Dog;

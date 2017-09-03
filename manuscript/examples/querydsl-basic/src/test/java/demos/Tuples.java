@@ -1,4 +1,4 @@
-package tests;
+package demos;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -11,9 +11,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
-
-import static tests.Tools.breed;
-import static tests.Tools.dog;
 
 public class Tuples {
 
@@ -67,8 +64,8 @@ public class Tuples {
   public static void prepareData(EntityManager em) {
     em.getTransaction().begin();
 
-    Breed collie = breed(em, "collie");
-    dog(em, "Rex", collie, 3);
+    Breed collie = Tools.breed(em, "collie");
+    Tools.dog(em, "Rex", collie, 3);
 
     em.getTransaction().commit();
   }

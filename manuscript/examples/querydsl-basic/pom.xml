@@ -18,6 +18,7 @@
     <eclipselink.version>2.6.2</eclipselink.version>
     <querydsl.version>4.1.4</querydsl.version>
     <h2.version>1.4.190</h2.version>
+    <testng.version>6.11</testng.version>
   </properties>
 
   <dependencies>
@@ -32,12 +33,14 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
       <version>${hibernate.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.jpa</artifactId>
       <version>${eclipselink.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -62,6 +65,13 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>${h2.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>${testng.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

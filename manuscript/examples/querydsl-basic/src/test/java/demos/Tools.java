@@ -1,4 +1,4 @@
-package tests;
+package demos;
 
 import model00.Breed;
 import model00.Dog;
