@@ -3,5 +3,6 @@
 *.iws
 .idea/
 manuscript/examples/*/target/
+manuscript/examples/*/build/
 .gradle
 *.vpp~*
