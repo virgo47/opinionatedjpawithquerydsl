@@ -1,20 +1,12 @@
 /*
- * Nearly traditional build with separate "generated" source set, but with resources redirected
- * to main classes in order to support Hibernate auto-scan even in SE (with persistence.xml and
- * entity classes in different classpath components it does not work).
+ * This build tries to streamline things as much as possible by declaring the generated classes
+ * directory as part of the main classes - no new source set is created and in overall it requires
+ * less handling afterwards. In addition to that the build redirects main/resources to main/classes
+ * (just like the primary build.gradle) for Hibernate auto-scan.
  *
- * All of the Gradle builds from this module suffer a problem in Intellij IDEA when running with
- * Hibernate expecting that auto-scan finds classes and resources in a single classpath component.
- * IntelliJ IDEA by default compiles to its own directories (out) and keeps classes separate from
- * resources. When the same module is imported as Maven project, IDEA uses target/classes where
- * both resources and classes are under one component. To get the same behaviour with IDEA we need
- * to enable "File | Settings | Build, Execution, Deployment | Build Tools | Gradle | Runner =>
- * Delegate IDE build/run actions to gradle". See also:
- *
- * https://stackoverflow.com/q/45174989/658826
- * https://youtrack.jetbrains.com/issue/IDEA-175172
- *
- * With this build delegation run configuration in IDEA seem to work flawlessly (IDEA 2017.2.3).
+ * This build however suffers a performance problem - it repeats generateQuerydsl and
+ * generateJpaMetamodel every time (does not know they are up to date probably because they
+ * are not separate stages).
  */
 plugins {
   id 'nebula.provided-base' version '3.0.3'
@@ -34,6 +26,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
+  generatedSrc = "$buildDir/generated-src"
+
   querydslVersion = '4.1.4'
   hibernateVersion = '5.2.2.Final'
   eclipseLinkVersion = '2.6.2'
@@ -56,17 +50,10 @@ dependencies {
 
 sourceSets {
   main {
+    java.srcDir file(generatedSrc)
     output.resourcesDir = "$buildDir/classes/java/main"
   }
-  generated {
-    java {
-      srcDirs = ["$buildDir/generated-src"]
-    }
-  }
-  test {
-    // This is required for tests to "see" generated classes as well
-    runtimeClasspath += generated.output
-  }
+  // no special additions to test configuration is necessary, as everything is in main classes now
 }
 
 task generateQuerydsl(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
@@ -76,7 +63,7 @@ task generateQuerydsl(type: JavaCompile, group: 'build', description: 'Generates
     '-proc:only',
     '-processor', 'com.querydsl.apt.jpa.JPAAnnotationProcessor'
   ]
-  destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
+  destinationDir = file(generatedSrc)
 }
 
 task generateJpaMetamodel(type: JavaCompile, group: 'build', description: 'Generates metamodel for JPA Criteria (not QueryDSL)') {
@@ -88,21 +75,12 @@ task generateJpaMetamodel(type: JavaCompile, group: 'build', description: 'Gener
     '-Aeclipselink.persistencexml=src/main/resources/META-INF/persistence.xml',
     '-Aeclipselink.persistenceunits=demo-el'
   ]
-  destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
+  destinationDir = file(generatedSrc)
 }
 
 compileJava {
   dependsOn generateQuerydsl
   dependsOn generateJpaMetamodel
-  source generateQuerydsl.destinationDir
-  source generateJpaMetamodel.destinationDir
-}
-
-compileGeneratedJava {
-  dependsOn generateQuerydsl
-  dependsOn generateJpaMetamodel
-  options.warnings = false
-  classpath += sourceSets.main.runtimeClasspath
 }
 
 test {
