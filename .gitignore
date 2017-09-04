@@ -4,5 +4,6 @@
 .idea/
 manuscript/examples/*/target/
 manuscript/examples/*/build/
+manuscript/examples/*/out/
 .gradle
 *.vpp~*
