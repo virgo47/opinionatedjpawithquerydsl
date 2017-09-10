@@ -92,43 +92,6 @@
         </executions>
       </plugin>
 
-      <!-- To generate metamodel for type-safe Criteria API -->
-      <plugin>
-        <groupId>org.bsc.maven</groupId>
-        <artifactId>maven-processor-plugin</artifactId>
-        <version>2.2.4</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <!--
-              This is needed because by default this runs before persistence.xml is moved to target
-              (resource processed) and by default it is searched for there. Without this it would
-              take two mvn package runs to succeed. Persistence unit must be also explicitly
-              chosen because we have two units in a single persistence.xml, both with the same
-              classes, which results in "Attempt to recreate a file for type ..." error.
-              -->
-              <compilerArguments>
-                -Aeclipselink.persistencexml=src/main/resources/META-INF/persistence.xml
-                -Aeclipselink.persistenceunits=demo-el
-              </compilerArguments>
-              <processors>
-                <processor>org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor</processor>
-              </processors>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-            <version>${eclipselink.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>

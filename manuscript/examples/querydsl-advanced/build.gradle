@@ -1,11 +1,6 @@
 /*
- * Alternative (probably more traditional) build with separate "generated" source set
- * and resources in separate directory (as by default). The only difference is that resources
- * are put into separate build directory from the classes.
- *
- * Currently this build nearly passes, but the test fails because persistence.xml does not
- * enumerate entity classes for Hibernate (this is not necessary for Maven build or for
- * build.gradle build file).
+ * See comments in ../querydsl-basic/build.gradle. This build generates Querydsl but not JPA
+ * metamodel, otherwise there are no other important differences.
  */
 plugins {
   id 'java'
@@ -17,7 +12,6 @@ repositories {
 
 configurations {
   querydslApt
-  jpaMetamodelApt
 }
 
 sourceCompatibility = 1.8
@@ -32,7 +26,7 @@ ext {
   hibernateVersion = '5.2.2.Final'
   eclipseLinkVersion = '2.6.2'
   h2Version = '1.4.190'
-  testNgVersion = '6.11'
+  antlrVersion = '4.5.3'
 }
 
 dependencies {
@@ -41,14 +35,16 @@ dependencies {
   compile "org.hibernate:hibernate-entitymanager:$hibernateVersion"
   compile "org.eclipse.persistence:org.eclipse.persistence.jpa:$eclipseLinkVersion"
   compile "com.h2database:h2:$h2Version"
-
-  testCompile "org.testng:testng:$testNgVersion"
+  // For experiment with expressions evaluator
+  compile "org.antlr:antlr4-runtime:$antlrVersion"
 
   querydslApt "com.querydsl:querydsl-apt:$querydslVersion"
-  jpaMetamodelApt "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$eclipseLinkVersion"
 }
 
 sourceSets {
+  main {
+    output.resourcesDir = "$buildDir/classes/java/main"
+  }
   generated {
     java {
       srcDirs = ["$buildDir/generated-src"]
@@ -70,32 +66,13 @@ task generateQuerydsl(type: JavaCompile, group: 'build', description: 'Generates
   destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
 }
 
-task generateJpaMetamodel(type: JavaCompile, group: 'build', description: 'Generates metamodel for JPA Criteria (not QueryDSL)') {
-  source = sourceSets.main.java
-  classpath = configurations.compile + configurations.jpaMetamodelApt
-  options.compilerArgs = [
-    '-proc:only',
-    '-processor', 'org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor',
-    '-Aeclipselink.persistencexml=src/main/resources/META-INF/persistence.xml',
-    '-Aeclipselink.persistenceunits=demo-el'
-  ]
-  destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
-}
-
 compileJava {
   dependsOn generateQuerydsl
-  dependsOn generateJpaMetamodel
   source generateQuerydsl.destinationDir
-  source generateJpaMetamodel.destinationDir
 }
 
 compileGeneratedJava {
   dependsOn generateQuerydsl
-  dependsOn generateJpaMetamodel
   options.warnings = false
   classpath += sourceSets.main.runtimeClasspath
-}
-
-test {
-  useTestNG()
 }

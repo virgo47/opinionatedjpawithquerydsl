@@ -9,7 +9,6 @@
  * are not separate stages).
  */
 plugins {
-  id 'nebula.provided-base' version '3.0.3'
   id 'java'
 }
 
@@ -25,6 +24,10 @@ configurations {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
+
 ext {
   generatedSrc = "$buildDir/generated-src"
 
@@ -36,7 +39,7 @@ ext {
 }
 
 dependencies {
-  provided 'javax:javaee-api:7.0'
+  compileOnly 'javax:javaee-api:7.0'
   compile "com.querydsl:querydsl-jpa:$querydslVersion"
   compile "org.hibernate:hibernate-entitymanager:$hibernateVersion"
   compile "org.eclipse.persistence:org.eclipse.persistence.jpa:$eclipseLinkVersion"

@@ -1,9 +1,15 @@
+# IDEA module/project/workspace files
 *.iml
 *.ipr
 *.iws
+# VisualParadigm backup files
+*.vpp~*
+
+# top level IDEA /out and .idea/.gradle at any level
+/out/
 .idea/
+.gradle/
+# other out/target/build directories at specific example/project level
 manuscript/examples/*/target/
 manuscript/examples/*/build/
 manuscript/examples/*/out/
-.gradle
-*.vpp~*
