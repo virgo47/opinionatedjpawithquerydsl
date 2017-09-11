@@ -1,6 +1,7 @@
 # List of acronyms {#acronyms}
 
 * API -- application programming interface
+* APT -- Java Annotation Processing Tool (can be used to generate sources from metadata)
 * BLOB -- binary large object
 * CLOB -- character large object
 * CPU -- central processing unit (processor)

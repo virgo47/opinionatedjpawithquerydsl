@@ -1,21 +1,87 @@
 # Project example {#app-project-example}
 
 Setting up project with JPA, Querydsl and H2 as a database may seem daunting task for a newcomer,
-but it's not really that difficult. We will show how it works in Maven. I'm a fan of Gradle too,
-but -- unfortunately -- more a fan than an experienced user and "instant" solutions readily
-available for Maven are not yet prepared for Gradle.
+but it's not really that difficult. I will show both Maven and Gradle projects.
 
 ## Querydsl and Maven {#querydsl-maven}
 
+Maven is supported out-of-the-box with a plugin as [documented here](http://www.querydsl.com/static/querydsl/4.1.3/reference/html_single/#d0e132).
+
+First we need to declare our dependencies (`provided` scope for APT JAR is enough).
+
+{title="Dependencies", lang=xml}
+~~~
+<dependency>
+  <groupId>com.querydsl</groupId>
+  <artifactId>querydsl-apt</artifactId>
+  <version>${querydsl.version}</version>
+  <scope>provided</scope>
+</dependency>
+
+<dependency>
+  <groupId>com.querydsl</groupId>
+  <artifactId>querydsl-jpa</artifactId>
+  <version>${querydsl.version}</version>
+</dependency>
+
+<dependency>
+  <groupId>org.slf4j</groupId>
+  <artifactId>slf4j-log4j12</artifactId>
+  <version>1.6.1</version>
+</dependency>
+~~~
+
+Next we need to configure the Maven APT plugin.
+
+{title="Generator plugin", lang=xml}
+~~~
+<project>
+  <build>
+  <plugins>
+    ...
+    <plugin>
+      <groupId>com.mysema.maven</groupId>
+      <artifactId>apt-maven-plugin</artifactId>
+      <version>1.1.3</version>
+      <executions>
+        <execution>
+          <goals>
+            <goal>process</goal>
+          </goals>
+          <configuration>
+            <outputDirectory>target/generated-sources/java</outputDirectory>
+            <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+    ...
+  </plugins>
+  </build>
+</project>
+~~~
+
+This assures that the Q-classes will be generated during the build. There is also alternative
+processor to generate these from Hibernate annotations.
 
 
-%% Reference documentation, show entity example and generated class perhaps?
+### IDE support
 
-TODO
+As per instructions, for Eclipse to recognize the generated classes one should run:
+
+~~~
+mvn eclipse:eclipse
+~~~
+
+I have no idea how the regeneration of Q-classes works as I don't use Eclipse.
+
+In IntelliJ IDEA the generated classes are recognized when the Maven project is imported. To
+generate the classes after an entity source was changed we need to set up annotation processor
+in **Settings > Build, Execution, Deployment > Compiler > Annotation Processors**. Personally,
+I don't bother (WHY? does it disappear after some changes? What went wrong?)
 
 
-TODO
+## Querydsl and Gradle
 
-%% ### Querydsl and Gradle
-%%
-%% TODO: Querydsl does not provide support (plugin) for Gradle directly.
+Next I will show an example of Gradle project. TODO
+
