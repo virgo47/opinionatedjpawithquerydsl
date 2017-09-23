@@ -315,7 +315,9 @@ public X convertToEntityAttribute(Y dbValue) {
   try {
     Method method = enumClass().getMethod("fromDbValue", dbValue.getClass());
     return (X) method.invoke(null, dbValue);
-  } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+  } catch (IllegalAccessException | InvocationTargetException |
+    NoSuchMethodException e)
+  {
     throw new IllegalArgumentException("...this really doesn't make sense", e);
   }
 }
@@ -331,8 +333,10 @@ EclipseLink, but maybe we're asking for problems. Let's check it really:
 
 ~~~
 // throws NoSuchMethodException
-// Method method = converter.getClass().getMethod("convertToDatabaseColumn", Integer.class);
-Method method = converter.getClass().getMethod("convertToDatabaseColumn", Object.class);
+// Method method = converter.getClass().getMethod(
+//   "convertToDatabaseColumn", Integer.class);
+Method method = converter.getClass().getMethod(
+  "convertToDatabaseColumn", Object.class);
 System.out.println("method = " + method);
 ~~~
 

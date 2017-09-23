@@ -202,7 +202,8 @@ There is also neat way how to download subtree of a GitHub project using -- surp
 export. This makes running any example on the command line a breeze:
 
 ~~~
-svn export https://github.com/virgo47/opinionatedjpawithquerydsl/trunk/examples/querydsl-basic
+svn export \
+https://github.com/virgo47/opinionatedjpawithquerydsl/trunk/examples/querydsl-basic
 cd querydsl-basic
 mvn test-compile exec:java -Dexec.mainClass="tests.DogQueryDemo"
 ~~~

@@ -867,14 +867,16 @@ Querydsl is a nice API and DSL but may lead to horrific monsters like:
 
 ~~~
 Integer trnId = new JPAQuery<>(em)
-  .select(QClientAgreementBankAccountTransaction.clientAgreementBankAccountTransaction.transactionId))
+  .select(QClientAgreementBankAccountTransaction
+    .clientAgreementBankAccountTransaction.transactionId))
   .from(QClientAgreement.clientAgreement)
   .join(QClientAgreementBankAccount.clientAgreementBankAccount).on(
     QClientAgreementBankAccount.clientAgreementBankAccount.clientAgreementId
       .eq(QClientAgreement.clientAgreement.id))
-  .join(QClientAgreementBankAccountTransaction.clientAgreementBankAccountTransaction).on(
-    QClientAgreementBankAccountTransaction.clientAgreementBankAccountTransaction.clientAgreementBankAccountId
-      .eq(QClientAgreementBankAccount.clientAgreementBankAccount.id))
+  .join(QClientAgreementBankAccountTransaction.clientAgreementBankAccountTransaction)
+    .on(QClientAgreementBankAccountTransaction.
+      clientAgreementBankAccountTransaction.clientAgreementBankAccountId
+        .eq(QClientAgreementBankAccount.clientAgreementBankAccount.id))
   .where(QClientAgreement.clientAgreement.id.in(clientAgreementsToDelete))
   .fetch();
 ~~~
