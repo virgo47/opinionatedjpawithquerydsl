@@ -1,7 +1,8 @@
 # Project example {#app-project-example}
 
 Setting up project with JPA, Querydsl and H2 as a database may seem daunting task for a newcomer,
-but it's not really that difficult. I will show both Maven and Gradle projects.
+but it's not really that difficult. I will show both Maven 3.x and Gradle 4.x projects using Java 8.
+
 
 ## Querydsl and Maven {#querydsl-maven}
 
@@ -9,7 +10,7 @@ Maven is supported out-of-the-box with a plugin as [documented here](http://www.
 
 First we need to declare our dependencies (`provided` scope for APT JAR is enough).
 
-{title="Dependencies", lang=xml}
+{title="Maven: Querydsl dependencies", lang=xml}
 ~~~
 <dependency>
   <groupId>com.querydsl</groupId>
@@ -33,7 +34,7 @@ First we need to declare our dependencies (`provided` scope for APT JAR is enoug
 
 Next we need to configure the Maven APT plugin.
 
-{title="Generator plugin", lang=xml}
+{title="Maven: Querydsl generator plugin", lang=xml}
 ~~~
 <project>
   <build>
@@ -62,7 +63,12 @@ Next we need to configure the Maven APT plugin.
 ~~~
 
 This assures that the Q-classes will be generated during the build. There is also alternative
-processor to generate these from Hibernate annotations.
+processor to generate these from Hibernate annotations. Most [example projects](https://github.com/virgo47/opinionatedjpawithquerydsl/tree/master/manuscript/examples)
+for this book have `pom.xml` files like this.
+
+Unrelated to Querydsl is the plugin configuration for generating JPA metadata. Here you can use
+various providers to do so. In [querydsl-basic/pom.xml](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/pom.xml)
+I use EclipseLink's annotation processor.
 
 
 ### IDE support
@@ -77,11 +83,202 @@ I have no idea how the regeneration of Q-classes works as I don't use Eclipse.
 
 In IntelliJ IDEA the generated classes are recognized when the Maven project is imported. To
 generate the classes after an entity source was changed we need to set up annotation processor
-in **Settings > Build, Execution, Deployment > Compiler > Annotation Processors**. Personally,
-I don't bother (WHY? does it disappear after some changes? What went wrong?)
+in **Settings > Build, Execution, Deployment > Compiler > Annotation Processors**.
+
+D> Personally, I don't bother as I wasn't convinced by how it worked. I believe build tool and
+D> IDE should work both-ways together which does not happen with Maven and IDEA -- at least not for
+D> various plugins. So after I change something in the entities I just re-run Maven `package` goal
+D> (from IDE or command line, does not matter) and then I iterate with IDEA building minor changes
+D> for me.
+D>
+D> I didn't have problems with IDEA not recognizing the directory with generated sources in this
+D> case, however I had it quite often with other plugins generating sources. Again, after me
+D> helping IDEA to know about the generated sources (once) everything worked just fine from then
+D> on. (Yes, even my most appreciated IDE has its quirks, obviously. It's just like with other
+D> family members.)
 
 
 ## Querydsl and Gradle
 
-Next I will show an example of Gradle project. TODO
+Next I will show an example of Gradle project. I didn't use any particular plugin for Querydsl
+although there are some out there, but the situation around Gradle and its plugins is much more
+volatile hence I decided to do it without a plugin. If you're familiar with Gradle it should be
+easy to modify example scripts.
 
+I experimented with various scripts in [querydsl-basic](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic)
+project that -- as mentioned above with Maven -- generates also JPA metadata. Probably most typical
+Gradle script would be [build-traditional.gradle](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/build-traditional.gradle)
+-- let's go over it bit by bit:
+
+~~~
+plugins {
+  id 'java'
+}
+
+repositories {
+  jcenter()
+}
+
+configurations {
+  querydslApt
+  jpaMetamodelApt
+}
+~~~
+
+So far nothing special, `java` plugin will be sufficient, we just need additional configuration for
+each generate task (`querydslApt` and `jpaMetamodelApt`).
+
+~~~
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
+~~~
+
+Next we just configure Java version and encoding for compilation (this should always be explicit).
+Next we'll set up dependencies:
+
+~~~
+ext {
+  querydslVersion = '4.1.4'
+  hibernateVersion = '5.2.2.Final'
+  eclipseLinkVersion = '2.6.2'
+  h2Version = '1.4.190'
+  logbackVersion = '1.2.3'
+  testNgVersion = '6.11'
+}
+
+dependencies {
+  compileOnly 'javax:javaee-api:7.0'
+  compile "com.querydsl:querydsl-jpa:$querydslVersion"
+  compile "org.hibernate:hibernate-entitymanager:$hibernateVersion"
+  compile "org.eclipse.persistence:org.eclipse.persistence.jpa:$eclipseLinkVersion"
+  compile "com.h2database:h2:$h2Version"
+  compile "ch.qos.logback:logback-classic:$logbackVersion"
+
+  testCompile "org.testng:testng:$testNgVersion"
+
+  querydslApt "com.querydsl:querydsl-apt:$querydslVersion"
+  jpaMetamodelApt "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$eclipseLinkVersion"
+}
+~~~
+
+Dependencies needed only for generator tasks are in their respective configurations -- we don't
+need these to run our programs after build.
+
+~~~
+sourceSets {
+  generated {
+    java {
+      srcDirs = ["$buildDir/generated-src"]
+    }
+  }
+  test {
+    // This is required for tests to "see" generated classes as well
+    runtimeClasspath += generated.output
+  }
+}
+~~~
+
+Here we defined new source set for generated classes. I'm not sure what's the best practice,
+whether different set for each generator would be better or not and why, so I'll leave it like
+this. Next the generator tasks -- they are both very similar and definitely could be refactored
+and put into plugins, but that's beyond the scope of this book and my current experience:
+
+~~~
+task generateQuerydsl(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
+  source = sourceSets.main.java
+  classpath = configurations.compile + configurations.querydslApt
+  options.compilerArgs = [
+    '-proc:only',
+    '-processor', 'com.querydsl.apt.jpa.JPAAnnotationProcessor'
+  ]
+  destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
+}
+
+task generateJpaMetamodel(type: JavaCompile, group: 'build', description: 'Generates metamodel for JPA Criteria (not QueryDSL)') {
+  source = sourceSets.main.java
+  classpath = configurations.compile + configurations.jpaMetamodelApt
+  options.compilerArgs = [
+    '-proc:only',
+    '-processor', 'org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor',
+    '-Aeclipselink.persistencexml=src/main/resources/META-INF/persistence.xml',
+    '-Aeclipselink.persistenceunits=demo-el'
+  ]
+  destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
+}
+~~~
+
+Finally we want these tasks to interplay nicely with the rest of the build:
+
+~~~
+compileJava {
+  dependsOn generateQuerydsl
+  dependsOn generateJpaMetamodel
+  source generateQuerydsl.destinationDir
+  source generateJpaMetamodel.destinationDir
+}
+
+compileGeneratedJava {
+  dependsOn generateQuerydsl
+  dependsOn generateJpaMetamodel
+  options.warnings = false
+  classpath += sourceSets.main.runtimeClasspath
+}
+
+test {
+  useTestNG()
+}
+~~~
+
+That's it. This all works, but I encountered a minor problem with Hibernate if we rely on entity
+automatic discovery. This happens only within a single JAR in which the `persistence.xml` was
+found. However, Gradle builds projects to a different structure than Maven and keeps resources
+and classes as separate directories -- where a directory as a classpath entry effectively means
+separate JAR. So if you download the project go to `manuscript/examples/querydsl-basic` and run:
+
+~~~
+gradle -b build-traditional.gradle clean build
+~~~
+
+You will see a failure of `DemoTest` (very simple TestNG-based test class) for Hibernate test.
+This can be fixed by listing the classes in `persistence.xml` -- which would actually be compliant
+with how JPA works in Java SE environment -- or you need somehow make `build/resources` and
+`build/classes` be one.
+
+This actually is not that complicated and that's what [gradle.build](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/build.gradle)
+is like in the end (including a long explanation comment in it). All we need to do is add three
+lines into sources sets:
+
+~~~
+sourceSets {
+  // these three lines is the only difference against querydsl-traditional.build
+  main {
+    output.resourcesDir = "$buildDir/classes/java/main"
+  }
+  //... the rest is the same
+~~~
+
+This is a very subtle change, but very effective and I didn't notice any other negative side
+effects. I can't comment on the effect of this change on more complicated big projects though.
+I further tried to make even more drastic change and declare generated source directory as part
+of Java main source set:
+
+~~~
+sourceSets {
+  main {
+    // This is actually not recommended, read on...
+    java.srcDir file(generatedSrc)
+~~~
+
+This also works, sort of, but the build is not able to detect changes properly and always runs
+the generation, even when everything is up-to-date. You can try this build, it's in
+[build-extreme.gradle](https://github.com/virgo47/opinionatedjpawithquerydsl/blob/master/manuscript/examples/querydsl-basic/build-extreme.gradle),
+but it seems to be obviously not well behaved Gradle build.
+
+
+### IntelliJ IDEA support
+
+TODO

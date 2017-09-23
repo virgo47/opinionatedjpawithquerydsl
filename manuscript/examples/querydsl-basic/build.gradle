@@ -41,6 +41,7 @@ ext {
   hibernateVersion = '5.2.2.Final'
   eclipseLinkVersion = '2.6.2'
   h2Version = '1.4.190'
+  logbackVersion = '1.2.3'
   testNgVersion = '6.11'
 }
 
@@ -50,6 +51,7 @@ dependencies {
   compile "org.hibernate:hibernate-entitymanager:$hibernateVersion"
   compile "org.eclipse.persistence:org.eclipse.persistence.jpa:$eclipseLinkVersion"
   compile "com.h2database:h2:$h2Version"
+  compile "ch.qos.logback:logback-classic:$logbackVersion"
 
   testCompile "org.testng:testng:$testNgVersion"
 
