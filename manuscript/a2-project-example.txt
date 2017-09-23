@@ -281,4 +281,32 @@ but it seems to be obviously not well behaved Gradle build.
 
 ### IntelliJ IDEA support
 
-TODO
+Gradle support in IntelliJ IDEA is obviously constantly getting better and depending on the used
+version of the tools (I used Gradle 4.0, 4.1 and 4.2 on IDEA 2017) it's not always easy to figure
+out how well it should work. Recently I saw a breathtaking presentation of Kotlin DSL support in
+Gradle (build file named `gradle.build.kts`) but I simply wasn't able to reproduce it on my
+projects build from scratch. The same I remember for reasonable support for Gradle DSL years ago,
+but this seems to be much better now.
+
+We can either import an existing sources as new IDEA module from external Gradle model or create
+new Gradle module. In either case after Gradle project refresh IDEA understands the project model
+quite well. There is a Settings option for Gradle called "Create separate module per source set"
+which is enabled by default but I personally like it disabled to get just one IDEA module per demo
+(like with Maven).
+
+There is also interesting settings in Gradle/Runner called "Delegate IDE build/run actions to
+gradle" and this one I actually prefer. This completely bypasses IDEA's internal build and calls
+Gradle build for any build/compilation and to run application or tests as well.
+
+D> This puzzles me a bit -- I don't know how they run an arbitrary class when this is not easily
+D> possible with Gradle from a command line without `application` plugin in your project.
+
+As we discussed the hiccup with Hibernate's scan for entities this affects IDEA's internal build
+mechanism even with the right Gradle build. While with Maven IDEA builds into its `target`
+directory with Gradle IDEA uses its own `out` directory because reportedly Gradle's and IDEA's
+way of building are way different and would not work if they stepped on each other's toes. This
+is exactly what that "Delegate..." setting option fixes. Builds are pretty fast (it's Gradle after
+all!) and it feels good when you know that you use the same build in IDE and on your CI as well.
+
+W> Disclaimer: I can't claim rich experiences with this way though, but I plan to try it as
+W> a default way how to do Gradle-based projects in IDEA.
