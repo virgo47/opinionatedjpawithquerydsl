@@ -57,3 +57,10 @@ alternative schema and test data for H2 as well, but a lot of it can be automate
 language of choice for this). But this overhead was always offset by the benefits for testing and
 the fact that we looked at our schema through the perspective of two different RDBMS (production
 one and H2) actually often helped too.
+
+D> This practice actually goes against "Dev/prod parity" principle of [The Twelfe-Factor
+D> App](https://12factor.net/). The question then is: Do you use reasonable RDBMS engine that
+D> is easy to run during development? Easy to automate and licence friendly? Fast and lightweight?
+D> If you can, go for dev/prod parity -- that's the way towards the Holy Grail without a doubt.
+D> If you can't get there then using H2, even just for a limited set of tests somewhere in the
+D> middle level of the testing pyramid, is my recommendation.
