@@ -484,7 +484,8 @@ List<Tuple> results = new JPAQuery<>(em)
   .fetch();
 for (Tuple row : results) {
   DogRaw dog = row.get(d);
-  System.out.println(row.get(o).getName() + ", " + (dog != null ? dog.getName() : null));
+  System.out.println(row.get(o).getName() + ", " +
+    (dog != null ? dog.getName() : null));
 }
 ~~~
 
