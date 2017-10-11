@@ -32,6 +32,10 @@ To actually finish something, I want to do this in the 1st edition:
 %%        * Composite `@Id` or `@IdClass`?
 %%        * Equals object or id in queries? Does it matter? Tests with popular ORMs
 %%        * equals/hashCode best practices, why isAssignableFrom? can it collide in hierarchies? (should not)
+%%        * https://stackoverflow.com/questions/5031614/the-jpa-hashcode-equals-dilemma
+%% Hibernate [recommends](https://docs.jboss.org/hibernate/stable/core.old/reference/en/html/persistent-classes-equalshashcode.html)
+%% to use business keys (for collection working regardless of persistent state), but there are other
+%% schools, like "don't let Hibernate steal identity, persist ASAP" (I agree with this, BTW, saveAndFlush)
 %%	@Override
 %%	public final int hashCode() {
 %%		return Objects.hashCode(getId());
@@ -60,7 +64,7 @@ To actually finish something, I want to do this in the 1st edition:
 
 Other ideas, maybe for next editions:
 
-* filtering/pagination (promised for 2nd ed)                                         
+* filtering/pagination (promised for 2nd ed)
 You may be interested in presented filtering/pagination "framework" too and while it is utilized
 with the JPA back-end in our case, the concept is rather generic. Sometimes I feel like reinventing
 this part for every project I've made.
