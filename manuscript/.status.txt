@@ -26,6 +26,10 @@ To actually finish something, I want to do this in the 1st edition:
 %% (describes cascading in general for various *To*, including dangerous REMOVE on @ManyToMany that
 %% often does not do what we want (actually does more and removes not only link, but also target).
 %%    * Transaction boundary and lazy load (be explicit, I cannot stress it enough), OSIV
+%%    * JPA 2.2 support:
+%% http://www.javamagazine.mozaicreader.com/NovDec2017/Default/0/0/3879938#&pageSet=43&page=0
+%% https://vladmihalcea.com/whats-new-in-jpa-2-2-java-8-date-and-time-types/
+%% https://www.infoq.com/news/2018/01/improvements-jpa-22
     * Modularity, if you must (100%)
 * Common Problems
 %%    * Object identity, easy problem, recommended always the same way
