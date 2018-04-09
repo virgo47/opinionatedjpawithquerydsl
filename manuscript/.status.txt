@@ -18,6 +18,9 @@ To actually finish something, I want to do this in the 1st edition:
     * No further steps without Querydsl (100%)
     * Troubles with *to-one* relationships (100%) NEEDS REVIEW
         * https://virgo47.wordpress.com/2015/01/30/jpa-joins-without-mapped-attributes/ (JPA 2.1 supports ON, not before)
+        * #entity-views, is "Entity view the best name? Subentity? Projection?"
+        * DB views vs https://en.wikibooks.org/wiki/Java_Persistence/Tables#Multiple_tables
+        Does it belong to this chapter? This is more about select efficiency/performance
     * Removing `@ManyToOne` altogether (not JPA compliant) (100%) NEEDS REVIEW
 %% Second edition:
 %%    * *Many-to-many* relations mapping consequences, what SQL it generates, explicit/implicit mapping

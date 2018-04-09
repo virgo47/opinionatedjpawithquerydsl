@@ -165,9 +165,9 @@ cache as we go (when misses are possible) and when we preload the whole set (ide
 not too big).
 * The cache can cooperate with any administrative features that modify the underlying data.
 Because we code it with full knowledge of the logic behind the data we can selectively refresh
-update the cache in a smart way. In declarative cache we often have to evict it completely --
-although this can still be a good simple strategy even for programmatic caches, especially
-when the refresh requires a single select.
+or update the cache in a smart way.
+In declarative cache we often have to evict it completely -- although this can still be a good
+simple strategy even for programmatic caches, especially when the refresh requires a single select.
 * Full preload requires more memory up-front and slows down the startup of the application (can
 be done lazily on-demand) but deals with the DB once and for all. Declarative cache executes
 a query on demand for every miss but loads only some of the data that require caching --

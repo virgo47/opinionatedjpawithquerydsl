@@ -521,6 +521,8 @@ to eliminate traversing *to-one* relationships you're not interested in.
 
 ## Alternative entity "views" {#entity-views}
 
+%% Better name for this concept? Subentity? Projection? Perspective? Sight?
+
 If we want to solve painful read/update scenario (assuming we know the ID of the entity) and we
 need to work with only some attributes of the entity we can try to map only those. We will leave
 full mapping in some "master" class and create another entity that gives us partial view of the
