@@ -325,6 +325,8 @@ D>
 D> I highly recommend reading older but still very relevant article [Transaction strategies:
 D> Understanding transaction pitfalls](http://www.ibm.com/developerworks/java/library/j-ts1/)
 
+%% TODO: JPA 2.2 has streaming
+
 Sometimes bulk update is not a feasible option, but we still want to loop through some
 result, modify each entity without interacting with others and flush it (or batch the update if
 possible). This sounds similar to the missing "cursor-like result set streaming" mentioned
@@ -347,6 +349,14 @@ D>
 D> In this case it's better to use flush and clear instead of just flush, as without clearing
 D> every next flush has to do more and more dirty checking, even if you think you don't have to
 D> mind the growing size of the persistence context.
+
+Talking about read-only scenarios, it's also shame that JPA as of 2.2 still does not have any
+notion of read-only entities.
+EclipseLink provides `@ReadOnly` annotation for entity classes since TopLink times, Hibernate
+has its `@Immutable` annotation that works not only for classes but also for fields/methods.
+This does not make the persistence context smaller by itself, but these classes can be skipped
+during dirty checking, not to mention the benefit of explicit information they suppose to be
+for reading only.
 
 
 ## Other entity manager gotchas
