@@ -20,8 +20,12 @@ OSGi*, Prentice Hall, 2012.
 [JPDG] Scott Oaks. *Java Performance: The Definitive Guide*, O'Reilly, 2014.
 
 {#bib-jpspec}
-[JPspec] Java Persistence 2.1 Expert Group. *JSR 338: JavaTM Persistence API, Version 2.1*, Oracle,
-2013. [Download](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
+[JPspec] Java Persistence 2.2 Expert Group. *JSR 338: Java^TM^ Persistence API, Version 2.2*, Oracle, 2017.
+[Download](http://download.oracle.com/otn-pub/jcp/persistence-2_2-mrel-spec/JavaPersistence.pdf)
+
+{#bib-jpspec21}
+[JPspec21] Java Persistence 2.1 Expert Group. *JSR 338: Java^TM^ Persistence API, Version 2.1*, Oracle, 2013.
+[Download](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html) 
 
 {#bib-poeaa}
 [PoEAA] Martin Fowler. *Patterns of Enterprise Application Architecture*, Addison-Wesley, 2002.
@@ -59,6 +63,8 @@ well-argued longer post about troubles with ORM
 ## Other online resources {#resources-other}
 
 * Querydsl: http://www.querydsl.com/
+* EclipseLink: http://www.eclipse.org/eclipselink/
+* Hibernate ORM: http://hibernate.org/orm/
 * DataNucleus: http://www.datanucleus.org/
 * jOOQ: http://www.jooq.org
 * H2 database: http://h2database.com

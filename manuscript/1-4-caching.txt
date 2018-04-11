@@ -11,8 +11,8 @@ even between more of them across various JVMs in case of distributed caches. Thi
 the *second-level cache*.[^slc] It is used to enhance performance, typically by avoiding
 round-trips to the database. But caching has consequences.
 
-[^slc]: Second-level cache is most popular term, used also in [[JPspec](#bib-jpspec)]. It appears
-    in [[PJPA2](#bib-projpa2)] too, but *in-memory cache* is used more often there.
+[^slc]: Second-level cache is most popular term, used also in [[JPspec](#bib-jpspec)].
+    It appears in [[PJPA2](#bib-projpa2)] too, but *in-memory cache* is used more often there.
 
 
 ## Caching control

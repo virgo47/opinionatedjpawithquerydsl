@@ -24,7 +24,8 @@ the same with Hibernate it just works. We simply cannot assume that the ID is se
 ## Lazy on basic and *to-one* fields {#lazy-problems}
 
 While we can map these fields as lazy the behaviour is actually not guaranteed according
-to the JPA specification [[JPspec](#bib-jpspec)]. Its section 2.2, page 25, states:
+to the JPA specification [[JPspec](#bib-jpspec)].
+Its section 2.2 states:
 
 {icon=quote-right}
 G> If property access is used and lazy fetching is specified, portable applications should not

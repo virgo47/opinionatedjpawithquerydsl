@@ -2,58 +2,67 @@
 
 -# Preface
 
-This book is about my experience with [object-relational mapping](https://en.wikipedia.org/wiki/Object-relational_mapping)
-in general and the [Java Persistence API](https://en.wikipedia.org/wiki/Java_Persistence_API) (JPA)
-in particular. It's also about [Querydsl](http://www.querydsl.com/), because since I was
-recommended this library I completely fell in love with it. It never let me down and sometimes
-generated feeling of sheer happiness -- which is not that common in our programming profession.
+Welcome to the second edition of the book about my rather unorthodox approach to
+[object-relational mapping](https://en.wikipedia.org/wiki/Object-relational_mapping) in general and
+the [Java Persistence API](https://en.wikipedia.org/wiki/Java_Persistence_API) (JPA) in particular.
+It's also about [Querydsl](http://www.querydsl.com/), because since I was
+recommended this library I completely fell in love with it.
+It never let me down, it is actually joy to work with it -- which is not that common in our
+programming profession.
 
-Be warned -- this book is, as the title suggests, very opinionated. Sometimes you may ask:
-"Why the hell this guy still uses JPA?!" It is not a typical tutorial book covering the technology
-systematically -- I cherry-pick instead. It's not a typical best practices book either. We use ORM
-technology but not quite as intended. We even left the safe water of JPA specification -- although
-originally unintentionally because reference implementation let us.
+This book is, as the title suggests, very opinionated.
+Sometimes you may ask: "Why the hell this guy still uses JPA?!"
+It is not a typical tutorial book covering the technology systematically -- I cherry-pick instead.
+It's not a typical best practices book either.
+I use ORM technology but not quite as intended.
+I even left the safe water of the JPA specification -- although originally unintentionally because
+the reference implementation ([EclipseLink](http://www.eclipse.org/eclipselink/)) let us without
+warning.
 
 We decided to take control over the [SQL](https://en.wikipedia.org/wiki/SQL) statements our
-system produces. You can't rely much on lazy or eager fetch types, because often (as the
-specification says) these are mere hints, not real promises. Even with rather SQL-like approach
-JPA still provides big benefits over plain
-[JDBC](https://en.wikipedia.org/wiki/Java_Database_Connectivity). We tuned down the ORM part of
-the JPA a little bit and mapped our entities to resemble "raw" tables more. You may feel like
-shouting "that's all wrong!" -- which is OK. Let me answer the following question first...
+system produces.
+You can't rely much on lazy or eager fetch types, because often (as the specification says) these
+are mere hints, not real promises.
+Even with rather SQL-like approach JPA still provides big benefits over plain
+[JDBC](https://en.wikipedia.org/wiki/Java_Database_Connectivity).
+We tuned down the "mapping" part of the ORM a little bit and our entities resemble "raw" tables more.
+You may feel like shouting "that's all wrong!" -- which is OK.
+Let me answer the following question first...
 
 
 ## Is this book for you?
 
-This book is for anyone who actively uses JPA -- preferably in version 2.1 (*Java EE 7*) --
-and is not completely happy with it. It's main focuses is on painful points related to relationship
-mapping where benefits mix with unavoidable drawbacks. Even if you're happy with JPA as it is, the
-book still can give you more options how to solve your problems.
+This book is for anyone who actively uses JPA -- preferably in version 2.2 (*Java EE 8*) --
+and is not completely happy with it.
+It's main focuses is on painful points related to relationship mapping where benefits mix
+with unavoidable drawbacks.
+Even if you're happy with JPA as it is, the book still can give you more options how to solve your problems.
 
 Some of the considerations are related to ORM in general and may be applicable for non-JPA ORM
-providers, but I can't guarantee that. Some parts of the book are more generic and based on common
-sense (like "avoid N+1 select"), others are strictly JPA related (like how to achieve modularity).
-Some are probably complete answers, recipes even, others are open topics that only raise further
-questions. Some are definitely a bit unorthodox from a typical JPA perspective.
+providers, but I can't guarantee that.
+Some parts of the book are more generic and based on common sense (like "avoid N+1 select"),
+others are strictly JPA related (like how to achieve modularity).
+Some are probably complete answers, recipes even, others are open topics that only raise further questions.
 
-Last, but not least, I'll use Querydsl throughout the book -- and this library is still not covered
-in books as much as it deserves, I believe.
+I'll use Querydsl throughout the book because that's how JPA Criteria API should have be.
+I believe Querydsl still does not have adequate (and deserved) coverage in books.
 
 
 ## Not in the book
 
 This is not an introductory book about JPA, see the next section about other JPA related books.
 I expect you know ORM and JPA at least superficially, you work with it for whatever reason (or
-will, or want to) and you are interested in something beyond reference material. It does not mean
-it is a difficult book though, as I always try explain the problem I talk about.
+will, or want to) and you are interested in something beyond reference material.
+It does not mean it is a difficult book though, as I always try explain the problem I talk about.
 
 This is not a book about architecture, at least not primarily, although patterns how to use
-JPA are somewhere in the area. I take kind of "Fowlerish" liberty of mixing design and architecture
-and blur the line between them. I admit I have not yet worked on such a project where thinking
-architecturally big would pay off. Instead I have seen architecture on other projects where the
-effort was wasted for various reasons. Some of them are easy to guess if you're interested in an
-agile or lean software development. That said, I'll talk about some design considerations,
-for instance about the contract between presentation and session layer.
+JPA are somewhere in the area.
+I take kind of "Fowlerish" liberty of mixing design and architecture and blur the line between them.
+I admit I have not yet worked on such a project where thinking architecturally big would pay off.
+Instead I have seen architecture on projects where the effort was wasted for various reasons.
+Some of them are easy to guess if you're interested in an agile or lean software development.
+That said, I'll talk about some design considerations, for instance about the contract between
+presentation and session layer.
 
 This book does not cover any of these topics:
 
@@ -65,101 +74,107 @@ the *opinionated* approach.
 * High performance -- we mention performance, and the advices should not affect it negatively,
 but I don't focus on high-performance tricks in particular.
 
-We may mention some of them here and there, but there will be little focus on these. Most of them
-are covered elsewhere anyway. Let's talk about some of the books available in this segment.
+Most of these are covered elsewhere anyway.
+Let's talk about other books available in this segment.
 
 
 ## Other JPA books
 
-JPA came with EJB 3, actually first as a part of *JSR 220* "Enterprise JavaBeans 3.0", but it soon
-proved as a worthy API on its own because it is not tied to EJP in particular. In those days I'd
-recommend [Pro EJB 3: Java Persistence API](http://www.amazon.com/dp/1590596455), but I think the
-book is now dead (and yes, in 2016 it celebrated its 10^th^ anniversary).
+*JPA 1.0* came with *EJB 3.0* back in 2006, first as a part of *JSR 220: Enterprise JavaBeans 3.0*.
+It soon proved as a worthy API on its own because it is not tied to EJB in particular.
+In those days I'd recommend [Pro EJB 3: Java Persistence API](http://www.amazon.com/dp/1590596455),
+but I think the book is now massively outdated.
 
-I can highly recommend [Pro JPA 2](http://www.amazon.com/dp/1430249269)
-in its 2^nd^ Edition [[PJPA2](#bib-projpa2)],
-which is updated to *JPA 2.1* (in line with *Java EE 7*). There is hardly anything I haven't found
-in this one. Sure, it's closing to 500 pages, but it's structured well. It has minimal overlap with
-the rest of Java EE in *Chapter 3: Enterprise Applications*, but even that may be useful. This
-is currently my go-to book when I need to refresh some JPA knowledge.
+I can highly recommend [Pro JPA 2](http://www.amazon.com/dp/1430249269) in its 2^nd^ Edition
+[[PJPA2](#bib-projpa2)], which is updated to *JPA 2.1* (in line with *Java EE 7*).
+There is hardly anything I haven't found in this one.
+Sure, it's closing on 500 pages, but it's structured well.
+It has minimal overlap with the rest of Java EE in *Chapter 3: Enterprise Applications*,
+but even that part may be useful.
+This is currently my go-to book when I need to refresh some JPA knowledge.
 
 Then there is [Spring Data](http://www.amazon.com/dp/1449323952) book [[SData](#bib-sdata)].
 For the sake of confusion there are actually two books of this name -- one published by O'Reilly
-and the other one by Packt, both published within a month late in 2012. If you are Spring positive,
-I can only recommend reading at least first 50 pages of the one by O'Reilly (up to chapter 4
-including), even if you don't use Spring Data after all. It's a nice quick overview of JPA and
-Querydsl with examples of Spring configuration both in XML and Java and they even mention
-kind of advanced things like `orphanRemoval` (although rather in passing). It's definitely a little
-time well spent anyway.
+and the other one by Packt, both published within a month late in 2012.
+If you are Spring positive, I can only recommend reading at least first 50 pages of the one by
+O'Reilly (up to chapter 4 including), even if you don't use Spring Data after all.
+It's a nice quick overview of JPA and Querydsl with examples of Spring configuration both in XML
+and Java and they even mention things like `orphanRemoval` (although rather in passing).
+It's definitely a little time well spent.
 
-I don't know any other relevant books, but there is one more obvious resource -- [Java Persistence
-2.1 Specification](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
-itself [[JPspec](#bib-jpspec)].
-There are things you hardly find anywhere else, especially when it comes to corner cases
-like *"use of DISTINCT with COUNT is not supported for arguments of embeddable types"*. So when you
-encounter a problem it is good to search through the specification for keywords. Often JPA
-provider works as specified, even when it does not make sense to us.
+I don't know any other relevant books, but there is one more obvious resource --
+[Java Persistence 2.2 Specification](http://download.oracle.com/otn-pub/jcp/persistence-2_2-mrel-spec/JavaPersistence.pdf)
+itself [[JPspec](#bib-jpspec)] (or older
+[Java Persistence 2.1 Specification](http://download.oracle.com/otndocs/jcp/persistence-2_1-fr-spec/index.html)
+[[JPspec21](#bib-jpspec21)]).
+There are things you hardly find anywhere else, especially when it comes to corner cases like
+*"use of DISTINCT with COUNT is not supported for arguments of embeddable types or map entry types"*.
+So when you encounter a problem it is good to search through the specification for keywords.
+Often JPA provider works as specified, even when it does not make sense to us.
 
-There are tons of blog posts, of course, some of them are very influential. I will mention the
-most important ones in chapter [Love and hate for ORM](#ch-love-hate).
+There are tons of blog posts, of course, some of them are very influential.
+I will mention the most important ones in chapter [Love and hate for ORM](#ch-love-hate).
 
 
 ## Books on performance of the database and persistence layer
 
-Any book about persistence gives at least some elementary advices on performance. You definitely
-should consult the documentation to your provider. I can also recommend two books on Java
-performance in general -- both named quite plainly: [Java Performance](https://www.amazon.com/dp/0137142528)
-(2011) [[JP](#bib-jp)] and [Java Performance: The Definitive Guide](https://www.amazon.com/dp/1449358454)
-(2014) [[JPDG](#bib-jpdg)]. The first one has a final chapter named *Java Persistence and
-Enterprise Java Beans Performance*, the second one deals with the topic in its penultimate chapter
-*Database Performance Best Practices*. Finally, there is also a very recent book that covers
-performance of Java persistence specifically --
-[High Performance Java Persistence](https://leanpub.com/high-performance-java-persistence)
-[[HPJP](#bib-hpjp)].
+Any book about persistence gives at least some elementary advices on performance.
+You definitely should consult the documentation to your provider.
+I can also recommend two books on Java performance in general -- both named quite plainly:
+[Java Performance](https://www.amazon.com/dp/0137142528) (2011) [[JP](#bib-jp)] and
+[Java Performance: The Definitive Guide](https://www.amazon.com/dp/1449358454) (2014) [[JPDG](#bib-jpdg)].
+The first one has a final chapter named *Java Persistence and Enterprise Java Beans Performance*,
+the second one deals with the topic in its penultimate chapter *Database Performance Best Practices*.
+Finally, there is also a very recent book that covers performance of Java persistence specifically --
+[High Performance Java Persistence](https://leanpub.com/high-performance-java-persistence) [[HPJP](#bib-hpjp)].
 
 {icon=book}
 G> ### SQL Performance Explained
 G>
 G> I can highly recommend this incredible book [[SQLPE](#bib-sqlpe)] which explains indexes,
 G> joins, execution plans and many other aspects of queries (including data modification) in just
-G> under 200 pages. This not only is a true gem in this area, it can be also obtained as PDF from
-G> [its site](http://sql-performance-explained.com) for 10 Eur or so. I hope it goes without saying
-G> that ignoring the database level and SQL will not get far (and not in the right direction).
+G> under 200 pages.
+G> This not only is a true gem in this area, it can be also obtained as PDF from
+G> [its site](http://sql-performance-explained.com) for 10 Eur or so.
+G> I hope it goes without saying that ignoring the database level and SQL will not get you very far
+G> (and not in the right direction).
 
 
 ## Looking back to *Patterns of Enterprise Application Architecture*
 
 Martin Fowler wrote his *Patterns of Enterprise Application Architecture* [[PoEAA](#bib-poeaa)]
 in 2002 trying to capture various patterns that were reoccurring in enterprise applications,
-not necessarily written in Java. Many patterns in the book cover data access layer and many of
-those are clearly ORM related -- starting with *Data Mapper* going through *Unit of Work*
-or *Lazy Load* to many more related to concrete mapping problems.
+not necessarily written in Java.
+Many patterns in the book cover data access layer and many of those are clearly ORM related --
+starting with *Data Mapper* going through *Unit of Work* or *Lazy Load* to many more related
+to concrete mapping problems.
 
 Reading the material so old also gives you the idea how well the patterns stand the test of time.
-In 2002 Java was 7 years old, now it's over 20. There were no annotations and dependency injection
-was known in theory, but there was no wide-spread container supporting it (mind you, Spring 1.0 was
-released in 2004). Years later we still used various `SessionHelper` static classes to work with
-Hibernate `Session` in thread-local manner, often forgetting to close session because we were not
-able to clearly put open and close to a single method with try/finally block. That was before we
-read books like *Clean Code*... probably because it was before they were written.[^prpr]
+In 2002 Java was 7 years old, now it's over 20.
+There were no annotations and dependency injection was known in theory, but there was no wide-spread
+container supporting it (mind you, Spring 1.0 was released in 2004).
+Years later we still used various `SessionHelper` static classes to work with Hibernate `Session`
+in thread-local manner, often forgetting to close session because we were not able to clearly put
+open and close to a single method with try/finally block.
+That was before we read books like *Clean Code*... probably because they were not yet written.[^prpr]
 
-[^prpr]: However, *Pragmatic Programmer* (1999) was already out there. After many years of being
-    aware this book exists I've decided to buy it and read it. It is beyond any recommendation and
-    tip 25 *How to Balance Resources* is tackling exactly this. Personally I'd say this book is
-    more essential than *Clean Code* but both should be read in any case.
+[^prpr]: However, *Pragmatic Programmer* (1999) was already out there.
+    After many years of being aware this book exists I've decided to buy it and read it.
+    It is beyond any recommendation and tip 25 *How to Balance Resources* is tackling exactly this.
+    Personally I'd say this book is more essential than *Clean Code* but both should be read in any case.
 
 Closing his chapter *Mapping to Relational Databases* Martin Fowler wrote:
 
 {icon=quote-right}
 G> Object-relational mapping is a fact of life for most people, so it's no surprise
-G> that there's been a lot written on the subject. The surprise is that there isn’t a
-G> single coherent, complete, and up-to-date book, which is why I've devoted so
-G> much of this one to this tricky yet interesting subject.
+G> that there's been a lot written on the subject.
+G> The surprise is that there isn’t a single coherent, complete, and up-to-date book, which is
+G> why I've devoted so much of this one to this tricky yet interesting subject.
 
-Today there are more books related to ORM, even if you narrow it down to Java world. My attempt
-tries to step away from many ORM concepts and go back to SQL roots to a degree. That does not
-change the fact that Fowler's work organizing and describing all these (still applicable) patterns
-is remarkable.
+Today there are more books related to ORM, even if you narrow it down to Java world.
+My attempt tries to step away from many ORM concepts and go back to SQL roots to a degree.
+That does not change the fact that Fowler's work organizing and describing all these (still
+applicable) patterns is remarkable.
 
 
 ## Structure of the book
@@ -168,16 +183,16 @@ In the [first part](#part-jpa-good-bad) of the book we'll quickly go through JPA
 (all highly subjective, you know the disclaimer drill) with a bit of historical context as well.
 This part should prepare a backdrop for any further arguments.
 
-In the [second part](#part-opinionated-jpa) of the book we will get opinionated. After an
-introduction for my case we will make a detour to meet Querydsl, because I'm not willing to
-go on without it. Afterwards we'll see how to work around the features marked as questionable
-(where possible).
+In the [second part](#part-opinionated-jpa) of the book we will get opinionated.
+After an introduction for my case we will make a detour to meet Querydsl, because I'm not
+willing to go on without it.
+Afterwards we'll see how to work around the features marked as questionable (where possible).
 
 [Third part](#part-common-problems) talks about more common problems you encounter when working
 with the JPA (like paginating and N+1 select) and offers solutions for them.
 
 Finally, [appendices](#appendices) will provide short references for related technologies I used
-throughout the book (e.g. H2 database) and other additional material.
+throughout the book (e.g. H2 database, project/build structure) and other additional material.
 
 
 ## Using code examples
@@ -186,20 +201,23 @@ Book is written on GitHub and all the code is in the
 [GitHub repo](https://github.com/virgo47/opinionatedjpawithquerydsl) for the book.
 
 You may download the whole repository or browse it online, the most important snippets of code
-are presented in the book. Because I present various JPA models and setups examples are split
-into many small projects, each with its own Maven `pom.xml`. Entity classes and other "production"
-code is in the `src/main/java` (or `resources`) while demo code is in the `src/test/java`. If you
-want to run it in IDE, I recommend those that can create multiple run configurations and are able
-to run normal classes (with `main`) from the test sources as well -- I suspect some prominent IDEs
-don't support this. But you can always run the demo code using Maven like this (from the project
-directory, e.g. `examples/querydsl-basic`:
+are presented in the book.
+Because I present various JPA models and setups examples are split into many small projects,
+each with its own Maven `pom.xml` (or Gradle build in some cases).
+Entity classes and other "production" code is in the `src/main/java` (or `resources`)
+while demo code is in the `src/test/java`.
+If you want to run it in IDE, I recommend those that can create multiple run configurations and
+are able to run normal classes (with `main`) from the test sources as well -- I suspect some
+prominent IDEs don't support this.
+But you can always run the demo code using Maven from the project directory (e.g.
+`examples/querydsl-basic`) with the command like:
 
 ~~~
 mvn test-compile exec:java -Dexec.mainClass="tests.DogQueryDemo"
 ~~~
 
-There is also neat way how to download subtree of a GitHub project using -- surprisingly -- SVN
-export. This makes running any example on the command line a breeze:
+There is also neat way how to download subtree of a GitHub project using SVN export.
+This makes running any example on the command line a breeze:
 
 ~~~
 svn export \
@@ -215,21 +233,30 @@ print the e-book, of course).
 ## My writing background
 
 I've written more than a few posts on [my blog](http://virgo47.wordpress.com/),
-mostly on technical topics, couple of them about JPA. Actually, this book is partially based on
-these frustrated experiences. I always felt like a writer -- originally just to share, although not
-everything is worth sharing, I know. Later I realized that writing helps me to clarify a lot of
-concepts to myself. For the same reasons (sharing and learning) I gave courses and talks. Preparing
-those is also kind of writing. So I hope both me and this book are not lost causes.
+mostly on technical topics, couple of them about JPA.
+Actually, this book is partially based on these frustrated experiences but is much more than
+a collection of blog posts as the research was much deeper.
+I was surprised it got to 200 pages in its first edition.
+My goal for the second edition was to updated it, extend it but, hopefully, also reduce and distill
+its original content.
+
+I always felt like a writer -- originally just to share ideas and experiences.
+Later I realized that writing helps me to clarify a lot of concepts to myself.
+For the same reasons (sharing and learning) I gave courses and talks.
+Preparing those is also kind of writing.
+So I hope both me and this book are not lost causes.
 
 
 ## Feedback
 
 When you work on a technical book, especially alone, it happens that some of the information is not
-exactly right and some might be plain wrong. Obviously, it is not my intention -- on the contrary,
-I try hard to avoid any confusion or leading anyone into a mistake. However, it may happen because
-the topic is not trivial. I study books and online resources, I test my solutions, I try to
-understand what is going on, but sometimes I may just understand something wrong. Sorry for that
-and please, if you know better, let me know. You can:
+exactly right and some might be plain wrong.
+Obviously, it is not my intention to mislead anyone.
+However, it may happen because the topic is not trivial.
+I study books and online resources, I test my solutions, I try to understand what is going on,
+but sometimes I may just understand something wrong.
+Sorry for that and please, if you know better, let me know.
+You can:
 
 * either add an issue on the [GitHub repo](https://github.com/virgo47/opinionatedjpawithquerydsl)
 for the book,

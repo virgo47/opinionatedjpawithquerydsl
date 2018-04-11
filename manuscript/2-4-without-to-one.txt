@@ -1,10 +1,10 @@
 # Removing *to-one* altogether {#ch-without-to-one}
 
 W> This solution builds on JPA 2.1 `ON` clause but is not JPA compliant because it also uses
-W> root entity after `JOIN` keyword (also known as *ad hoc join*) that is only supported in
-W> EclipseLink and not according to
-W> [[JPspec](#bib-jpspec)]. Specification details this on page 176 and the following sections
-W> 4.4.5.x. I discovered this option when I played with Querydsl
+W> root entity after `JOIN` keyword (also known as *ad hoc join*) that is supported by current
+W> JPA providers but not according to [[JPspec](#bib-jpspec)].
+W> Specification details this on page 176 and the following sections 4.4.5.x.
+W> I discovered this option when I played with Querydsl
 W> and various options how to state my joins -- and it worked on the reference implementation!
 W> With this I was more than a year in a mistake that we're bending JPA, using it as it was not
 W> intended, but still within the rules. I hit the wall when I tried it with Hibernate in course

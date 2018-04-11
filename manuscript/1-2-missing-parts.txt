@@ -67,21 +67,21 @@ When compared to SQL, probably the most striking JPQL limitations are related to
 scenarios can be replaced by JOINs, but some can't. For instance, we cannot put subqueries into
 a SELECT clause -- this would allow for aggregated results per row. We cannot put them into a FROM
 clause and use the select result as any other table -- or, in relational database sense, as a
-[relation](https://en.wikipedia.org/wiki/Relation_%28database%29)). This would
-allow us, among other things, to count rows for results that current JPA does not support.[^cntemb]
+[relation](https://en.wikipedia.org/wiki/Relation_%28database%29)).
+This would allow us, among other things, to count rows for results that current JPA does not support.[^cntemb]
 
 [^cntemb]: My favourite is [JPspec](#bib-jpspec), section 4.8.5, mentioning that *"use of DISTINCT
-    with COUNT is not supported for arguments of embeddable types or map entry types"*. In general,
-    using embeddables may limit our options, which is a pity and may force design decisions not to
-    use them where we otherwise would.
+    with COUNT is not supported for arguments of embeddable types or map entry types"*.
+    In general, using embeddables may limit our options, which is a pity and may force design
+    decisions not to use them where we otherwise would.
 
-JPA offers a palette of favourite functions, but of course it does not provide all possible
-functions.[^datearit]
-Before *JPA 2.1* we'd have to use ORM provider custom functionality to overcome this, or
-fallback to native SQL. Just because we are consciously sacrificing database portability it does
-not mean we don't want to use JPQL. It provides us with `FUNCTION` construct where the name
-of the called function is the first argument with other arguments following behind. Easy to use
-and very flexible -- this effectively closes the gap for functions we can use.
+JPA offers a palette of favourite functions, but of course it does not provide all possible functions.[^datearit]
+Before *JPA 2.1* we'd have to use ORM provider custom functionality to overcome this,
+or fallback to native SQL.
+Just because we are consciously sacrificing database portability it does not mean we don't want to use JPQL.
+It provides us with `FUNCTION` construct where the name of the called function is the first
+argument with other arguments following behind.
+Easy to use and very flexible -- this effectively closes the gap for functions we can use.
 
 [^datearit]: One especially big pain is no support for date arithmetic like `GETDATE() + 1`.
 
@@ -89,9 +89,9 @@ and very flexible -- this effectively closes the gap for functions we can use.
 ## Other missing parts
 
 The best way how to find corner cases that are not supported in the specification [[JPspec](#bib-jpspec)]
-is simply to search for "not supported" string. Some of these are related to embeddables, some are
-pretty natural (e.g. *"applying setMaxResults or setFirstResult to a query involving fetch joins
-over collections is undefined"*).[^paging]
+is simply to search for "not supported" string.
+Some of these are related to embeddables, some are pretty natural (e.g. *"applying setMaxResults
+or setFirstResult to a query involving fetch joins over collections is undefined"*).[^paging]
 
 [^paging]: For paginating with fetch across *to-many* relations see the chapter
     [Avoid N+1 select](#ch-avoid-n-plus-1), concretely [this section](#to-many-paginating).
