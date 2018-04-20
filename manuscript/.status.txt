@@ -17,7 +17,7 @@ To actually finish something, I want to do this in the 1st edition:
     * ORM tuned down (100%)
     * No further steps without Querydsl (100%)
     * Troubles with *to-one* relationships (100%) NEEDS REVIEW
-        * \#entity-views, is "Entity view" the best name? perhaps `@QueryProjection`?
+        * \#entity-views, is "Entity view" the best name? perhaps `@QueryEntity`?
         * DB views vs https://en.wikibooks.org/wiki/Java_Persistence/Tables#Multiple_tables
         Does it belong to this chapter? This is more about select efficiency/performance
     * Removing `@ManyToOne` altogether (not JPA compliant) (100%) NEEDS REVIEW
